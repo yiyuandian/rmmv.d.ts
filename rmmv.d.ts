@@ -7,18 +7,24 @@
 /// <reference path="../lz-string/lz-string.d.ts"/>
 /// <reference path="../fpsmeter/FPSMeter.d.ts"/>
 
+/**
+ * 位图处理
+ */
 declare class Bitmap {
     /**
+     * 加载图像文件并返回新的位图对象。
+     * 
      * Loads a image file and returns a new bitmap object.
      *
      * @static
      * @method load
-     * @param {String} url The image url of the texture
+     * @param {String} url 纹理的图像url
      * @return Bitmap
      */
     static load(url: string): Bitmap;
 
     /**
+     * 截取当前游戏窗口图片并返回一个位图对象。
      * Takes a snapshot of the game screen and returns a new bitmap object.
      *
      * @static
@@ -37,7 +43,7 @@ declare class Bitmap {
     fontFace: string;
 
     /**
-     * The size of the font in pixels.
+     * 字体的大小（以像素为单位）。
      *
      * @property fontSize
      * @type Number
@@ -45,7 +51,7 @@ declare class Bitmap {
     fontSize: number;
 
     /**
-     * Whether the font is italic.
+     * 字体是否为斜体。
      *
      * @property fontItalic
      * @type Boolean
@@ -53,7 +59,7 @@ declare class Bitmap {
     fontItalic: number;
 
     /**
-     * The color of the text in CSS format.
+     * CSS格式文本的颜色。
      *
      * @property textColor
      * @type String
@@ -61,7 +67,7 @@ declare class Bitmap {
     textColor: string;
 
     /**
-     * The color of the outline of the text in CSS format.
+     * CSS格式的文本轮廓的颜色。
      *
      * @property outlineColor
      * @type String
@@ -69,7 +75,7 @@ declare class Bitmap {
     outlineColor: string;
 
     /**
-     * The width of the outline of the text.
+     * 文本轮廓的宽度。
      *
      * @property outlineWidth
      * @type Number
@@ -77,7 +83,7 @@ declare class Bitmap {
     outlineWidth: number;
 
     /**
-     * [read-only] The url of the image file.
+     * [只读]图像文件的url。
      *
      * @property url
      * @type String
@@ -85,7 +91,7 @@ declare class Bitmap {
     url: string;
 
     /**
-     * [read-only] The base texture that holds the image.
+     * [只读]保存图像的基本纹理。
      *
      * @property baseTexture
      * @type PIXI.BaseTexture
@@ -93,7 +99,7 @@ declare class Bitmap {
     baseTexture: PIXI.BaseTexture;
 
     /**
-     * [read-only] The bitmap canvas.
+     * [只读]位图画布。
      *
      * @property canvas
      * @type HTMLCanvasElement
@@ -101,7 +107,7 @@ declare class Bitmap {
     canvas: HTMLCanvasElement;
 
     /**
-     * [read-only] The 2d context of the bitmap canvas.
+     * [只读]位图画布的2d上下文。
      *
      * @property context
      * @type CanvasRenderingContext2D
@@ -109,23 +115,23 @@ declare class Bitmap {
     context: CanvasRenderingContext2D;
 
     /**
-     * [read-only] The width of the bitmap.
+     * [只读]位图的宽度。
      *
-     * @property width
+     * @property width - 宽度
      * @type Number
      */
     width: number;
 
     /**
-     * [read-only] The height of the bitmap.
+     * [只读]位图的高度。
      *
-     * @property height
+     * @property height - 高度
      * @type Number
      */
     height: number;
 
     /**
-     * [read-only] The rectangle of the bitmap.
+     * [只读]位图的矩形。
      *
      * @property rect
      * @type Rectangle
@@ -133,7 +139,7 @@ declare class Bitmap {
     rect: Rectangle;
 
     /**
-     * Whether the smooth scaling is applied.
+     * 是否应用平滑缩放。
      *
      * @property smooth
      * @type Boolean
@@ -433,7 +439,7 @@ declare class Bitmap {
 }
 
 /**
- * The static class that carries out graphics processing.
+ * 执行图形处理的静态类。
  *
  * @class Graphics
  */
@@ -1078,7 +1084,7 @@ interface GraphicsStatic {
 declare var Graphics: GraphicsStatic;
 
 /**
- * The static class that handles HTML5 Audio.
+ * 处理HTML5音频的静态类。
  *
  * @class Html5Audio
  * @constructor
@@ -1328,6 +1334,7 @@ interface Html5AudioStatic {
 declare var Html5Audio: Html5AudioStatic;
 
 /**
+ * 处理来自键盘和游戏板的输入数据的静态类。
  * The static class that handles input data from the keyboard and gamepads.
  *
  * @class Input
@@ -1576,8 +1583,7 @@ interface InputStatic {
 declare var Input: InputStatic;
 
 /**
- * This is not a class, but contains some methods that will be added to the
- * standard Javascript objects.
+ * 这不是一个类，但包含一些将添加到标准Javascript对象的方法
  *
  * @class JsExtensions
  */
@@ -1764,7 +1770,7 @@ declare class Rectangle extends PIXI.Rectangle {
 }
 
 /**
- * The static class that handles JSON with object information.
+ * 处理带有对象信息的JSON的静态类。
  *
  * @class JsonEx
  */
@@ -1849,7 +1855,7 @@ interface JsonExStatic {
 }
 
 /**
- * The static class that handles JSON with object information.
+ * 处理带有对象信息的JSON的静态类。
  *
  * @class JsonEx
  */
@@ -3253,7 +3259,7 @@ interface TouchInputStatic {
 declare var TouchInput: TouchInputStatic;
 
 /**
- * The static class that defines utility methods.
+ * 定义实用程序方法的静态类。
  *
  * @class Utils
  */
@@ -6491,8 +6497,10 @@ declare namespace MV {
     }
 }
 /**
+ * 音频管理器
  * AudioManager
  *
+ * 处理BGM、BGS、ME和SE的静态类。
  * The static class that handles BGM, BGS, ME and SE.
  */
 interface AudioManagerStatic {
@@ -6564,8 +6572,10 @@ interface AudioManagerStatic {
 declare var AudioManager: AudioManagerStatic;
 
 /**
+ * 战斗管理器
  * BattleManager
  *
+ * 管理战斗进程的静态类。
  * The static class that manages battle progress.
  */
 interface BattleManagerStatic {
@@ -6716,9 +6726,10 @@ declare var $gamePlayer: Game_Player;
 declare var $testEvent: Array<RPG.EventCommand>;
 
 /**
+ * 数据管理器
  * DataManager
- *
- * The static class that manages the database and game objects.
+ * 
+ * 管理数据库和游戏对象的静态类。
  */
 interface DataManagerStatic {
     _globalId: string;
@@ -6801,7 +6812,7 @@ interface ImageManagerStatic {
 declare var ImageManager: ImageManagerStatic;
 
 /**
- * PluginManager
+ * 插件管理器
  *
  * The static class that manages the plugins.
  */
@@ -6821,6 +6832,7 @@ interface PluginManagerStatic {
 declare var PluginManager: PluginManagerStatic;
 
 /**
+ * 场景管理器
  * SceneManager
  *
  * The static class that manages scene transitions.
@@ -6960,6 +6972,7 @@ interface StorageManagerStatic {
 declare var StorageManager: StorageManagerStatic;
 
 /**
+ * 文本管理器
  * TextManager
  *
  * The static class that handles terms and messages.
@@ -7062,6 +7075,7 @@ declare var TextManager: TextManagerStatic;
  * -----------------------------------------------------------------------------
  * Game_Temp
  *
+ * 不包含在保存数据中的临时数据的游戏对象类。
  * The game object class for temporary data that is not included in save data.
  */
 declare class Game_Temp {
@@ -7086,7 +7100,7 @@ declare class Game_Temp {
  * -----------------------------------------------------------------------------
  * Game_System
  *
- * The game object class for the system data.
+ * 系统数据的游戏对象类。
  */
 declare class Game_System {
     protected _saveEnabled: boolean;
@@ -7156,7 +7170,7 @@ declare class Game_System {
  * -----------------------------------------------------------------------------
  * Game_Timer
  *
- * The game object class for the timer.
+ * 计时器的游戏对象类。
  */
 declare class Game_Timer {
     protected _frames: number;
@@ -7174,8 +7188,7 @@ declare class Game_Timer {
  * -----------------------------------------------------------------------------
  * Game_Message
  *
- * The game object class for the state of the message window that displays text
- * or selections, etc.
+ * 用于显示文本或选择等的消息窗口状态的游戏对象类。
  */
 declare class Game_Message {
     protected _texts: Array<string>;
@@ -7239,7 +7252,7 @@ declare class Game_Message {
  * -----------------------------------------------------------------------------
  * Game_Switches
  *
- * The game object class for switches.
+ * 开关的游戏对象类。
  */
 declare class Game_Switches {
     protected _data: Array<boolean>;
@@ -7254,7 +7267,7 @@ declare class Game_Switches {
  * -----------------------------------------------------------------------------
  * Game_Variables
  *
- * The game object class for variables.
+ * 变量的游戏对象类。
  */
 declare class Game_Variables {
     protected _data: Array<number>;
@@ -7269,7 +7282,7 @@ declare class Game_Variables {
  * -----------------------------------------------------------------------------
  * Game_SelfSwitches
  *
- * The game object class for self switches.
+ * 用于自切换的游戏对象类。
  */
 declare class Game_SelfSwitches {
     protected _data: {key: Array<any>};
@@ -7285,8 +7298,7 @@ declare class Game_SelfSwitches {
  * -----------------------------------------------------------------------------
  * Game_Screen
  *
- * The game object class for screen effect data, such as changes in color tone
- * and flashes.
+ * 游戏对象类为屏幕效果数据，如色调变化和闪烁。
  */
 declare class Game_Screen {
     protected _shake: number;
@@ -7372,7 +7384,7 @@ declare class Game_Screen {
  * -----------------------------------------------------------------------------
  * Game_Picture
  *
- * The game object class for a picture.
+ * 图片的游戏对象类。
  */
 declare class Game_Picture {
     protected _name: string;
@@ -10518,24 +10530,66 @@ declare class Window_MenuCommand extends Window_Command {
  * -----------------------------------------------------------------------------
  * Window_MenuStatus
  *
- * The window for displaying party member status on the menu screen.
+ * 
+ * 在菜单屏幕上显示队伍成员状态的窗口。
+ * @class Window_MenuStatus
+ * @extends {Window_Selectable}
  */
 declare class Window_MenuStatus extends Window_Selectable {
     protected _formationMode: boolean;
     protected _pendingIndex: number;
 
+    /**
+     * 创建Window_MenuStatus的实例。
+     * @param {number} x 
+     * @param {number} y 
+     * @memberof Window_MenuStatus
+     */
     constructor(x: number, y: number);
 
     windowWidth(): number;
     windowHeight(): number;
+    /**
+     * 返回主菜单窗口中每个项目（参与者状态）的高度.
+     * @returns {number} 
+     * @memberof Window_MenuStatus
+     */
     itemHeight(): number;
+    /**
+     * 返回菜单状态中可见的行数。
+     * @returns {number} 
+     * @memberof Window_MenuStatus
+     */
     numVisibleRows(): number;
+    /**
+     * 加载主菜单状态窗口的图像。
+     * 
+     * @memberof Window_MenuStatus
+     */
     loadImages(): void;
+    /**
+     * 在给定索引处绘制项背景。
+     * 
+     * @param {number} index 
+     * @memberof Window_MenuStatus
+     */
     drawItemBackground(index: number): void;
     drawItemImage(index: number): void;
     drawItemStatus(index: number): void;
     selectLast(): void;
+    /**
+     * 确定窗口是否处于编队模式；
+     * 如果为True，玩家可以选择角色交换位置。
+     * @returns {boolean} 
+     * @memberof Window_MenuStatus
+     */
     formationMode(): boolean;
+    /**
+     * 将编队模式设置为true或false。
+     * 
+     * @param {boolean} formationMode 要设置的模式
+     * @memberof Window_MenuStatus
+     */
     setFormationMode(formationMode: boolean): void;
     pendingIndex(): number;
     setPendingIndex(index: number): void;
@@ -10545,6 +10599,7 @@ declare class Window_MenuStatus extends Window_Selectable {
  * -----------------------------------------------------------------------------
  * Window_MenuActor
  *
+ * 用于在道具和技能界面时选择目标的窗口
  * The window for selecting a target actor on the item and skill screens.
  */
 declare class Window_MenuActor extends Window_MenuStatus {
