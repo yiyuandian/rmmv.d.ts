@@ -1,3 +1,35 @@
+/*
+* Do Not Remove This Header
+//=============================================================================
+//  ChangeLog
+//=============================================================================
+* version 1.0.0
+* - Added most major MV functions.
+* - Added PIXI.js type definitions
+* - Added LZString type definitions
+* - Added FPSMeter type definitions
+//=============================================================================
+//  Credits
+//=============================================================================
+*
+*  AsterAtwood: https://github.com/AsterAtwood
+*  Sabakan03: https://github.com/sabakan03
+*  For providing the base d.ts files to work from.
+//=============================================================================
+//  Contact Information
+//=============================================================================
+*
+* Contact me via twitter: EISKino, or on the rpg maker forums.
+* Username on forums: Kino.
+*
+* Forum Link: http://forums.rpgmakerweb.com/index.php?/profile/75879-kino/
+* Website Link: http://endlessillusoft.com/
+* Twitter Link: https://twitter.com/EISKino
+* Patreon Link: https://www.patreon.com/EISKino
+*
+* Hope this makes your plugin creation all the better.
+* --Kino
+*/
 // Type definitions for RPG Maker MV JS Library v1.2.0
 // Project: http://
 // Definitions by: aaa<https://>, bbb<https://>
@@ -5379,6 +5411,22 @@ declare namespace RPG {
          * The adjustment value for the battler graphic's hue (0..360).
          */
         battlerHue: number;
+      
+        /**
+         * The name of the enemy in the database.
+         * 
+         * @type {string}
+         * @memberof Enemy
+         */
+          name: string
+        
+        /**
+         * The ID of the enemy in the database.
+         * 
+         * @type {number}
+         * @memberof Enemy
+         */
+        id:number 
 
         /**
          * Parameters. An array of integers using the following IDs as subscripts:
@@ -6407,101 +6455,231 @@ declare namespace RPG {
         volume: number;
     }
 }
-declare namespace MV {
-    export interface Matrix {
-        type: string;
-        value: Array<number>;
-    }
-    export interface TouchInputEvents {
-        trigger: boolean;
-        cancelled: boolean;
-        moved: boolean;
-        released: boolean;
-        wheelX: number;
-        wheelY: number;
-    }
-    export interface AudioParameters {
-        name: string;
-        volume: number;
-        pitch: number;
-        pan: number;
-        pos: number;
-    }
-    export interface BattleRewards {
-        gold: number;
-        exp: number;
-        items: Array<RPG.BaseItem>;
-    }
-    export interface BattlerAnimation {
-        animationId: number;
-        mirror: boolean;
-        delay: number;
-    }
-    export interface CommandItem {
-        name: string;
-        symbol: string;
-        enabled: boolean;
-        ext: any;
-    }
-    export interface TextState {
-        index: number;
-        x: number;
-        y: number;
-        left: number;
-    }
-    export interface BattleLogMethod {
-        name: string;
-        params: any;
-    }
-    export interface Motion {
-        index: number;
-        loop: boolean;
-    }
-    export interface ConfigData {
-        alwaysDash: boolean;
-        commandRemember: boolean;
-        bgmVolume: number;
-        bgsVolume: number;
-        meVolume: number;
-        seVolume: number;
-    }
-    export interface DatabaseFile {
-        name: string;
-        src: string;
-    }
-    export interface SaveFileInfo {
-        globalId: string;
-        title: string;
-        characters: Array<Array<any>>;
-        faces: Array<Array<any>>;
-        playtime: string;
-        timestamp: number;
-    }
-    export interface SaveContents {
-        system: Game_System;
-        screen: Game_Screen;
-        timer: Game_Timer;
-        switches: Game_Switches;
-        variables: Game_Variables;
-        selfSwitches: Game_SelfSwitches;
-        actors: Game_Actors;
-        party: Game_Party;
-        map: Game_Map;
-        player: Game_Party;
-    }
-    export interface PluginSettings {
-        name: string;
-        status: string;
-        description: string;
-        parameters: {[key: string]: string};
-    }
+//=============================================================================
+// rpg_managers.js v1.5.0
+//=============================================================================
+/** @global RPGMakerMV Actor data. */
+declare var $dataActors: Array<RPG.Actor>;
+/** @global RPGMakerMV Class data. */
+declare var $dataClasses: Array<RPG.Class>;
+/** @global RPGMakerMV Skill data. */
+declare var $dataSkills: Array<RPG.Skill>;
+/** @global RPGMakerMV Item data. */
+declare var $dataItems: Array<RPG.Item>;
+/** @global RPGMakerMV Weapon data. */
+declare var $dataWeapons: Array<RPG.Weapon>;
+/** @global RPGMakerMV Armor data. */
+declare var $dataArmors: Array<RPG.Armor>;
+/** @global RPGMakerMV Enemy data. */
+declare var $dataEnemies: Array<RPG.Enemy>;
+/** @global RPGMakerMV Troop data. */
+declare var $dataTroops: Array<RPG.Troop>;
+/** @global RPGMakerMV State data. */
+declare var $dataStates: Array<RPG.State>;
+/** @global RPGMakerMV Animation data. */
+declare var $dataAnimations: Array<RPG.Animation>;
+/** @global RPGMakerMV Tileset data. */
+declare var $dataTilesets: Array<RPG.Tileset>;
+/** @global RPGMakerMV CommonEvent data. */
+declare var $dataCommonEvents: Array<RPG.CommonEvent>;
+/** @global RPGMakerMV System data. */
+declare var $dataSystem: RPG.System;
+/** @global RPGMakerMV MapInfo data. */
+declare var $dataMapInfos: Array<RPG.MapInfo>;
+/** @global RPGMakerMV Map data for the current map. */
+declare var $dataMap: RPG.Map;
+/** @global RPGMakerMV Temporary game data; not saved with the game. */
+declare var $gameTemp: Game_Temp;
+/** @global RPGMakerMV Game System data; saved with the game.
+ * @type {Game_Temp}
+*/
+declare var $gameSystem: Game_System;
+/** @global RPGMakerMV Game Screen; contains properties and methods
+ * for adjusting the game screen.
+ * @type {Game_Screen}
+ */
+declare var $gameScreen: Game_Screen;
+declare var $gameTimer: Game_Timer;
+/** @global RPGMakerMV Game Message; contains properties and methods
+ * for displaying messages in the game message window. 
+ * @type {Game_Message}
+*/
+declare var $gameMessage: Game_Message;
+/** @global RPGMakerMV Game Switches; contains properties and methods
+ * for modifying in game switches while the game is running.
+ * These are boolean values: true or false.
+ * @type {Game_Switches}
+ */
+declare var $gameSwitches: Game_Switches;
+/** @global RPGMakerMV Game Variables; contains properties and methods
+ * for modifying the values of game variables.
+ * The variables can contain anything.
+ * @type {Game_Variables}
+ */
+declare var $gameVariables: Game_Variables;
+declare var $gameSelfSwitches: Game_SelfSwitches;
+declare var $gameActors: Game_Actors;
+/** @global RPGmakerMV Game Party; contains properties and methods
+ * for interacting with the game party. Some of the methods include
+ * number of party members, etc.
+ * @type {Game_Party}
+ */
+declare var $gameParty: Game_Party;
+/** @global RPGMakerMV Game Troop; contains properties and methods
+ * for interacting with the game troops. Some of the methods include
+ * enemy data, enemy names, etc.
+ * @type {Game_Troop}
+ */
+declare var $gameTroop: Game_Troop;
+/** @global RPGMakerMV Game Map; contains properties and methods
+ * for interacting with the game map. Some of these methods include
+ * interacting with the map's game_interpreter, and event information.
+ * @type {Game_Map}
+ */
+declare var $gameMap: Game_Map;
+/** @global RPGMakerMV Game Player; contains properties and methods
+ * for interacting with the game player. Some of these methods
+ * include interacting with the player's position and move route.
+ * @type {Game_Player}
+ */
+declare var $gamePlayer: Game_Player;
+declare var $testEvent: Array<RPG.EventCommand>;
+
+declare class DataManager {
+    protected static _globalId: string;
+    protected static _lastAccessedId: number;
+    protected static _errorUrl: any;
+    protected static _databaseFiles: Array<Object>;
+    constructor();
+    static loadDatabase(): void;
+    static loadDataFile(name: string, src: string): void;
+    static isDatabaseLoaded(): boolean;
+    static loadMapData(mapId: number): void;
+    static makeEmptyMap(): void;
+    static isMapLoaded(): boolean;
+    static onLoad(object: any);
+    static extractMetaData(data: object): void;
+    static checkError(): void;
+    static isBattleTest(): boolean;
+    static isEventTest(): boolean;
+    /**
+     * Returns a boolean value given an item.
+     * Item being a database object representing a skill.
+     * @static
+     * @param {object} item 
+     * @returns {boolean} 
+     * @memberof DataManager
+     */
+    static isSkill(item: object): boolean;
+    /**
+     * Returns a boolean value given an item.
+     * Item must be a database item to be true.
+     * @static
+     * @param {object} item 
+     * @returns {boolean} 
+     * @memberof DataManager
+     */
+    static isItem(item: object): boolean;
+    /**
+     * Returns a boolean value given an item.
+     * Item must be a database weapon to be true.
+     * @static
+     * @param {object} item 
+     * @returns {boolean} 
+     * @memberof DataManager
+     */
+    static isWeapon(item: object): boolean;
+    /**
+     * Returns a boolean value given an item.
+     * Item must be a database armor to be true.
+     * @static
+     * @param {object} item 
+     * @returns {boolean} 
+     * @memberof DataManager
+     */
+    static isArmor(item: object): boolean;
+    static createGameObjects(): void;
+    static setupNewGame(): void;
+    static setupBattleTest(): void;
+    static setupEventTest(): void;
+    static loadGlobalInfo(): void;
+    static saveGlobalInfo(info: object): void;
+    /**
+     * Returns a boolean value given a savefileId.
+     * If the savefileId exists; the value will be true.
+     * @static
+     * @param {number} savefileId 
+     * @returns {boolean} 
+     * @memberof DataManager
+     */
+    static isThisGameFile(savefileId: number): boolean;
+    static isAnySavefileExists(): boolean;
+    static latestSavefileId(): number;
+    static loadAllSavefileImages(): void;
+    static loadSavefileImages(info: object): void;
+    /**
+     * Returns the maximum number of save files 
+     * allocated in the game.
+     * @static
+     * @returns {number} 
+     * @memberof DataManager
+     */
+    static maxSavefiles(): number;
+    /**
+     * Saves the RPGMakerMV game given a savefileId.
+     * Returns true if successful.
+     * @static
+     * @param {number} savefileId 
+     * @returns {boolean} 
+     * @memberof DataManager
+     */
+    static saveGame(savefileId: number): boolean;
+    static loadGame(savefileId: number): boolean;
+    /**
+     * Returns the last accessed save fileId upon
+     * saving or loading the game.
+     * @static
+     * @returns {number} 
+     * @memberof DataManager
+     */
+    static lastAccessedSavefileId(): number;
+    static saveGameWithoutRescue(savefileId: number): boolean;
+    static loadGameWithoutRescue(savefileId: number): boolean;
+    static selectSavefileForNewGame(): void;
+    /**
+     * Creates a new save file on the global
+     * save file information containing important
+     * data such as play time, characters, timestamp.
+     * @static
+     * @memberof DataManager
+     */
+    static makeSavefileInfo(): void;
+    /**
+     * Creates the save file contents when saving your game.
+     * Good for aliasing when you want to add more data
+     * to the game's save contents.
+     * @static
+     * @returns {object} 
+     * @memberof DataManager
+     */
+    static makeSaveContents(): object;
+    /**
+     * Extracts the save file contents into the game's
+     * variables. An excellent method to alias when you
+     * wish to extend the game's save contents for a plugin.
+     * @static
+     * @param {object} contents 
+     * @memberof DataManager
+     */
+    static extractSaveContents(contents: object): void;
 }
+
 /**
  * 音频管理器
- * AudioManager
  *
  * 处理BGM、BGS、ME和SE的静态类。
  * The static class that handles BGM, BGS, ME and SE.
+ * @interface AudioManagerStatic
  */
 interface AudioManagerStatic {
     _bgmVolume: number;
@@ -6571,12 +6749,51 @@ interface AudioManagerStatic {
 }
 declare var AudioManager: AudioManagerStatic;
 
+
+/**
+ * SoundManager
+ * The static class that plays sound effects defined in the database
+ * @interface SoundManagerStatic
+ */
+interface SoundManagerStatic {
+    preloadImportantSounds(): void;
+    loadSystemSound(n: number): void;
+    playSystemSound(n: number): void;
+    playCursor(): void;
+    playOk(): void;
+    playCancel(): void;
+    playBuzzer(): void;
+    playEquip(): void;
+    playSave(): void;
+    playLoad(): void;
+    playBattleStart(): void;
+    playEscape(): void;
+    playEnemyAttack(): void;
+    playEnemyDamage(): void;
+    playEnemyCollapse(): void;
+    playBossCollapse1(): void;
+    playBossCollapse2(): void;
+    playActorDamage(): void;
+    playActorCollapse(): void;
+    playRecovery(): void;
+    playMiss(): void;
+    playEvasion(): void;
+    playMagicEvasion(): void;
+    playReflection(): void;
+    playShop(): void;
+    playUseItem(): void;
+    playUseSkill(): void;
+}
+declare var SoundManager: SoundManagerStatic;
+
 /**
  * 战斗管理器
  * BattleManager
  *
  * 管理战斗进程的静态类。
+ * The static class that manages the battle process.
  * The static class that manages battle progress.
+ * @interface BattleManagerStatic
  */
 interface BattleManagerStatic {
     _phase: string;
@@ -6695,141 +6912,205 @@ interface ConfigManagerStatic extends MV.ConfigData {
 }
 declare var ConfigManager: ConfigManagerStatic;
 
-declare var $dataActors: Array<RPG.Actor>;
-declare var $dataClasses: Array<RPG.Class>;
-declare var $dataSkills: Array<RPG.Skill>;
-declare var $dataItems: Array<RPG.Item>;
-declare var $dataWeapons: Array<RPG.Weapon>;
-declare var $dataArmors: Array<RPG.Armor>;
-declare var $dataEnemies: Array<RPG.Enemy>;
-declare var $dataTroops: Array<RPG.Troop>;
-declare var $dataStates: Array<RPG.State>;
-declare var $dataAnimations: Array<RPG.Animation>;
-declare var $dataTilesets: Array<RPG.Tileset>;
-declare var $dataCommonEvents: Array<RPG.CommonEvent>;
-declare var $dataSystem: RPG.System;
-declare var $dataMapInfos: Array<RPG.MapInfo>;
-declare var $dataMap: RPG.Map;
-declare var $gameTemp: Game_Temp;
-declare var $gameSystem: Game_System;
-declare var $gameScreen: Game_Screen;
-declare var $gameTimer: Game_Timer;
-declare var $gameMessage: Game_Message;
-declare var $gameSwitches: Game_Switches;
-declare var $gameVariables: Game_Variables;
-declare var $gameSelfSwitches: Game_SelfSwitches;
-declare var $gameActors: Game_Actors;
-declare var $gameParty: Game_Party;
-declare var $gameTroop: Game_Troop;
-declare var $gameMap: Game_Map;
-declare var $gamePlayer: Game_Player;
-declare var $testEvent: Array<RPG.EventCommand>;
-
-/**
- * 数据管理器
- * DataManager
- * 
- * 管理数据库和游戏对象的静态类。
- */
-interface DataManagerStatic {
-    _globalId: string;
-    _lastAccessedId: number;
-    _errorUrl: string;
-    _databaseFiles: Array<MV.DatabaseFile>;
-
-    maxSavefiles: number;
-
-    loadDatabase(): void;
-    loadDataFile(name: string, src: string): void;
-    isDatabaseLoaded(): boolean;
-    loadMapData(mapId: number): void;
-    makeEmptyMap(): void;
-    isMapLoaded(): boolean;
-    onLoad(object: RPG.Map): void;
-    extractMetadata(data: RPG.MetaData): void;
-    checkError(): void;
-    isBattleTest(): boolean;
-    isEventTest(): boolean;
-    isSkill(): boolean;
-    isItem(): boolean;
-    isWeapon(): boolean;
-    isArmor(): boolean;
-    createGameObjects(): void;
-    setupNewGame(): void;
-    setupBattleTest(): void;
-    setupEventTest(): void;
-    loadGlobalInfo(): Array<any>;
-    saveGlobalInfo(info: Array<any>): void;
-    isThisGameFile(savefileId: number): boolean;
-    isAnySavefileExists(): boolean;
-    latestSavefileId(): number;
-    loadAllSavefileImages(): void;
-    loadSavefileImages(info: MV.SaveFileInfo): void;
-    saveGame(savefileId: number): boolean;
-    loadGame(savefileId: number): boolean;
-    loadSavefileInfo(savefileId: number): any;
-    lastAccessedSavefileId(): number;
-    saveGameWithoutRescue(savefileId: number): boolean;
-    loadGameWithoutRescue(savefileId: number): boolean;
-    selectSavefileForNewGame(): void;
-    makeSavefileInfo(): void;
-    makeSaveContents(): MV.SaveContents;
-    extractSaveContents(contents: MV.SaveContents);
-}
-declare var DataManager: DataManagerStatic;
-
 /**
  * ImageManager
  *
  * The static class that loads images, creates bitmap objects and retains them.
+ * @interface ImageManagerStatic
  */
 interface ImageManagerStatic {
     cache: CacheMap;
 
+    /**
+     * Loads a Bitmap object from the 'img/animations/' folder
+     * and returns it.
+     * @param {string} filename 
+     * @param {number} [hue] 
+     * @returns {Bitmap} 
+     * @memberof ImageManagerStatic
+     */
     loadAnimation(filename: string, hue?: number): Bitmap;
+    /**
+     * Loads a Bitmap object from the 'img/battlebacks1/' folder
+     *  and returns it.
+     * @param {string} filename 
+     * @param {number} [hue] 
+     * @returns {Bitmap} 
+     * @memberof ImageManagerStatic
+     */
     loadBattleback1(filename: string, hue?: number): Bitmap;
+    /**
+     * Loads a Bitmap object from the 'img/battlebacks2/' folder
+     * and returns it.
+     * @param {string} filename 
+     * @param {number} [hue] 
+     * @returns {Bitmap} 
+     * @memberof ImageManagerStatic
+     */
     loadBattleback2(filename: string, hue?: number): Bitmap;
+    /**
+     * Loads a Bitmap object from the 'img/enemies/' folder
+     * and returns it.
+     * @param {string} filename 
+     * @param {number} [hue] 
+     * @returns {Bitmap} 
+     * @memberof ImageManagerStatic
+     */
     loadEnemy(filename: string, hue?: number): Bitmap;
+    /**
+     * Loads a Bitmap object from the 'img/characters/' folder
+     * and returns it.
+     * @param {string} filename 
+     * @param {number} [hue] 
+     * @returns {Bitmap} 
+     * @memberof ImageManagerStatic
+     */
     loadCharacter(filename: string, hue?: number): Bitmap;
+    /**
+     * Loads a Bitmap object from the 'img/faces/' folder
+     * and returns it.
+     * @param {string} filename 
+     * @param {number} [hue] 
+     * @returns {Bitmap} 
+     * @memberof ImageManagerStatic
+     */
     loadFace(filename: string, hue?: number): Bitmap;
+    /**
+     * Loads a Bitmap object from the 'img/parallaxes/' folder
+     * and returns it.
+     * @param {string} filename 
+     * @param {number} [hue] 
+     * @returns {Bitmap} 
+     * @memberof ImageManagerStatic
+     */
     loadParallax(filename: string, hue?: number): Bitmap;
+    /**
+     * Loads a Bitmap object from the 'img/pictures/' folder
+     * and returns it.
+     * @param {string} filename 
+     * @param {number} [hue] 
+     * @returns {Bitmap} 
+     * @memberof ImageManagerStatic
+     */
     loadPicture(filename: string, hue?: number): Bitmap;
+    /**
+     * Loads a Bitmap object from the 'img/sv_actors/' folder
+     * and returns it.
+     * @param {string} filename 
+     * @param {number} [hue] 
+     * @returns {Bitmap} 
+     * @memberof ImageManagerStatic
+     */
     loadSvActor(filename: string, hue?: number): Bitmap;
+    /**
+     * Loads a Bitmap object from the 'img/sv_enemies/' folder
+     * and returns it.
+     * @param {string} filename 
+     * @param {number} [hue] 
+     * @returns {Bitmap} 
+     * @memberof ImageManagerStatic
+     */
     loadSvEnemy(filename: string, hue?: number): Bitmap;
+    /**
+     * Loads a Bitmap object from 'img/system/' folder
+     * and returns it.
+     * @param {string} filename 
+     * @param {number} [hue] 
+     * @returns {Bitmap} 
+     * @memberof ImageManagerStatic
+     */
     loadSystem(filename: string, hue?: number): Bitmap;
+    /**
+     * Loads a Bitmap object from the 'img/tilesets/' folder
+     * and returns it.
+     * @param {string} filename 
+     * @param {number} [hue] 
+     * @returns {Bitmap} 
+     * @memberof ImageManagerStatic
+     */
     loadTileset(filename: string, hue?: number): Bitmap;
+    /**
+     * Loads a Bitmap object from the 'img/titles1/' folder
+     * and returns it.
+     * @param {string} filename 
+     * @param {number} [hue] 
+     * @returns {Bitmap} 
+     * @memberof ImageManagerStatic
+     */
     loadTitle1(filename: string, hue?: number): Bitmap;
+    /**
+     * Loads a Bitmap object from the 'img/titles2/' folder
+     * and returns it.
+     * @param {string} filename 
+     * @param {number} [hue] 
+     * @returns {Bitmap} 
+     * @memberof ImageManagerStatic
+     */
     loadTitle2(filename: string, hue?: number): Bitmap;
+    /**
+     * Loads a Bitmap object from any folder and returns it.
+     * 
+     * @param {string} folder 
+     * @param {string} filename 
+     * @param {number} hue 
+     * @param {boolean} smooth 
+     * @returns {Bitmap} 
+     * @memberof ImageManagerStatic
+     */
     loadBitmap(folder: string, filename: string, hue: number, smooth: boolean): Bitmap;
+    /**
+     * Loads an empty Bitmap object and returns it.
+     * 
+     * @param {string} path 
+     * @param {number} hue 
+     * @returns {Bitmap} 
+     * @memberof ImageManagerStatic
+     */
     loadEmptyBitmap(path: string, hue: number): Bitmap;
+    /**
+     * Loads a Bitmap object given a path
+     * and returns it.
+     * @param {string} path 
+     * @param {number} hue 
+     * @returns {Bitmap} 
+     * @memberof ImageManagerStatic
+     */
     loadNormalBitmap(path: string, hue: number): Bitmap;
+    /**
+     * Clears the image cache in RPGMakerMV.
+     * 
+     * @memberof ImageManagerStatic
+     */
     clear(): void;
+    /**
+     * Returns true if the image cache
+     * is ready.
+     * @returns {boolean} 
+     * @memberof ImageManagerStatic
+     */
     isReady(): boolean;
+    /**
+     * Returns true if the given filename
+     * is an object character. Must contain
+     * a  '!' in the file name to be an
+     * object character.
+     * @param {string} filename 
+     * @returns {boolean} 
+     * @memberof ImageManagerStatic
+     */
     isObjectCharacter(filename: string): boolean;
+    /**
+     * Returns true if the given filename is
+     * a large character. Must contain a '$'
+     * in the file name to be a large character.
+     * @param {string} filename 
+     * @returns {boolean} 
+     * @memberof ImageManagerStatic
+     */
     isBigCharacter(filename: string): boolean;
     isZeroParallax(filename: string): boolean;
 }
 declare var ImageManager: ImageManagerStatic;
-
-/**
- * 插件管理器
- *
- * The static class that manages the plugins.
- */
-interface PluginManagerStatic {
-    _path: string;
-    _scripts: Array<string>;
-    _errorUrls: Array<string>;
-    _parameters: {[key: string]: {[key: string]: string}};
-
-    setup(plugins: Array<MV.PluginSettings>): void;
-    checkErrors(): void;
-    parameters(name: string): any;
-    setParameters(name: string, parameters: {[key: string]: string}): void;
-    loadScript(name: string): void;
-    onError(e: Event): void;
-}
-declare var PluginManager: PluginManagerStatic;
 
 /**
  * 场景管理器
@@ -6901,47 +7182,11 @@ interface SceneManagerStatic {
 }
 declare var SceneManager: SceneManagerStatic;
 
-
-/**
- * SoundManager
- *
- * The static class that plays sound effects defined in the database.
- */
-interface SoundManagerStatic {
-    preloadImportantSounds(): void;
-    loadSystemSound(n: number): void;
-    playSystemSound(n: number): void;
-    playCursor(): void;
-    playOk(): void;
-    playCancel(): void;
-    playBuzzer(): void;
-    playEquip(): void;
-    playSave(): void;
-    playLoad(): void;
-    playBattleStart(): void;
-    playEscape(): void;
-    playEnemyAttack(): void;
-    playEnemyDamage(): void;
-    playEnemyCollapse(): void;
-    playBossCollapse1(): void;
-    playBossCollapse2(): void;
-    playActorDamage(): void;
-    playActorCollapse(): void;
-    playRecovery(): void;
-    playMiss(): void;
-    playEvasion(): void;
-    playMagicEvasion(): void;
-    playReflection(): void;
-    playShop(): void;
-    playUseItem(): void;
-    playUseSkill(): void;
-}
-declare var SoundManager: SoundManagerStatic;
-
 /**
  * StorageManager
  *
  * The static class that manages storage for saving game data.
+ * @interface StorageManagerStatic
  */
 interface StorageManagerStatic {
     save(savefileId: number, json: string): void;
@@ -6974,8 +7219,8 @@ declare var StorageManager: StorageManagerStatic;
 /**
  * 文本管理器
  * TextManager
- *
  * The static class that handles terms and messages.
+ * @interface TextManagerStatic
  */
 interface TextManagerStatic {
     currencyUnit: string;
@@ -7071,12 +7316,125 @@ interface TextManagerStatic {
     getter(method: string, param: number): string;
 }
 declare var TextManager: TextManagerStatic;
+
 /**
- * -----------------------------------------------------------------------------
- * Game_Temp
- *
+ * PluginManager
+ * The static class that manages plugins.
+ * @interface PluginManagerStatic
+ */
+interface PluginManagerStatic {
+    _path: string;
+    _scripts: Array<string>;
+    _errorUrls: Array<string>;
+    _parameters: {[key: string]: {[key: string]: string}};
+
+    setup(plugins: Array<MV.PluginSettings>): void;
+    /**
+     * Checks for errors in the plugins.
+     * 
+     * @memberof PluginManagerStatic
+     */
+    checkErrors(): void;
+    parameters(name: string): any;
+    setParameters(name: string, parameters: {[key: string]: string}): void;
+    loadScript(name: string): void;
+    onError(e: Event): void;
+}
+declare var PluginManager: PluginManagerStatic;
+
+declare namespace MV {
+    export interface Matrix {
+        type: string;
+        value: Array<number>;
+    }
+    export interface TouchInputEvents {
+        trigger: boolean;
+        cancelled: boolean;
+        moved: boolean;
+        released: boolean;
+        wheelX: number;
+        wheelY: number;
+    }
+    export interface AudioParameters {
+        name: string;
+        volume: number;
+        pitch: number;
+        pan: number;
+        pos: number;
+    }
+    export interface BattleRewards {
+        gold: number;
+        exp: number;
+        items: Array<RPG.BaseItem>;
+    }
+    export interface BattlerAnimation {
+        animationId: number;
+        mirror: boolean;
+        delay: number;
+    }
+    export interface CommandItem {
+        name: string;
+        symbol: string;
+        enabled: boolean;
+        ext: any;
+    }
+    export interface TextState {
+        index: number;
+        x: number;
+        y: number;
+        left: number;
+    }
+    export interface BattleLogMethod {
+        name: string;
+        params: any;
+    }
+    export interface Motion {
+        index: number;
+        loop: boolean;
+    }
+    export interface ConfigData {
+        alwaysDash: boolean;
+        commandRemember: boolean;
+        bgmVolume: number;
+        bgsVolume: number;
+        meVolume: number;
+        seVolume: number;
+    }
+    export interface DatabaseFile {
+        name: string;
+        src: string;
+    }
+    export interface SaveFileInfo {
+        globalId: string;
+        title: string;
+        characters: Array<Array<any>>;
+        faces: Array<Array<any>>;
+        playtime: string;
+        timestamp: number;
+    }
+    export interface SaveContents {
+        system: Game_System;
+        screen: Game_Screen;
+        timer: Game_Timer;
+        switches: Game_Switches;
+        variables: Game_Variables;
+        selfSwitches: Game_SelfSwitches;
+        actors: Game_Actors;
+        party: Game_Party;
+        map: Game_Map;
+        player: Game_Party;
+    }
+    export interface PluginSettings {
+        name: string;
+        status: string;
+        description: string;
+        parameters: {[key: string]: string};
+    }
+}
+/**
  * 不包含在保存数据中的临时数据的游戏对象类。
- * The game object class for temporary data that is not included in save data.
+ * The game object class for temporary data that is not included in the save data.
+ * @class Game_Temp
  */
 declare class Game_Temp {
     protected _isPlaytest: boolean;
@@ -7084,23 +7442,81 @@ declare class Game_Temp {
     protected _destinationX: number;
     protected _destinationY: number;
 
+    /**
+     * Determines if the game is in Play Test mode.
+     * 
+     * @returns {boolean} 
+     * @memberof Game_Temp
+     */
     isPlaytest(): boolean;
+    /**
+     * Reserves the given commonEventId to be processed later.
+     * 
+     * @param {number} commonEventId 
+     * @memberof Game_Temp
+     */
     reserveCommonEvent(commonEventId: number): void;
+    /**
+     * Clears the current reserved common event.
+     * 
+     * @memberof Game_Temp
+     */
     clearCommonEvent(): void;
+    /**
+     * Returns true if a common event has been reserved.
+     * 
+     * @returns {boolean} 
+     * @memberof Game_Temp
+     */
     isCommonEventReserved(): boolean;
-    reservedCommonEvent(): void;
+    /**
+     * Returns common event data from the database.
+     * 
+     * @returns {any} 
+     * @memberof Game_Temp
+     */
+    reservedCommonEvent(): any;
+    /**
+     * Sets the destination of the player for movement.
+     * 
+     * @param {number} x 
+     * @param {number} y 
+     * @memberof Game_Temp
+     */
     setDestination(x: number, y: number): void;
+    /**
+     * Clears the destination of movement for the player.
+     * 
+     * @memberof Game_Temp
+     */
     clearDestination(): void;
+    /**
+     * Determines if the destination for the player to move to is valid.
+     * 
+     * @returns {boolean} 
+     * @memberof Game_Temp
+     */
     isDestinationValid(): boolean;
+    /**
+     * Returns the x coordinate of the destination.
+     * 
+     * @returns {number} 
+     * @memberof Game_Temp
+     */
     destinationX(): number;
+    /**
+     * Returns the y coordinate of the destination.
+     * 
+     * @returns {number} 
+     * @memberof Game_Temp
+     */
     destinationY(): number;
 }
 
 /**
- * -----------------------------------------------------------------------------
- * Game_System
- *
  * 系统数据的游戏对象类。
+ * 
+ * @class Game_System
  */
 declare class Game_System {
     protected _saveEnabled: boolean;
@@ -7129,66 +7545,249 @@ declare class Game_System {
     isRussian(): boolean;
     isSideView(): boolean;
     isSaveEnabled(): boolean;
+    /**
+     * Disables the ability to save the game.
+     * 
+     * @memberof Game_System
+     */
     disableSave(): void;
+    /**
+     * Enables the ability to save the game.
+     * 
+     * @memberof Game_System
+     */
     enableSave(): void;
+    /**
+     * Returns true if the menu is enabled.
+     * 
+     * @returns {boolean} 
+     * @memberof Game_System
+     */
     isMenuEnabled(): boolean;
+    /**
+     * Disables the menu from being accessed.
+     * 
+     * @memberof Game_System
+     */
     disableMenu(): void;
+    /**
+     * Enables the menu to be accessed.
+     * 
+     * @memberof Game_System
+     */
     enableMenu(): void;
     isEncounterEnabled(): boolean;
+    /**
+     * Returns true if the player can encounter enemies.
+     * 
+     * @memberof Game_System
+     */
     disableEncounter(): void;
     enableEncounter(): void;
     isFormationEnabled(): boolean;
+    /**
+     * Disables the use of the formation command in the menu.
+     * 
+     * @memberof Game_System
+     */
     disableFormation(): void;
+    /**
+     * Enables the use of the formation command in the menu.
+     * 
+     * @memberof Game_System
+     */
     enableFormation(): void;
+    /**
+     * Returns the number of battles the player has participated in.
+     * 
+     * @returns {number} 
+     * @memberof Game_System
+     */
     battleCount(): number;
+    /**
+     * Returns the number of the wins the player has gained in battle.
+     * 
+     * @returns {number} 
+     * @memberof Game_System
+     */
     winCount(): number;
+    /**
+     * Returns the number of battles the player has escaped from in battle.
+     * 
+     * @returns {number} 
+     * @memberof Game_System
+     */
     escapeCount(): number;
+    /**
+     * Returns the number of saves the player has made in game.
+     * 
+     * @returns {number} 
+     * @memberof Game_System
+     */
     saveCount(): number;
+    /**
+     * Returns the version id represented in the database.
+     * 
+     * @returns {number} 
+     * @memberof Game_System
+     */
     versionId(): number;
+    /**
+     * Returns the tone of the window in the database.
+     * 
+     * @returns {Array<number>} 
+     * @memberof Game_System
+     */
     windowTone(): Array<number>;
+    /**
+     * Sets the window tone, given an array
+     * of rgb. Example: [0, 255, 255].
+     * @param {Array<number>} value 
+     * @memberof Game_System
+     */
     setWindowTone(value: Array<number>): void;
+    /**
+     * Returns the current battle background music.
+     * 
+     * @returns {RPG.AudioFile} 
+     * @memberof Game_System
+     */
     battleBgm(): RPG.AudioFile;
+    /**
+     * Sets the battle background music.
+     * 
+     * @param {RPG.AudioFile} value 
+     * @memberof Game_System
+     */
     setBattleBgm(value: RPG.AudioFile): void;
+    /**
+     * Returns the victory musical effect.
+     * 
+     * @returns {RPG.AudioFile} 
+     * @memberof Game_System
+     */
     victoryMe(): RPG.AudioFile;
+    /**
+     * Sets the victory musical effect.
+     * 
+     * @param {RPG.AudioFile} value 
+     * @memberof Game_System
+     */
     setVictoryMe(value: RPG.AudioFile): void;
+    /**
+     * Returns the defeat musical effect.
+     * 
+     * @returns {RPG.AudioFile} 
+     * @memberof Game_System
+     */
     defeatMe(): RPG.AudioFile;
+    /**
+     * Sets the defeat musical effect.
+     * 
+     * @param {RPG.AudioFile} value 
+     * @memberof Game_System
+     */
     setDefeatMe(value: RPG.AudioFile): void;
     onBattleStart(): void;
     onBattleWin(): void;
     onBattleEscape(): void;
     onBeforeSave(): void;
     onAfterLoad(): void;
+    /**
+     * Returns the total play time.
+     * 
+     * @returns {number} 
+     * @memberof Game_System
+     */
     playtime(): number;
     playtimeText(): string;
+    /**
+     * Saves background music to the game system object.
+     * 
+     * @memberof Game_System
+     */
     saveBgm(): void;
+    /**
+     * Replays the saved background music.
+     * 
+     * @memberof Game_System
+     */
     replayBgm(): void;
+    /**
+     * Saves the walking background music.
+     * 
+     * @memberof Game_System
+     */
     saveWalkingBgm(): void;
+    /**
+     * Replays the saved walking background music.
+     * 
+     * @memberof Game_System
+     */
     replayWalkingBgm(): void;
+    /**
+     * Saves the second walking bgm from the map data.
+     * 
+     * @memberof Game_System
+     */
+    saveWalkingBgm2(): void;
 }
 
 /**
- * -----------------------------------------------------------------------------
- * Game_Timer
- *
  * 计时器的游戏对象类。
+ * 
+ * @class Game_Timer
  */
 declare class Game_Timer {
     protected _frames: number;
     protected _working: boolean;
 
+    /**
+     * Updates the game timer.
+     * 
+     * @param {boolean} sceneActive 
+     * @memberof Game_Timer
+     */
     update(sceneActive: boolean): void;
+    /**
+     * Starts the timer with the specified number of frames as count.
+     * 
+     * @param {number} count 
+     * @memberof Game_Timer
+     */
     start(count: number): void;
+    /**
+     * Stops the timer.
+     * 
+     * @memberof Game_Timer
+     */
     stop(): void;
+    /**
+     * Returns true if the timer is working and counting down.
+     * 
+     * @returns {boolean} 
+     * @memberof Game_Timer
+     */
     isWorking(): boolean;
+    /**
+     * Returns the number of seconds on the timer.
+     * 
+     * @returns {number} 
+     * @memberof Game_Timer
+     */
     seconds(): number;
+    /**
+     * Handler for when the time expires on the timer.
+     * 
+     * @memberof Game_Timer
+     */
     onExpire(): void;
 }
 
 /**
- * -----------------------------------------------------------------------------
- * Game_Message
- *
  * 用于显示文本或选择等的消息窗口状态的游戏对象类。
+ * 
+ * @class Game_Message
  */
 declare class Game_Message {
     protected _texts: Array<string>;
@@ -7212,47 +7811,226 @@ declare class Game_Message {
 
     clear(): void;
     choices(): Array<string>;
+    /**
+     * Returns the name of the face image used for the message.
+     * 
+     * @returns {string} 
+     * @memberof Game_Message
+     */
     faceName(): string;
+    /**
+     * Returns the face index within the face image to display the
+     * correct face.
+     * @returns {number} 
+     * @memberof Game_Message
+     */
     faceIndex(): number;
+    /**
+     * Returns the background associated with the message;
+     * this is the background
+     * @returns {number} 
+     * @memberof Game_Message
+     */
     background(): number;
+    /**
+     * Returns the current position type of the message window.
+     * 
+     * @returns {number} 
+     * @memberof Game_Message
+     */
     positionType(): number;
     choiceDefaultType(): number;
     choiceCancelType(): number;
+    /**
+     * Returns the background type of the choice window.
+     * 
+     * @returns {number} 
+     * @memberof Game_Message
+     */
     choiceBackground(): number;
+    /**
+     * Returns the position of the choice window.
+     * 
+     * @returns {number} 
+     * @memberof Game_Message
+     */
     choicePositionType(): number;
+    /**
+     * Returns the number input variable id.
+     * 
+     * @returns {number} 
+     * @memberof Game_Message
+     */
     numInputVariableId(): number;
+    /**
+     * Returns the number input maximum digits.
+     * 
+     * @returns {number} 
+     * @memberof Game_Message
+     */
     numInputMaxDigits(): number;
+    /**
+     * Returns the item choice variable id.
+     * 
+     * @returns {number} 
+     * @memberof Game_Message
+     */
     itemChoiceVariableId(): number;
+    /**
+     * Returns the item choice item type id.
+     * 
+     * @returns {number} 
+     * @memberof Game_Message
+     */
     itemChoiceItypeId(): number;
+    /**
+     * Returns true if the scroll mode is set to true.
+     * 
+     * @returns {boolean} 
+     * @memberof Game_Message
+     */
     scrollMode(): boolean;
+    /**
+     * Returns the scroll speed.
+     * 
+     * @returns {number} 
+     * @memberof Game_Message
+     */
     scrollSpeed(): number;
+    /**
+     * Returns true if the scroll is set to not being fast.
+     * 
+     * @returns {boolean} 
+     * @memberof Game_Message
+     */
     scrollNoFast(): boolean;
+    /**
+     * Adds text to the game message object.
+     * 
+     * @param {string} text 
+     * @memberof Game_Message
+     */
     add(text: string): void;
     setFaceImage(faceName: string, faceIndex: number): void;
+    /**
+     * Sets the background of the message window;
+     * options are 0 (fully opaque), 1 (transparent), 2 (invisible background).
+     * The default is 0.
+     * @param {number} background 
+     * @memberof Game_Message
+     */
     setBackground(background: number): void;
+    /**
+     * Sets the position of the message window;
+     * default is 2.
+     * @param {number} positionType 
+     * @memberof Game_Message
+     */
     setPositionType(positionType: number): void;
+    /**
+     * Sets the choices within the choice window;
+     * sets the default and cancel choices for the window.
+     * @param {Array<string>} choices 
+     * @param {number} defaultType 
+     * @param {number} cancelType 
+     * @memberof Game_Message
+     */
     setChoices(choices: Array<string>, defaultType: number, cancelType: number): void;
     setChoiceBackground(background: number): void;
+    /**
+     * Sets the position of the choice window associated with the
+     * message window.
+     * @param {number} positionType 
+     * @memberof Game_Message
+     */
     setChoicePositionType(positionType: number): void;
+    /**
+     * Sets the number input and associates it with a variable id;
+     * the max number of digits can also be set.
+     * @param {number} variableId 
+     * @param {number} maxDigits 
+     * @memberof Game_Message
+     */
     setNumberInput(variableId: number, maxDigits: number): void;
+    /**
+     * Sets the choice and associates it with a variable id;
+     * sets the itemtype id associated with the choice.
+     * @param {number} variableId 
+     * @param {number} itemType 
+     * @memberof Game_Message
+     */
     setItemChoice(variableId: number, itemType: number): void;
+    /**
+     * Sets the scroll speed of the message window;
+     * disable fast movement if noFast is set to true.
+     * @param {number} speed 
+     * @param {boolean} noFast 
+     * @memberof Game_Message
+     */
     setScroll(speed: number, noFast: boolean): void;
+    /**
+     * Sets a callback to be associated with a specific choice;
+     * a callback is a JavaScript function that will be run when the
+     * choice is selected.
+     * @param {((n: number) => void)} callback 
+     * @memberof Game_Message
+     */
     setChoiceCallback(callback: ((n: number) => void)): void;
     onChoice(n: number): void;
+    /**
+     * Returns true if the game message object has text.
+     * 
+     * @returns {boolean} 
+     * @memberof Game_Message
+     */
     hasText(): boolean;
+    /**
+     * Returns true if the game message object has a set of choices.
+     * 
+     * @returns {boolean} 
+     * @memberof Game_Message
+     */
     isChoice(): boolean;
+    /**
+     * Returns true if the game message object has a number input attached.
+     * 
+     * @returns {boolean} 
+     * @memberof Game_Message
+     */
     isNumberInput(): boolean;
+    /**
+     * Returns true if the game message object has an item choice attached.
+     * 
+     * @returns {boolean} 
+     * @memberof Game_Message
+     */
     isItemChoice(): boolean;
+    /**
+     * Returns true if the game message object has text, choices, number input,
+     * or item choice.
+     * @returns {boolean} 
+     * @memberof Game_Message
+     */
     isBusy(): boolean;
+    /**
+     * Creates a new page for the text within the message window.
+     * 
+     * @memberof Game_Message
+     */
     newPage(): void;
+    /**
+     * Returns all of the text contained within the message.
+     * 
+     * @returns {string} 
+     * @memberof Game_Message
+     */
     allText(): string;
 }
 
 /**
- * -----------------------------------------------------------------------------
- * Game_Switches
- *
  * 开关的游戏对象类。
+ *
+ * @class Game_Switches
  */
 declare class Game_Switches {
     protected _data: Array<boolean>;
@@ -7264,10 +8042,9 @@ declare class Game_Switches {
 }
 
 /**
- * -----------------------------------------------------------------------------
- * Game_Variables
- *
  * 变量的游戏对象类。
+ * 
+ * @class Game_Variables
  */
 declare class Game_Variables {
     protected _data: Array<number>;
@@ -7279,26 +8056,45 @@ declare class Game_Variables {
 }
 
 /**
- * -----------------------------------------------------------------------------
- * Game_SelfSwitches
- *
  * 用于自切换的游戏对象类。
+ * 
+ * @class Game_SelfSwitches
  */
 declare class Game_SelfSwitches {
     protected _data: {key: Array<any>};
 
+    /**
+     * Clears the array of data for the game's self switches.
+     * 
+     * @memberof Game_SelfSwitches
+     */
     clear(): void;
+    /**
+     * Returns the value of the switch at the current key;
+     * the value is a boolean (true or false).
+     * @param {Array<any>} key 
+     * @returns {boolean} 
+     * @memberof Game_SelfSwitches
+     */
     value(key: Array<any>): boolean;
+    /**
+     * Sets the value of the key of the respected self switch.
+     * 
+     * @param {Array<any>} key 
+     * @param {boolean} value 
+     * @memberof Game_SelfSwitches
+     */
     setValue(key: Array<any>, value: boolean): void;
     onChange(): void;
 }
 
-
 /**
- * -----------------------------------------------------------------------------
- * Game_Screen
- *
  * 游戏对象类为屏幕效果数据，如色调变化和闪烁。
+ * 
+ * aliased as $gameScreen.
+ * 别名 $gameScreen
+ * 
+ * @class Game_Screen
  */
 declare class Game_Screen {
     protected _shake: number;
@@ -7307,7 +8103,21 @@ declare class Game_Screen {
     protected _shakeDuration: number;
     protected _shakeDirection: number;
 
+    /**
+     * _zoomX property of the game screen.
+     * 
+     * @protected
+     * @type {number}
+     * @memberof Game_Screen
+     */
     protected _zoomX: number;
+    /**
+     * _zoomY property of the game screen.
+     * 
+     * @protected
+     * @type {number}
+     * @memberof Game_Screen
+     */
     protected _zoomY: number;
     protected _zoomScale: number;
     protected _zoomScaleTarget: number;
@@ -7318,6 +8128,13 @@ declare class Game_Screen {
     protected _weatherPowerTarget: number;
     protected _weatherDuration: number;
 
+    /**
+     * The _brightness property of the game screen;
+     * returned when calling the brightness method.
+     * @protected
+     * @type {number}
+     * @memberof Game_Screen
+     */
     protected _brightness: number;
     protected _fadeOutDuration: number;
     protected _fadeInDuration: number;
@@ -7329,29 +8146,137 @@ declare class Game_Screen {
     protected _flashColor: Array<number>;
     protected _flashDuration: number;
 
+    /**
+     * The array of Game_Pictures that are 
+     * attached to the game screen.
+     * @protected
+     * @type {Array<Game_Picture>}
+     * @memberof Game_Screen
+     */
     protected _pictures: Array<Game_Picture>;
 
     clear(): void;
+    /**
+     * Handler for when the battle starts in game; prepares
+     * the screen for the battle scene.
+     * @memberof Game_Screen
+     */
     onBattleStart(): void;
+    /**
+     * Returns the brightness of the game screen.
+     * 
+     * @returns {number} 
+     * @memberof Game_Screen
+     */
     brightness(): number;
     tone(): Array<number>;
     flashColor(): Array<number>;
     shake(): number;
+    /**
+     * Returns the  zoom x coordinate of the screen.
+     * 
+     * @returns {number} 
+     * @memberof Game_Screen
+     */
     zoomX(): number;
+    /**
+     * Returns the zoom y coordiante of the screen.
+     * 
+     * @returns {number} 
+     * @memberof Game_Screen
+     */
     zoomY(): number;
+    /**
+     * Returns the zoom scale of the screen.
+     * 
+     * @returns {number} 
+     * @memberof Game_Screen
+     */
     zoomScale(): number;
+    /**
+     * Returns the current weather type.
+     * 
+     * @returns {string} 
+     * @memberof Game_Screen
+     */
     weatherType(): string;
+    /**
+     * Returns the weather power.
+     * 
+     * @returns {number} 
+     * @memberof Game_Screen
+     */
     weatherPower(): number;
+    /**
+     * Returns the specified picture given the picture id.
+     * 
+     * @param {number} pictureId 
+     * @returns {Game_Picture} 
+     * @memberof Game_Screen
+     */
     picture(pictureId: number): Game_Picture;
+    /**
+     * Returns the real picture id, given the picture id.
+     * 
+     * @param {number} pictureId 
+     * @returns {number} 
+     * @memberof Game_Screen
+     */
     realPictureId(pictureId: number): number;
+    /**
+     * Clears the screen fade.
+     * 
+     * @memberof Game_Screen
+     */
     clearFade(): void;
+    /**
+     * Clears the screen tone.
+     * 
+     * @memberof Game_Screen
+     */
     clearTone(): void;
+    /**
+     * Clears the screen flash.
+     * 
+     * @memberof Game_Screen
+     */
     clearFlash(): void;
+    /**
+     * Clears the screen shake.
+     * 
+     * @memberof Game_Screen
+     */
     clearShake(): void;
+    /**
+     * Clears the screen zoom.
+     * 
+     * @memberof Game_Screen
+     */
     clearZoom(): void;
+    /**
+     * Clears the screen weather.
+     * 
+     * @memberof Game_Screen
+     */
     clearWeather(): void;
+    /**
+     * Clears the pictures set on the game screen.
+     * 
+     * @memberof Game_Screen
+     */
     clearPictures(): void;
+    /**
+     * Erases the battle pictures.
+     * 
+     * @memberof Game_Screen
+     */
     eraseBattlePictures(): void;
+    /**
+     * Returns the maximum number of pictures set on the game screen.
+     * 
+     * @returns {number} 
+     * @memberof Game_Screen
+     */
     maxPictures(): number;
     startFadeOut(duration: number): void;
     startFadeIn(duration: number): void;
@@ -7361,14 +8286,59 @@ declare class Game_Screen {
     startZoom(x: number, y: number, scale: number, duration: number): void;
     setZoom(x: number, y: number, scale: number): void;
     changeWeather(type: string, power: number, duration: number): void;
+    /**
+     * Updates the game screen.
+     * 
+     * @memberof Game_Screen
+     */
     update(): void;
+    /**
+     * Updates the screen fade out.
+     * 
+     * @memberof Game_Screen
+     */
     updateFadeOut(): void;
+    /**
+     * Updates the screen fade in.
+     * 
+     * @memberof Game_Screen
+     */
     updateFadeIn(): void;
+    /**
+     * Updates the screen tone.
+     * 
+     * @memberof Game_Screen
+     */
     updateTone(): void;
+    /**
+     * Update the screen flash.
+     * 
+     * @memberof Game_Screen
+     */
     updateFlash(): void;
+    /**
+     * Update the screen shake.
+     * 
+     * @memberof Game_Screen
+     */
     updateShake(): void;
+    /**
+     * Update the screen zoom.
+     * 
+     * @memberof Game_Screen
+     */
     updateZoom(): void;
+    /**
+     * Update the screen weather.
+     * 
+     * @memberof Game_Screen
+     */
     updateWeather(): void;
+    /**
+     * Update the screen pictures.
+     * 
+     * @memberof Game_Screen
+     */
     updatePictures(): void;
     startFlashForDamage(): void;
     showPicture(pictureId: number, name: string, origin: number, x: number, y: number,
@@ -7377,16 +8347,28 @@ declare class Game_Screen {
                 scaleX: number, scaleY: number, opacity: number, blendMode: number, duration: number): void;
     rotatePicture(pictureId: number, speed: number): void;
     tintPicture(pictureId: number, tone: Array<number>, duration: number): void;
+    /**
+     * Erases a picture from the screen given the respected picture id.
+     * 
+     * @param {number} pictureId 
+     * @memberof Game_Screen
+     */
     erasePicture(pictureId: number): void;
 }
 
 /**
- * -----------------------------------------------------------------------------
- * Game_Picture
- *
  * 图片的游戏对象类。
+ * 
+ * @class Game_Picture
  */
 declare class Game_Picture {
+    /**
+     * _name property of the current picture.
+     * 
+     * @protected
+     * @type {string}
+     * @memberof Game_Picture
+     */
     protected _name: string;
     protected _origin: number;
     protected _x: number;
@@ -7410,15 +8392,75 @@ declare class Game_Picture {
     protected _angle: number;
     protected _rotationSpeed: number;
 
+    /**
+     * Returns the name of the game picture.
+     * 
+     * @returns {string} 
+     * @memberof Game_Picture
+     */
     name(): string;
+    /**
+     * Returns the origin of the game picture.
+     * 
+     * @returns {number} 
+     * @memberof Game_Picture
+     */
     origin(): number;
+    /**
+     * Returns the picture x coordinate.
+     * 
+     * @returns {number} 
+     * @memberof Game_Picture
+     */
     x(): number;
+    /**
+     * Returns the picture y coordinate.
+     * 
+     * @returns {number} 
+     * @memberof Game_Picture
+     */
     y(): number;
+    /**
+     * Returns x scale of the game picture.
+     * 
+     * @returns {number} 
+     * @memberof Game_Picture
+     */
     scaleX(): number;
+    /**
+     * Returns the y scale of the game picture.
+     * 
+     * @returns {number} 
+     * @memberof Game_Picture
+     */
     scaleY(): number;
+    /**
+     * Returns the opacity of the game picture.
+     * 
+     * @returns {number} 
+     * @memberof Game_Picture
+     */
     opacity(): number;
+    /**
+     * Returns the blend mode of the game picture.
+     * 
+     * @returns {number} 
+     * @memberof Game_Picture
+     */
     blendMode(): number;
+    /**
+     * Returns the tone of the game picture.
+     * 
+     * @returns {Array<number>} 
+     * @memberof Game_Picture
+     */
     tone(): Array<number>;
+    /**
+     * Returns the angle of the game picture.
+     * 
+     * @returns {number} 
+     * @memberof Game_Picture
+     */
     angle(): number;
     initBasic(): void;
     initTarget(): void;
@@ -7428,43 +8470,120 @@ declare class Game_Picture {
     move(origin: number, x: number, y: number, scaleX: number, scaleY: number, opacity: number, blendMode: number, duration: number): void;
     rotate(speed: number): void;
     tint(tone: Array<number>, duration: number): void;
+    /**
+     * Erases the game picture.
+     * 
+     * @memberof Game_Picture
+     */
     erase(): void;
+    /**
+     * Updates the game picture.
+     * 
+     * @memberof Game_Picture
+     */
     update(): void;
+    /**
+     * Updates the movement of the game picture.
+     * 
+     * @memberof Game_Picture
+     */
     updateMove(): void;
+    /**
+     * Updates the tone of the game picture.
+     * 
+     * @memberof Game_Picture
+     */
     updateTone(): void;
+    /**
+     * Updates the rotation of the game picture.
+     * 
+     * @memberof Game_Picture
+     */
     updateRotation(): void;
 }
 
 /**
- * -----------------------------------------------------------------------------
  * Game_Item
- *
- * The game object declare class for handling skills, items, weapons, and armor. It is
- * required because save data should not include the database object itself.
+ * The game object class for handling skills, items, weapons. armor.
+ * This is required, because the save data should not include the database object itself.
+ * @class Game_Item
  */
 declare class Game_Item {
     protected _dataClass: string;
     protected _itemId: number;
 
     constructor(item: RPG.BaseItem);
+    /**
+     * Returns true the item is a skill.
+     * 
+     * @returns {boolean} 
+     * @memberof Game_Item
+     */
     isSkill(): boolean;
+    /**
+     * Returns true if the item is an item.
+     * 
+     * @returns {boolean} 
+     * @memberof Game_Item
+     */
     isItem(): boolean;
+    /**
+     * Returns true if the item is a usable item, similar to a potion.
+     * 
+     * @returns {boolean} 
+     * @memberof Game_Item
+     */
     isUsableItem(): boolean;
+    /**
+     * Returns true if the item is a weapon.
+     * 
+     * @returns {boolean} 
+     * @memberof Game_Item
+     */
     isWeapon(): boolean;
+    /**
+     * Returns true if the item is an armor.
+     * 
+     * @returns {boolean} 
+     * @memberof Game_Item
+     */
     isArmor(): boolean;
+    /**
+     * Returns true if the item is equippable (weapon or armor).
+     * 
+     * @returns {boolean} 
+     * @memberof Game_Item
+     */
     isEquipItem(): boolean;
+    /**
+     * Returns true if the item is 'null'.
+     * 
+     * @returns {boolean} 
+     * @memberof Game_Item
+     */
     isNull(): boolean;
+    /**
+     * Returns the current itemId.
+     * 
+     * @returns {number} 
+     * @memberof Game_Item
+     */
     itemId(): number;
     object(): RPG.BaseItem;
+    /**
+     * Sets the current item of the current Game_Item object.
+     * 
+     * @param {RPG.BaseItem} item 
+     * @memberof Game_Item
+     */
     setObject(item: RPG.BaseItem): void;
     setEquip(isWeapon: boolean, itemId: number): void;
 }
 
 /**
- * -----------------------------------------------------------------------------
  * Game_Action
- *
- * The game object declare class for a battle action.
+ * The game object class representing a battle action.
+ * @class Game_Action
  */
 declare class Game_Action {
     static EFFECT_RECOVER_HP: number;
@@ -7589,12 +8708,14 @@ declare class Game_Action {
     applyGlobal(): void;
 }
 
+
 /**
  * -----------------------------------------------------------------------------
  * Game_ActionResult
  *
  * The game object declare class for a result of a battle action. For convinience, all
  * member variables in this declare class are public.
+ * @class Game_ActionResult
  */
 declare class Game_ActionResult {
     used: boolean;
@@ -7614,15 +8735,45 @@ declare class Game_ActionResult {
     addedDebuffs: Array<number>;
     removedBuffs: Array<number>;
 
+    /**
+     * Clears the game action result.
+     * 
+     * @memberof Game_ActionResult
+     */
     clear(): void;
+    /**
+     * Returns the added states from the action result.
+     * 
+     * @returns {Array<RPG.State>} 
+     * @memberof Game_ActionResult
+     */
     addedStateObjects(): Array<RPG.State>;
+    /**
+     * Returns the removes states from the result.
+     * 
+     * @returns {Array<RPG.State>} 
+     * @memberof Game_ActionResult
+     */
     removedStateObjects(): Array<RPG.State>;
     isStatusAffected(): boolean;
+    /**
+     * Returns true if the action result is a hit.
+     * 
+     * @returns {boolean} 
+     * @memberof Game_ActionResult
+     */
     isHit(): boolean;
     isStateAdded(stateId: number): boolean;
     pushAddedState(stateId: number): void;
     isStateRemoved(stateId: number): boolean;
     pushRemovedState(stateId: number): void;
+    /**
+     * Returns true if the a buff is added to the specified param
+     * from the action result.
+     * @param {number} paramId 
+     * @returns {boolean} 
+     * @memberof Game_ActionResult
+     */
     isBuffAdded(paramId: number): boolean;
     pushAddedBuff(paramId: number): void;
     isDebuffAdded(paramId: number): boolean;
@@ -7636,6 +8787,7 @@ declare class Game_ActionResult {
  * Game_BattlerBase
  *
  * The superdeclare class of Game_Battler. It mainly contains parameters calculation.
+ * @class Game_BattlerBase
  */
 declare class Game_BattlerBase {
     static TRAIT_ELEMENT_RATE: number;
@@ -7686,23 +8838,23 @@ declare class Game_BattlerBase {
     mp: number;
     /** [read-only] Tactical Points */
     tp: number;
-    /** [read-only] Maximum Hit Points */
+    /** [read-only] Maximum Hit Points - param 0*/
     mhp: number;
-    /** [read-only] Maximum Magic Points */
+    /** [read-only] Maximum Magic Points - param 1*/
     mmp: number;
-    /** [read-only] ATtacK power */
+    /** [read-only] ATtacK power - param 2*/
     atk: number;
-    /** [read-only] DEFense power */
+    /** [read-only] DEFense power - param 3*/
     def: number;
-    /** [read-only] Magic ATtack power */
+    /** [read-only] Magic Attack power - param 4*/
     mat: number;
-    /** [read-only] Magic DeFense power */
+    /** [read-only] Magic Defense power - param 5*/
     mdf: number;
-    /** [read-only] AGIlity */
+    /** [read-only] Agility - param 6 */
     agi: number;
-    /** [read-only] LUcK */
+    /** [read-only] LucK - param 7*/
     luk: number;
-    /** [read-only] HIT rate */
+    /** [read-only] HIT rate -xparam 0*/
     hit: number;
     /** [read-only] EVAsion rate */
     eva: number;
@@ -7746,16 +8898,66 @@ declare class Game_BattlerBase {
     initMembers(): void;
     clearParamPlus(): void;
     clearStates(): void;
+    /**
+     * Erases the current state from the game battler given the 
+     * stateId in the editor database.
+     * @param {number} stateId 
+     * @memberof Game_BattlerBase
+     */
     eraseState(stateId: number): void;
+    /**
+     * Returns true if the battler is affected by the specified state given
+     * the state id.
+     * @param {number} stateId 
+     * @returns {boolean} 
+     * @memberof Game_BattlerBase
+     */
     isStateAffected(stateId: number): boolean;
     isDeathStateAffected(): boolean;
+    /**
+     * Returns the death state id.
+     * 
+     * @returns {number} 
+     * @memberof Game_BattlerBase
+     */
     deathStateId(): number;
+    /**
+     * Resets the state count of the specified state, given the state id.
+     * 
+     * @param {number} stateId 
+     * @memberof Game_BattlerBase
+     */
     resetStateCounts(stateId: number): void;
+    /**
+     * Returns true if the state, given the state id is expired.
+     * 
+     * @param {number} stateId 
+     * @returns {boolean} 
+     * @memberof Game_BattlerBase
+     */
     isStateExpired(stateId: number): boolean;
     updateStateTurns(): void;
+    /**
+     * Clears buffs from the battler.
+     * 
+     * @memberof Game_BattlerBase
+     */
     clearBuffs(): void;
     eraseBuff(paramId: number): void;
+    /**
+     * Returns the length of the buff.
+     * 
+     * @returns {number} 
+     * @memberof Game_BattlerBase
+     */
     buffLength(): number;
+    /**
+     * Buffs the current parameter id.
+     * 
+     * @param {number} paramId 
+     * @returns {number} 
+     * @memberof Game_BattlerBase
+     */
     buff(paramId: number): number;
     isBuffAffected(paramId: number): boolean;
     isDebuffAffected(paramId: number): boolean;
@@ -7766,15 +8968,60 @@ declare class Game_BattlerBase {
     decreaseBuff(paramId: number): void;
     overwriteBuffTurns(paramId: number, turns: number): void;
     isBuffExpired(paramId: number): boolean;
+    /**
+     * Updates the buff turns on battler.
+     * 
+     * @memberof Game_BattlerBase
+     */
     updateBuffTurns(): void;
+    /**
+     * Kills the battler.
+     * 
+     * @memberof Game_BattlerBase
+     */
     die(): void;
+    /**
+     * Revives the battler.
+     * 
+     * @memberof Game_BattlerBase
+     */
     revive(): void;
+    /**
+     * Returns the states applied to the battler.
+     * 
+     * @returns {Array<RPG.State>} 
+     * @memberof Game_BattlerBase
+     */
     states(): Array<RPG.State>;
+    /**
+     * Returns the array of state icons attached to the battler;
+     * this is determined by the active states on the battler.
+     * @returns {Array<number>} 
+     * @memberof Game_BattlerBase
+     */
     stateIcons(): Array<number>;
+    /**
+     * Returns the array of buff icons attached to the battler;
+     * this is determined by the active buffs on the battler.
+     * @returns {Array<number>} 
+     * @memberof Game_BattlerBase
+     */
     buffIcons(): Array<number>;
     buffIconIndex(buffLevel: number, paramId: number): number;
+    /**
+     * Returns all of the icons attached to the battler.
+     * 
+     * @returns {Array<number>} 
+     * @memberof Game_BattlerBase
+     */
     allIcons(): Array<number>;
     traitObjects(): Array<any>;
+    /**
+     * Returns all the traits of the battler.
+     * 
+     * @returns {Array<RPG.Trait>} 
+     * @memberof Game_BattlerBase
+     */
     allTraits(): Array<RPG.Trait>;
     traits(code: number): Array<RPG.Trait>;
     traitsWithId(code: number, id: number): Array<RPG.Trait>;
@@ -7782,12 +9029,26 @@ declare class Game_BattlerBase {
     traitsSum(code: number, id: number): number;
     traitsSumAll(code: number): number;
     traitsSet(code: number): Array<number>;
+    /**
+     * Returns the base parameters of the battler; this is determined by their
+     * current level and the paramId given.
+     * @param {number} paramId 
+     * @returns {number} 
+     * @memberof Game_BattlerBase
+     */
     paramBase(paramId: number): number;
     paramPlus(paramId: number): number;
     paramMin(paramId: number): number;
     paramMax(paramId: number): number;
     paramRate(paramId: number): number;
     paramBuffRate(paramId: number): number;
+    /**
+     * Returns a standard parameter, given a paramId;
+     * standard parameters include: HP, MP, Atk, M.Atk, Def, M.Def, Luck, Agility.
+     * @param {number} paramId 
+     * @returns {number} 
+     * @memberof Game_BattlerBase
+     */
     param(paramId: number): number;
     xparam(xparamId: number): number;
     sparam(sparamId: number): number;
@@ -7796,10 +9057,34 @@ declare class Game_BattlerBase {
     stateRate(stateId: number): number;
     stateResistSet(): Array<number>;
     isStateResist(stateId: number): boolean;
+    /**
+     * Returns the attack elements of the battler
+     * as a list of numbers.
+     * @returns {Array<number>} 
+     * @memberof Game_BattlerBase
+     */
     attackElements(): Array<number>;
+    /**
+     * Returns the attack states of the battler as a
+     * list of numbers.
+     * @returns {Array<number>} 
+     * @memberof Game_BattlerBase
+     */
     attackStates(): Array<number>;
     attackStatesRate(stateId: number): void;
+    /**
+     * Returns the attack speed of the battler.
+     * 
+     * @returns {number} 
+     * @memberof Game_BattlerBase
+     */
     attackSpeed(): number;
+    /**
+     * Returns the number of attacks available to the battler.
+     * 
+     * @returns {number} 
+     * @memberof Game_BattlerBase
+     */
     attackTimesAdd(): number;
     addedSkillTypes(): Array<number>;
     isSkillTypeSealed(stypeId: number): boolean;
@@ -7809,67 +9094,358 @@ declare class Game_BattlerBase {
     isEquipAtypeOk(atypeId: number): boolean;
     isEquipTypeLocked(etypeId: number): boolean;
     isEquipTypeSealed(etypeId: number): boolean;
+    /**
+     * Returns the battler slot type of a trait.
+     * 
+     * @returns {number} 
+     * @memberof Game_BattlerBase
+     */
     slotType(): number;
+    /**
+     * Returns true if the battler dual wields.
+     * 
+     * @returns {boolean} 
+     * @memberof Game_BattlerBase
+     */
     isDualWield(): boolean;
     actionPlusSet(): Array<number>;
     specialFlag(flagId: number): boolean;
+    /**
+     * Returns the collapse type of the battler.
+     * 
+     * @returns {number} 
+     * @memberof Game_BattlerBase
+     */
     collapseType(): number;
     partyAbility(abilityId: number): boolean;
+    /**
+     * Returns true if the battler is set to battle automatically.
+     * 
+     * @returns {boolean} 
+     * @memberof Game_BattlerBase
+     */
     isAutoBattle(): boolean;
+    /**
+     * Returns true if the battler is guarding.
+     * 
+     * @returns {boolean} 
+     * @memberof Game_BattlerBase
+     */
     isGuard(): boolean;
     isSubstitute(): boolean;
+    /**
+     * Returns true if tp is preserved between battles.
+     * 
+     * @returns {boolean} 
+     * @memberof Game_BattlerBase
+     */
     isPreserveTp(): boolean;
     addParam(paramId: number, value: number): void;
+    /**
+     * Sets the battler hp.
+     * 
+     * @param {number} hp 
+     * @memberof Game_BattlerBase
+     */
     setHp(hp: number): void;
+    /**
+     * Sets the battler mp.
+     * 
+     * @param {number} mp 
+     * @memberof Game_BattlerBase
+     */
     setMp(mp: number): void;
+    /**
+     * Sets the battler tp.
+     * 
+     * @param {number} tp 
+     * @memberof Game_BattlerBase
+     */
     setTp(tp: number): void;
+    /**
+     * Returns the maximum tp of the battler.
+     * 
+     * @returns {number} 
+     * @memberof Game_BattlerBase
+     */
     maxTp(): number;
+    /**
+     * Refreshes the battler.
+     * 
+     * @memberof Game_BattlerBase
+     */
     refresh(): void;
+    /**
+     * Recovers the battler from all states and restores the
+     * battler to maximum hp and mp.
+     * @memberof Game_BattlerBase
+     */
     recoverAll(): void;
+    /**
+     * Returns the percentage of the battler's hp left as a float.
+     * 
+     * @returns {number} 
+     * @memberof Game_BattlerBase
+     */
     hpRate(): number;
+    /**
+     * Returns the percentage of the battler's mp left as a float.
+     * 
+     * @returns {number} 
+     * @memberof Game_BattlerBase
+     */
     mpRate(): number;
+    /**
+     * Returns the percentage of the battler's tp left as a float.
+     * 
+     * @returns {number} 
+     * @memberof Game_BattlerBase
+     */
     tpRate(): number;
+    /**
+     * Hides the game battler.
+     * 
+     * @memberof Game_BattlerBase
+     */
     hide(): void;
+    /**
+     * Shows the game battler.
+     * 
+     * @memberof Game_BattlerBase
+     */
     appear(): void;
+    /**
+     * Returns true if the game battler is hidden.
+     * 
+     * @returns {boolean} 
+     * @memberof Game_BattlerBase
+     */
     isHidden(): boolean;
+    /**
+     * Returns true if the game battler is not hidden.
+     * 
+     * @returns {boolean} 
+     * @memberof Game_BattlerBase
+     */
     isAppeared(): boolean;
+    /**
+     * Returns true if the battler is dead.
+     * 
+     * @returns {boolean} 
+     * @memberof Game_BattlerBase
+     */
     isDead(): boolean;
+    /**
+     * Returns true if the battler is alive.
+     * 
+     * @returns {boolean} 
+     * @memberof Game_BattlerBase
+     */
     isAlive(): boolean;
+    /**
+     * Returns true if the battler is dying.
+     * 
+     * @returns {boolean} 
+     * @memberof Game_BattlerBase
+     */
     isDying(): boolean;
+    /**
+     * Returns true if the game battler is restricted.
+     * 
+     * @returns {boolean} 
+     * @memberof Game_BattlerBase
+     */
     isRestricted(): boolean;
+    /**
+     * Returns true if the battler can input actions.
+     * 
+     * @returns {boolean} 
+     * @memberof Game_BattlerBase
+     */
     canInput(): boolean;
     canMove(): boolean;
+    /**
+     * Returns true if the battler is confused.
+     * 
+     * @returns {boolean} 
+     * @memberof Game_BattlerBase
+     */
     isConfused(): boolean;
+    /**
+     * Returns the confusion level of the battler.
+     * 
+     * @returns {number} 
+     * @memberof Game_BattlerBase
+     */
     confusionLevel(): number;
+    /**
+     * Returns true if the battler is an actor.
+     * 
+     * @returns {boolean} 
+     * @memberof Game_BattlerBase
+     */
     isActor(): boolean;
+    /**
+     * Returns true if the battler is an enemy.
+     * 
+     * @returns {boolean} 
+     * @memberof Game_BattlerBase
+     */
     isEnemy(): boolean;
+    /**
+     * Sorts the states attached to the battler.
+     * 
+     * @memberof Game_BattlerBase
+     */
     sortStates(): void;
+    /**
+     * Returns the number of the restriction.
+     * 
+     * @returns {number} 
+     * @memberof Game_BattlerBase
+     */
     restriction(): number;
+    /**
+     * Adds a new state given a state id to the battler.
+     * 
+     * @param {number} stateId 
+     * @memberof Game_BattlerBase
+     */
     addNewState(stateId: number): void;
+    /**
+     * Handler for when the battler is restricted.
+     * 
+     * @memberof Game_BattlerBase
+     */
     onRestrict(): void;
     mostImportantStateText(): string;
     stateMotionIndex(): number;
     stateOverlayIndex(): number;
+    /**
+     * Returns true if the skill is a weapon type
+     * oriented skill.
+     * @param {RPG.Skill} skill 
+     * @returns {boolean} 
+     * @memberof Game_BattlerBase
+     */
     isSkillWtypeOk(skill: RPG.Skill): boolean;
+    /**
+     * Returns the mp cost of the skill.
+     * 
+     * @param {RPG.Skill} skill 
+     * @returns {number} 
+     * @memberof Game_BattlerBase
+     */
     skillMpCost(skill: RPG.Skill): number;
+    /**
+     * Returns the tp cost of the skill.
+     * 
+     * @param {RPG.Skill} skill 
+     * @returns {number} 
+     * @memberof Game_BattlerBase
+     */
     skillTpCost(skill: RPG.Skill): number;
+    /**
+     * Returns true if the battler can pay the cost
+     * of the specified skill.
+     * @param {RPG.Skill} skill 
+     * @returns {boolean} 
+     * @memberof Game_BattlerBase
+     */
     canPaySkillCost(skill: RPG.Skill): boolean;
+    /**
+     * Pays the cost of the skill when activating the skill.
+     * 
+     * @param {RPG.Skill} skill 
+     * @memberof Game_BattlerBase
+     */
     paySkillCost(skill: RPG.Skill): void;
+    /**
+     * Returns true if the item occasion is okay.
+     * 
+     * @param {RPG.UsableItem} item 
+     * @returns {boolean} 
+     * @memberof Game_BattlerBase
+     */
     isOccasionOk(item: RPG.UsableItem): boolean;
     meetsUsableItemConditions(item: RPG.UsableItem): boolean;
+    /**
+     * Returns true if the battler meets the skill conditions.
+     * 
+     * @param {RPG.Skill} skill 
+     * @returns {boolean} 
+     * @memberof Game_BattlerBase
+     */
     meetsSkillConditions(skill: RPG.Skill): boolean;
+    /**
+     * Returns true if the battler meets the item conditions.
+     * 
+     * @param {RPG.Item} item 
+     * @returns {boolean} 
+     * @memberof Game_BattlerBase
+     */
     meetsItemConditions(item: RPG.Item): boolean;
+    /**
+     * Returns true if the battler can use the item.
+     * 
+     * @param {RPG.UsableItem} item 
+     * @returns {boolean} 
+     * @memberof Game_BattlerBase
+     */
     canUse(item: RPG.UsableItem): boolean;
+    /**
+     * Returns true if the battler can equip the item.
+     * 
+     * @param {RPG.EquipItem} item 
+     * @returns {boolean} 
+     * @memberof Game_BattlerBase
+     */
     canEquip(item: RPG.EquipItem): boolean;
+    /**
+     * Returns true if the battler can equip a weapon.
+     * 
+     * @param {RPG.EquipItem} item 
+     * @returns {boolean} 
+     * @memberof Game_BattlerBase
+     */
     canEquipWeapon(item: RPG.EquipItem): boolean;
+    /**
+     * Returns true if the battler can equip armor.
+     * 
+     * @param {RPG.EquipItem} item 
+     * @returns {boolean} 
+     * @memberof Game_BattlerBase
+     */
     canEquipArmor(item: RPG.EquipItem): boolean;
+    /**
+     * Returns the attack skill id in the database.
+     * 
+     * @returns {number} 
+     * @memberof Game_BattlerBase
+     */
     attackSkillId(): number;
+    /**
+     * Returns the guard skill id in the database.
+     * 
+     * @returns {number} 
+     * @memberof Game_BattlerBase
+     */
     guardSkillId(): number;
+    /**
+     * Returns true if the battler can attack.
+     * 
+     * @returns {boolean} 
+     * @memberof Game_BattlerBase
+     */
     canAttack(): boolean;
+    /**
+     * Returns true if the battler can guard.
+     * 
+     * @returns {boolean} 
+     * @memberof Game_BattlerBase
+     */
     canGuard(): boolean;
 }
-
-
 
 /**
  * -----------------------------------------------------------------------------
@@ -7877,6 +9453,7 @@ declare class Game_BattlerBase {
  *
  * The superdeclare class of Game_Actor and Game_Enemy. It contains methods for sprites
  * and actions.
+ * @class Game_Battler
  */
 declare class Game_Battler extends Game_BattlerBase {
     protected _actions: Array<Game_Action>;
@@ -7892,17 +9469,78 @@ declare class Game_Battler extends Game_BattlerBase {
     protected _motionRefresh: boolean;
     protected _selected: boolean;
 
+    /**
+     * Returns the name of the battler.
+     * 
+     * @returns {string} 
+     * @memberof Game_Battler
+     */
     name(): string;
+    /**
+     * Returns the battler name of the battler;
+     * the battler name is associated with the file used as the battler graphic.
+     * @returns {string} 
+     * @memberof Game_Battler
+     */
     battlerName(): string;
+    /**
+     * Returns the index of the battler.
+     * 
+     * @returns {number} 
+     * @memberof Game_Battler
+     */
     index(): number;
+    /**
+     * Returns the unit of the battler; this is either the 
+     * game party or game troop.
+     * @returns {Game_Unit} 
+     * @memberof Game_Battler
+     */
     friendsUnit(): Game_Unit;
+    /**
+     * Returns the opponents unit; this is either
+     * game party or game troop.
+     * @returns {Game_Unit} 
+     * @memberof Game_Battler
+     */
     opponentsUnit(): Game_Unit;
+    /**
+     * Clears animations from the battler.
+     * 
+     * @memberof Game_Battler
+     */
     clearAnimations(): void;
+    /**
+     * Clear damage pop up from the battler.
+     * 
+     * @memberof Game_Battler
+     */
     clearDamagePopup(): void;
+    /**
+     * Clear weapon animation from the battler.
+     * 
+     * @memberof Game_Battler
+     */
     clearWeaponAnimation(): void;
+    /**
+     * Clears effect from the battler.
+     * 
+     * @memberof Game_Battler
+     */
     clearEffect(): void;
+    /**
+     * Clears motion from the battler.
+     * 
+     * @memberof Game_Battler
+     */
     clearMotion(): void;
     requestEffect(effectType: string): void;
+    /**
+     * Request the specified motion on the game battler.
+     * 
+     * @param {string} motionType 
+     * @memberof Game_Battler
+     */
     requestMotion(motionType: string): void;
     requestMotionRefresh(): void;
     select(): void;
@@ -7910,60 +9548,309 @@ declare class Game_Battler extends Game_BattlerBase {
     isAnimationRequested(): boolean;
     isDamagePopupRequested(): boolean;
     isEffectRequested(): boolean;
+    /**
+     * Returns true if a motion is requested.
+     * 
+     * @returns {boolean} 
+     * @memberof Game_Battler
+     */
     isMotionRequested(): boolean;
+    /**
+     * Returns true if a weapon animation is requested.
+     * 
+     * @returns {boolean} 
+     * @memberof Game_Battler
+     */
     isWeaponAnimationRequested(): boolean;
     isMotionRefreshRequested(): boolean;
     isSelected(): boolean;
+    /**
+     * Returns the effect type of the battler.
+     * 
+     * @returns {string} 
+     * @memberof Game_Battler
+     */
     effectType(): string;
+    /**
+     * Returns the motion type of the battler.
+     * 
+     * @returns {string} 
+     * @memberof Game_Battler
+     */
     motionType(): string;
+    /**
+     * Returns the weapon image id.
+     * 
+     * @returns {number} 
+     * @memberof Game_Battler
+     */
     weaponImageId(): number;
+    /**
+     * Shifts the battler animation.
+     * 
+     * @returns {MV.BattlerAnimation} 
+     * @memberof Game_Battler
+     */
     shiftAnimation(): MV.BattlerAnimation;
+    /**
+     * Starts the specified animation, given the animation id on the
+     * battler.
+     * @param {number} animationId 
+     * @param {boolean} mirror 
+     * @param {number} delay 
+     * @memberof Game_Battler
+     */
     startAnimation(animationId: number, mirror: boolean, delay: number): void;
+    /**
+     * Starts a damage pop up on the battler.
+     * 
+     * @memberof Game_Battler
+     */
     startDamagePopup(): void;
+    /**
+     * Starts the weapon animation on te battler given a weapon id.
+     * 
+     * @param {number} weaponImageId 
+     * @memberof Game_Battler
+     */
     startWeaponAnimation(weaponImageId: number): void;
     action(index: number): Game_Action;
+    /**
+     * Sets the action at the specified index for the battler.
+     * 
+     * @param {number} index 
+     * @param {Game_Action} action 
+     * @memberof Game_Battler
+     */
     setAction(index: number, action: Game_Action): void;
+    /**
+     * Returns the number of battler actions.
+     * 
+     * @returns {number} 
+     * @memberof Game_Battler
+     */
     numActions(): number;
+    /**
+     * Clears the battler actions.
+     * 
+     * @memberof Game_Battler
+     */
     clearActions(): void;
+    /**
+     * Returns the battler action result.
+     * 
+     * @returns {Game_ActionResult} 
+     * @memberof Game_Battler
+     */
     result(): Game_ActionResult;
+    /**
+     * Clears the battler action result.
+     * 
+     * @memberof Game_Battler
+     */
     clearResult(): void;
+    /**
+     * Refreshes the battler.
+     * 
+     * @memberof Game_Battler
+     */
     refresh(): void;
+    /**
+     * Adds a state to the battler given the specified
+     * state id.
+     * @param {number} stateId 
+     * @memberof Game_Battler
+     */
     addState(stateId: number): void;
+    /**
+     * Returns true if the specified state given the state id
+     * is addable.
+     * @param {number} stateId 
+     * @returns {boolean} 
+     * @memberof Game_Battler
+     */
     isStateAddable(stateId: number): boolean;
+    /**
+     * Returns true if the specified state given the state id
+     * restricts.
+     * 
+     * @param {number} stateId 
+     * @returns {boolean} 
+     * @memberof Game_Battler
+     */
     isStateRestrict(stateId: number): boolean;
+    /**
+     * Handler for when theb attler is restricted.
+     * 
+     * @memberof Game_Battler
+     */
     onRestrict(): void;
+    /**
+     * Removes the specified state given the state id.
+     * 
+     * @param {number} stateId 
+     * @memberof Game_Battler
+     */
     removeState(stateId: number): void;
+    /**
+     * Has the battler escape from battle; plays a sound on escaping.
+     * 
+     * @memberof Game_Battler
+     */
     escape(): void;
+    /**
+     * Adds a buff to the battler for the specified number of turns
+     * on the selected parameter.
+     * @param {number} paramId 
+     * @param {number} turns 
+     * @memberof Game_Battler
+     */
     addBuff(paramId: number, turns: number): void;
+    /**
+     * Adds a debuff to the battler for the specified number of turns
+     * on the selected parameter.
+     * @param {number} paramId 
+     * @param {number} turns 
+     * @memberof Game_Battler
+     */
     addDebuff(paramId: number, turns: number): void;
     removeBuff(paramId: number): void;
     removeBattleStates(): void;
+    /**
+     * Removes all buffs from the battler.
+     * 
+     * @memberof Game_Battler
+     */
     removeAllBuffs(): void;
     removeStatesAuto(timing: number): void;
     removeBuffsAuto(): void;
     removeStatesByDamage(): void;
+    /**
+     * Creates the number of times for
+     * an action.
+     * @returns {number} 
+     * @memberof Game_Battler
+     */
     makeActionTimes(): number;
+    /**
+     * Creates the actions for the battler.
+     * 
+     * @memberof Game_Battler
+     */
     makeActions(): void;
+    /**
+     * Returns the speed of the battler.
+     * 
+     * @returns {number} 
+     * @memberof Game_Battler
+     */
     speed(): number;
+    /**
+     * Calculates the speed of the battler.
+     * 
+     * @memberof Game_Battler
+     */
     makeSpeed(): void;
+    /**
+     * Returns the current action of the battler.
+     * 
+     * @returns {Game_Action} 
+     * @memberof Game_Battler
+     */
     currentAction(): Game_Action;
+    /**
+     * Removes the current battler action.
+     * 
+     * @memberof Game_Battler
+     */
     removeCurrentAction(): void;
     setLastTarget(target: Game_Battler): void;
     forceAction(skillId: number, targetIndex: number): void;
+    /**
+     * Has theb attler use the given item.
+     * 
+     * @param {RPG.UsableItem} item 
+     * @memberof Game_Battler
+     */
     useItem(item: RPG.UsableItem): void;
+    /**
+     * Has the battler consume the given item.
+     * 
+     * @param {RPG.UsableItem} item 
+     * @memberof Game_Battler
+     */
     consumeItem(item: RPG.UsableItem): void;
+    /**
+     * Adds the specified amount of hp to the battler.
+     * 
+     * @param {number} value 
+     * @memberof Game_Battler
+     */
     gainHp(value: number): void;
+    /**
+     * Adds the specified amount of mp to the battler.
+     * 
+     * @param {number} value 
+     * @memberof Game_Battler
+     */
     gainMp(value: number): void;
+    /**
+     * Adds the specified amount of tp to the battler.
+     * 
+     * @param {number} value 
+     * @memberof Game_Battler
+     */
     gainTp(value: number): void;
+    /**
+     * Adds a specified amount of tp to the battler silently.
+     * 
+     * @param {number} value 
+     * @memberof Game_Battler
+     */
     gainSilentTp(value: number): void;
+    /**
+     * Initializes the battler's tp; tp is random.
+     * 
+     * @memberof Game_Battler
+     */
     initTp(): void;
+    /**
+     * Clears the battler's tp.
+     * 
+     * @memberof Game_Battler
+     */
     clearTp(): void;
     chargeTpByDamage(damageRate: number): void;
+    /**
+     * Has the battler regenerate hp based on their hp regen.
+     * 
+     * @memberof Game_Battler
+     */
     regenerateHp(): void;
     maxSlipDamage(): number;
+    /**
+     * Has the battler regenerate mp based on their mp regen.
+     * 
+     * @memberof Game_Battler
+     */
     regenerateMp(): void;
+    /**
+     * Has the battler regenerate tp based on their tp regen.
+     * 
+     * @memberof Game_Battler
+     */
     regenerateTp(): void;
+    /**
+     * Has the battler regenerate all resources based on
+     * their respective regeneration stats.
+     * @memberof Game_Battler
+     */
     regenerateAll(): void;
+    /**
+     * Handler for when battle has started.
+     * 
+     * @memberof Game_Battler
+     */
     onBattleStart(): void;
     onAllActionsEnd(): void;
     onTurnEnd(): void;
@@ -7971,22 +9858,115 @@ declare class Game_Battler extends Game_BattlerBase {
     onDamage(value: number): void;
     setActionState(actionState: string): void;
     isUndecided(): boolean;
+    /**
+     * Returns true if the battler is inputting commands in battle.
+     * 
+     * @returns {boolean} 
+     * @memberof Game_Battler
+     */
     isInputting(): boolean;
+    /**
+     * Returns true if the battler is waiting in battle.
+     * 
+     * @returns {boolean} 
+     * @memberof Game_Battler
+     */
     isWaiting(): boolean;
+    /**
+     * Returns true if the battler is performing an action in battle.
+     * 
+     * @returns {boolean} 
+     * @memberof Game_Battler
+     */
     isActing(): boolean;
+    /**
+     * Returns true if the battler is chanting in combat.
+     * 
+     * @returns {boolean} 
+     * @memberof Game_Battler
+     */
     isChanting(): boolean;
+    /**
+     * Returns true if the battler is waiting to guard.
+     * 
+     * @returns {boolean} 
+     * @memberof Game_Battler
+     */
     isGuardWaiting(): boolean;
+    /**
+     * Perform action start motion, given the specified game action.
+     * 
+     * @param {Game_Action} action 
+     * @memberof Game_Battler
+     */
     performActionStart(action: Game_Action): void;
+    /**
+     * Perform given action motion.
+     * 
+     * @param {Game_Action} action 
+     * @memberof Game_Battler
+     */
     performAction(action: Game_Action): void;
+    /**
+     * Perform action end motion.
+     * 
+     * @memberof Game_Battler
+     */
     performActionEnd(): void;
+    /**
+     * Perform damage motion.
+     * 
+     * @memberof Game_Battler
+     */
     performDamage(): void;
+    /**
+     * Perform miss motion.
+     * 
+     * @memberof Game_Battler
+     */
     performMiss(): void;
+    /**
+     * Perform recovery motion.
+     * 
+     * @memberof Game_Battler
+     */
     performRecovery(): void;
+    /**
+     * Perform evasion motion.
+     * 
+     * @memberof Game_Battler
+     */
     performEvasion(): void;
+    /**
+     * Perform magic evasion motion.
+     * 
+     * @memberof Game_Battler
+     */
     performMagicEvasion(): void;
+    /**
+     * Perform counter motion.
+     * 
+     * @memberof Game_Battler
+     */
     performCounter(): void;
+    /**
+     * Performs the reflect motion.
+     * 
+     * @memberof Game_Battler
+     */
     performReflection(): void;
+    /**
+     * Perform substitute motion with the specified game battler.
+     * 
+     * @param {Game_Battler} target 
+     * @memberof Game_Battler
+     */
     performSubstitute(target: Game_Battler): void;
+    /**
+     * Performs the collapse motion.
+     * 
+     * @memberof Game_Battler
+     */
     performCollapse(): void;
 }
 
@@ -7995,6 +9975,7 @@ declare class Game_Battler extends Game_BattlerBase {
  * Game_Actor
  *
  * The game object declare class for an actor.
+ * @class Game_Actor
  */
 declare class Game_Actor extends Game_Battler {
     protected _actorId: number;
@@ -8023,109 +10004,646 @@ declare class Game_Actor extends Game_Battler {
     constructor(actorId: number);
 
     setup(actorId: number): void;
+    /**
+     * Returns the id of the actor.
+     * 
+     * @returns {number} 
+     * @memberof Game_Actor
+     */
     actorId(): number;
+    /**
+     * Returns the database information of the actor.
+     * 
+     * @returns {RPG.Actor} 
+     * @memberof Game_Actor
+     */
     actor(): RPG.Actor;
+    /**
+     * Sets the actor name.
+     * 
+     * @param {string} name 
+     * @memberof Game_Actor
+     */
     setName(name: string): void;
+    /**
+     * Returns the nickname of the actor.
+     * 
+     * @returns {string} 
+     * @memberof Game_Actor
+     */
     nickname(): string;
+    /**
+     * Sets the nickname of the actor.
+     * 
+     * @param {string} nickname 
+     * @memberof Game_Actor
+     */
     setNickname(nickname: string): void;
+    /**
+     * Returns the actor profile.
+     * 
+     * @returns {string} 
+     * @memberof Game_Actor
+     */
     profile(): string;
+    /**
+     * Sets the actor profile.
+     * 
+     * @param {string} profile 
+     * @memberof Game_Actor
+     */
     setProfile(profile: string): void;
+    /**
+     * Returns the face name of the actor; this is
+     * the image of faces for the actor.
+     * @returns {string} 
+     * @memberof Game_Actor
+     */
     faceName(): string;
+    /**
+     * Returns the face index of the actor.
+     * 
+     * @returns {number} 
+     * @memberof Game_Actor
+     */
     faceIndex(): number;
+    /**
+     * Clears all states from the actor.
+     * 
+     * @memberof Game_Actor
+     */
     clearStates(): void;
+    /**
+     * Erase the specified state from the actor.
+     * 
+     * @param {number} stateId 
+     * @memberof Game_Actor
+     */
     eraseState(stateId: number): void;
+    /**
+     * Reset state count of the specified state.
+     * 
+     * @param {number} stateId 
+     * @memberof Game_Actor
+     */
     resetStateCounts(stateId: number): void;
+    /**
+     * Initialize images of the actor.
+     * 
+     * @memberof Game_Actor
+     */
     initImages(): void;
+    /**
+     * Returns the exp required to level.
+     * 
+     * @param {number} level 
+     * @returns {number} 
+     * @memberof Game_Actor
+     */
     expForLevel(level: number): number;
+    /**
+     * Initialize exp of the actor.
+     * 
+     * @memberof Game_Actor
+     */
     initExp(): void;
+    /**
+     * Returns the current experience points of the actor.
+     * 
+     * @returns {number} 
+     * @memberof Game_Actor
+     */
     currentExp(): number;
+    /**
+     * Returns the current level's experience for the actor.
+     * 
+     * @returns {number} 
+     * @memberof Game_Actor
+     */
     currentLevelExp(): number;
+    /**
+     * Returns the experience points for the next level of the actor.
+     * 
+     * @returns {number} 
+     * @memberof Game_Actor
+     */
     nextLevelExp(): number;
+    /**
+     * Returns the next required experience points for the actor to level up.
+     * 
+     * @returns {number} 
+     * @memberof Game_Actor
+     */
     nextRequiredExp(): number;
+    /**
+     * Returns the maximum level of the actor.
+     * 
+     * @memberof Game_Actor
+     */
     maxLevel(): void;
+    /**
+     * Returns true if the actor is max level.
+     * 
+     * @returns {boolean} 
+     * @memberof Game_Actor
+     */
     isMaxLevel(): boolean;
+    /**
+     * Initialize actor skills.
+     * 
+     * @memberof Game_Actor
+     */
     initSkills(): void;
+    /**
+     * Initialize actor equipment in the given slots.
+     * 
+     * @param {Array<number>} equips 
+     * @memberof Game_Actor
+     */
     initEquips(equips: Array<number>): void;
+    /**
+     * Returns the equip slots of the actor.
+     * 
+     * @returns {Array<number>} 
+     * @memberof Game_Actor
+     */
     equipSlots(): Array<number>;
+    /**
+     * Returns the equipment of the actor.
+     * 
+     * @returns {Array<RPG.EquipItem>} 
+     * @memberof Game_Actor
+     */
     equips(): Array<RPG.EquipItem>;
+    /**
+     * Returns the weapon of the actor.
+     * 
+     * @returns {Array<RPG.Weapon>} 
+     * @memberof Game_Actor
+     */
     weapons(): Array<RPG.Weapon>;
+    /**
+     * Returns the armor of the actor.
+     * 
+     * @returns {Array<RPG.Armor>} 
+     * @memberof Game_Actor
+     */
     armors(): Array<RPG.Armor>;
+    /**
+     * Returns true if the actor has a weapon.
+     * 
+     * @param {RPG.Weapon} weapon 
+     * @returns {boolean} 
+     * @memberof Game_Actor
+     */
     hasWeapon(weapon: RPG.Weapon): boolean;
+    /**
+     * Returns true if the actor has armor.
+     * 
+     * @param {RPG.Armor} armor 
+     * @returns {boolean} 
+     * @memberof Game_Actor
+     */
     hasArmor(armor: RPG.Armor): boolean;
+    /**
+     * Returns true if the equip change is okay in the given slot.
+     * 
+     * @param {number} slotId 
+     * @returns {boolean} 
+     * @memberof Game_Actor
+     */
     isEquipChangeOk(slotId: number): boolean;
+    /**
+     * Changes the actor equipment in the given slot with the
+     * given equip item. Places the original item into the party
+     * inventory.
+     * @param {number} slotId 
+     * @param {RPG.EquipItem} item 
+     * @memberof Game_Actor
+     */
     changeEquip(slotId: number, item: RPG.EquipItem): void;
+    /**
+     * Forces the actor to change equipment in the given slot
+     * with the given equip item without placing the item back into
+     * the party inventory.
+     * @param {number} slotId 
+     * @param {RPG.EquipItem} item 
+     * @memberof Game_Actor
+     */
     forceChangeEquip(slotId: number, item: RPG.EquipItem): void;
+    /**
+     * Trades the new item with the old item in the party inventory.
+     * 
+     * @param {RPG.EquipItem} newItem 
+     * @param {RPG.EquipItem} oldItem 
+     * @returns {boolean} 
+     * @memberof Game_Actor
+     */
     tradeItemWithParty(newItem: RPG.EquipItem, oldItem: RPG.EquipItem): boolean;
+    /**
+     * Changes the actor equip with an item based on the equip id.
+     * 
+     * @param {number} etypeId 
+     * @param {number} itemId 
+     * @memberof Game_Actor
+     */
     changeEquipById(etypeId: number, itemId: number): void;
+    /**
+     * Returns true if the actor is equipped with the specific item.
+     * 
+     * @param {RPG.EquipItem} item 
+     * @returns {boolean} 
+     * @memberof Game_Actor
+     */
     isEquipped(item: RPG.EquipItem): boolean;
+    /**
+     * Discards the given equip item from the actor; item
+     * is not return to the party inventory.
+     * @param {RPG.EquipItem} item 
+     * @memberof Game_Actor
+     */
     discardEquip(item: RPG.EquipItem): void;
+    /**
+     * Returns items the actor can't normally equip to the party inventory.
+     * 
+     * @param {boolean} forcing 
+     * @memberof Game_Actor
+     */
     releaseUnequippableItems(forcing: boolean): void;
+    /**
+     * Clears the actor's equipment; items are returned to the inventory.
+     * 
+     * @memberof Game_Actor
+     */
     clearEquipments(): void;
+    /**
+     * Optimize the actor's equipment.
+     * 
+     * @memberof Game_Actor
+     */
     optimizeEquipments(): void;
+    /**
+     * Equips the best item in the given slot.
+     * 
+     * @param {number} slotId 
+     * @memberof Game_Actor
+     */
     bestEquipItem(slotId: number): void;
+    /**
+     * Calculates the equip item performance and returns the sum/difference.
+     * 
+     * @param {RPG.EquipItem} item 
+     * @returns {number} 
+     * @memberof Game_Actor
+     */
     calcEquipItemPerformance(item: RPG.EquipItem): number;
     isSkillWtypeOk(skill: RPG.Skill): boolean;
     isWtypeEquipped(wtypeId: number): boolean;
+    /**
+     * Refreshes the actor.
+     * 
+     * @memberof Game_Actor
+     */
     refresh(): void;
     friendsUnit(): Game_Party;
     opponentsUnit(): Game_Troop;
+    /**
+     * Returns true if the actor is a member in battle.
+     * 
+     * @returns {boolean} 
+     * @memberof Game_Actor
+     */
     isBattleMember(): boolean;
     isFormationChangeOk(): boolean;
+    /**
+     * Returns the current class of the actor from the database.
+     * 
+     * @returns {RPG.Class} 
+     * @memberof Game_Actor
+     */
     currentClass(): RPG.Class;
+    /**
+     * Returns true if the actor is the specified class from the database.
+     * 
+     * @param {RPG.Class} gameClass 
+     * @returns {boolean} 
+     * @memberof Game_Actor
+     */
     isClass(gameClass: RPG.Class): boolean;
+    /**
+     * Returns the actor's skills; even if the skills are not usable.
+     * 
+     * @returns {Array<RPG.Skill>} 
+     * @memberof Game_Actor
+     */
     skills(): Array<RPG.Skill>;
+    /**
+     * Returns the usable skills of the actor.
+     * 
+     * @returns {Array<RPG.Skill>} 
+     * @memberof Game_Actor
+     */
     usableSkills(): Array<RPG.Skill>;
+    /**
+     * Returns the attack element ids.
+     * 
+     * @returns {Array<number>} 
+     * @memberof Game_Actor
+     */
     attackElements(): Array<number>;
+    /**
+     * Returns true if the actor has no weapon.
+     * 
+     * @returns {boolean} 
+     * @memberof Game_Actor
+     */
     hasNoWeapons(): boolean;
+    /**
+     * Returns the element id of barehanded attacks.
+     * 
+     * @returns {number} 
+     * @memberof Game_Actor
+     */
     bareHandsElementId(): number;
+    /**
+     * Returns the first attack animation id.
+     * 
+     * @returns {number} 
+     * @memberof Game_Actor
+     */
     attackAnimationId1(): number;
+    /**
+     * Returns the second attack animation id.
+     * 
+     * @returns {number} 
+     * @memberof Game_Actor
+     */
     attackAnimationId2(): number;
+    /**
+     * Returns the animation id for a barehanded attack.
+     * 
+     * @returns {number} 
+     * @memberof Game_Actor
+     */
     bareHandsAnimationId(): number;
+    /**
+     * Change the actor experience points; leveling up the actor
+     * if it's above the required exp for the current level.
+     * If show is set to true, actor level up with be displayed.
+     * @param {number} exp 
+     * @param {boolean} show 
+     * @memberof Game_Actor
+     */
     changeExp(exp: number, show: boolean): void;
+    /**
+     * Level up the actor.
+     * 
+     * @memberof Game_Actor
+     */
     levelUp(): void;
+    /**
+     * Level down the actor.
+     * 
+     * @memberof Game_Actor
+     */
     levelDown(): void;
     findNewSkills(lastSkills: Array<RPG.Skill>): Array<RPG.Skill>;
+    /**
+     * Displays the actor level up in a message window, with the learned skills.
+     * 
+     * @param {Array<RPG.Skill>} newSkills 
+     * @memberof Game_Actor
+     */
     displayLevelUp(newSkills: Array<RPG.Skill>): void;
+    /**
+     * Gives the specified exp to the actor.
+     * 
+     * @param {number} exp 
+     * @memberof Game_Actor
+     */
     gainExp(exp: number): void;
+    /**
+     * Returns the final exp rate of the actor based on if the actor 
+     * is a reserved party member or an active battle member. 
+     * @returns {number} 
+     * @memberof Game_Actor
+     */
     finalExpRate(): number;
+    /**
+     * Returns the exp rate of actors not in battle; this is set in the database.
+     * 
+     * @returns {number} 
+     * @memberof Game_Actor
+     */
     benchMembersExpRate(): number;
+    /**
+     * Returns true if the actor should display level up in a message window.
+     * 
+     * @returns {boolean} 
+     * @memberof Game_Actor
+     */
     shouldDisplayLevelUp(): boolean;
+    /**
+     * Changes the actor level; if show is set to true,
+     * the actor level will be displayed.
+     * @param {number} level 
+     * @param {boolean} show 
+     * @memberof Game_Actor
+     */
     changeLevel(level: number, show: boolean): void;
+    /**
+     * Actor learns the specified skill given the skill id.
+     * 
+     * @param {number} skillId 
+     * @memberof Game_Actor
+     */
     learnSkill(skillId: number): void;
+    /**
+     * Actor forgets the specified skill given the skill id from 
+     * the actor's usable skills.
+     * @param {number} skillId 
+     * @memberof Game_Actor
+     */
     forgetSkill(skillId: number): void;
+    /**
+     * Returns true if the actor has learned the specified
+     * skill given the specified skill id.
+     * @param {number} skillId 
+     * @returns {boolean} 
+     * @memberof Game_Actor
+     */
     isLearnedSkill(skillId: number): boolean;
+    /**
+     * Changes the actor class; if keep is true, the actor
+     * will retain their experience points.
+     * @param {number} classId 
+     * @param {boolean} keepExp 
+     * @memberof Game_Actor
+     */
     changeClass(classId: number, keepExp: boolean): void;
     setCharacterImage(characterName: string, characterIndex: number): void;
+    /**
+     * Sets the face image of the actor given the face image (from database)
+     * and face index within the iamge.
+     * 
+     * @param {string} faceName 
+     * @param {number} faceIndex 
+     * @memberof Game_Actor
+     */
     setFaceImage(faceName: string, faceIndex: number): void;
+    /**
+     * Sets the battler image of the actor; this is the sprite displayed
+     * in the side view mode.
+     * @param {string} battlerName 
+     * @memberof Game_Actor
+     */
     setBattlerImage(battlerName: string): void;
+    /**
+     * Returns true if the actor sprite is visible.
+     * 
+     * @returns {boolean} 
+     * @memberof Game_Actor
+     */
     isSpriteVisible(): boolean;
+    /**
+     * Starts the animation on the actor given the specified animation id;
+     * if  mirror is set to true, the animation will be mirrored. If a delay is enter,
+     * the animation will be delayed.
+     * @param {number} animationId 
+     * @param {boolean} mirror 
+     * @param {number} delay 
+     * @memberof Game_Actor
+     */
     startAnimation(animationId: number, mirror: boolean, delay: number): void;
+    /**
+     * Performs the attack motion for the actor.
+     * 
+     * @memberof Game_Actor
+     */
     performAttack(): void;
+    /**
+     * Perform the victory motion for the actor.
+     * 
+     * @memberof Game_Actor
+     */
     performVictory(): void;
+    /**
+     * Performs the escape motion for the actor.
+     * 
+     * @memberof Game_Actor
+     */
     performEscape(): void;
+    /**
+     * Creates the action list for the actor.
+     * 
+     * @returns {Array<Game_Action>} 
+     * @memberof Game_Actor
+     */
     makeActionList(): Array<Game_Action>;
+    /**
+     * Creates the auto battle actions for the game actor.
+     * 
+     * @memberof Game_Actor
+     */
     makeAutoBattleActions(): void;
     makeConfusionActions(): void;
+    /**
+     * Handler for when the player walks on the map scene.
+     * 
+     * @memberof Game_Actor
+     */
     onPlayerWalk(): void;
     updateStateSteps(state: RPG.State): void;
+    /**
+     * Shows the added states to the actor.
+     * 
+     * @memberof Game_Actor
+     */
     showAddedStates(): void;
+    /**
+     * Shows the removed states from the actor.
+     * 
+     * @memberof Game_Actor
+     */
     showRemovedStates(): void;
     stepsForTurn(): number;
     turnEndOnMap(): void;
+    /**
+     * Checks the effect of the floor on the actor.
+     * 
+     * @memberof Game_Actor
+     */
     checkFloorEffect(): void;
+    /**
+     * Executes the floor dmaage on the actor.
+     * 
+     * @memberof Game_Actor
+     */
     executeFloorDamage(): void;
+    /**
+     * Returns the basic floor damage.
+     * 
+     * @returns {number} 
+     * @memberof Game_Actor
+     */
     basicFloorDamage(): number;
+    /**
+     * Returns the max floor damage.
+     * 
+     * @returns {number} 
+     * @memberof Game_Actor
+     */
     maxFloorDamage(): number;
+    /**
+     * Perform damage to the actor on the map scene.
+     * 
+     * @memberof Game_Actor
+     */
     performMapDamage(): void;
+    /**
+     * Clears all of the actor's animations.
+     * 
+     * @memberof Game_Actor
+     */
     clearActions(): void;
+    /**
+     * Returns action the actor is inputting.
+     * 
+     * @returns {Game_Action} 
+     * @memberof Game_Actor
+     */
     inputtingAction(): Game_Action;
     selectNextCommand(): boolean;
     selectPreviousCommand(): boolean;
+    /**
+     * Returns the last menu skill of the actor.
+     * 
+     * @returns {RPG.Skill} 
+     * @memberof Game_Actor
+     */
     lastMenuSkill(): RPG.Skill;
     setLastMenuSkill(skill: RPG.Skill): void;
+    /**
+     * Returns the last battle skill of the actor.
+     * 
+     * @returns {RPG.Skill} 
+     * @memberof Game_Actor
+     */
     lastBattleSkill(): RPG.Skill;
     setLastBattleSkill(skill: RPG.Skill): void;
+    /**
+     * Returns the last command symbol that the actor used.
+     * 
+     * @returns {string} 
+     * @memberof Game_Actor
+     */
     lastCommandSymbol(): string;
+    /**
+     * Sets the last command symbol to the given symbol; this is the
+     * selected command in the battle menu.
+     * @param {string} symbol 
+     * @memberof Game_Actor
+     */
     setLastCommandSymbol(symbol: string): void;
 }
 
@@ -8134,6 +10652,7 @@ declare class Game_Actor extends Game_Battler {
  * Game_Enemy
  *
  * The game object declare class for an enemy.
+ * @class Game_Enemy
  */
 declare class Game_Enemy extends Game_Battler {
     protected _enemyId: number;
@@ -8146,24 +10665,106 @@ declare class Game_Enemy extends Game_Battler {
 
     initMembers(): void;
     setup(enemyId: number, x: number, y: number): void;
+    /**
+     * Returns the other troops in the enemy team.
+     * 
+     * @returns {Game_Troop} 
+     * @memberof Game_Enemy
+     */
     friendsUnit(): Game_Troop;
+    /**
+     * Returns the game party.
+     * 
+     * @returns {Game_Party} 
+     * @memberof Game_Enemy
+     */
     opponentsUnit(): Game_Party;
     isBattleMember(): boolean;
+    /**
+     * Returns the enemy id.
+     * 
+     * @returns {number} 
+     * @memberof Game_Enemy
+     */
     enemyId(): number;
+    /**
+     * Returns the enemy information from the database.
+     * 
+     * @returns {RPG.Enemy} 
+     * @memberof Game_Enemy
+     */
     enemy(): RPG.Enemy;
+    /**
+     * Returns the enemy's exp amount.
+     * 
+     * @memberof Game_Enemy
+     */
     exp(): void;
+    /**
+     * Returns enemy's given gold.
+     * 
+     * @memberof Game_Enemy
+     */
     gold(): void;
+    /**
+     * Creates the drop items for the enemy specified by the database.
+     * 
+     * @returns {Array<RPG.BaseItem>} 
+     * @memberof Game_Enemy
+     */
     makeDropItems(): Array<RPG.BaseItem>;
+    /**
+     * Returns the item drop rate of the enemy.
+     * 
+     * @returns {number} 
+     * @memberof Game_Enemy
+     */
     dropItemRate(): number;
     itemObject(kind: number, dataId: number): void;
+    /**
+     * Returns true if the enemy sprite is visible.
+     * 
+     * @returns {boolean} 
+     * @memberof Game_Enemy
+     */
     isSpriteVisible(): boolean;
+    /**
+     * Returns enemy screen X coordinate.
+     * 
+     * @returns {number} 
+     * @memberof Game_Enemy
+     */
     screenX(): number;
+    /**
+     * Returns enemy screen Y position.
+     * 
+     * @returns {number} 
+     * @memberof Game_Enemy
+     */
     screenY(): number;
+    /**
+     * Returns the hue of the enemy.
+     * 
+     * @returns {number} 
+     * @memberof Game_Enemy
+     */
     battlerHue(): number;
+    /**
+     * Returns the enemy original name.
+     * 
+     * @returns {string} 
+     * @memberof Game_Enemy
+     */
     originalName(): string;
     isLetterEmpty(): boolean;
     setLetter(letter: string): void;
     setPlural(plural: boolean): void;
+    /**
+     * Transform the enemy into another enemy based on id.
+     * 
+     * @param {number} enemyId 
+     * @memberof Game_Enemy
+     */
     transform(enemyId: number): void;
     meetsCondition(action: RPG.Enemy.Action): boolean;
     meetsTurnCondition(param1: number, param2: number): boolean;
@@ -8172,49 +10773,148 @@ declare class Game_Enemy extends Game_Battler {
     meetsStateCondition(param: number): boolean;
     meetsPartyLevelCondition(param: number): boolean;
     meetsSwitchCondition(param: number): boolean;
+    /**
+     * Returns true if the enemy action is valid.
+     * 
+     * @param {RPG.Enemy.Action} action 
+     * @returns {boolean} 
+     * @memberof Game_Enemy
+     */
     isActionValid(action: RPG.Enemy.Action): boolean;
     selectAction(actionList: Array<RPG.Enemy.Action>, ratingZero: number): RPG.Enemy.Action;
     selectAllActions(actionList: Array<RPG.Enemy.Action>): void;
 }
 
+
+
 /**
- * -----------------------------------------------------------------------------
- * Game_Actors
- *
- * The wrapper declare class for an actor array.
+ * Wrapper class for Game_Actor.
+ * This is the array form.
+ * @class Game_Actors
  */
 declare class Game_Actors {
     protected _data: Array<Game_Actor>;
 
+    /**
+     * Returns the actor with the specified id.
+     * 
+     * @param {number} actorId 
+     * @returns {Game_Actor} 
+     * @memberof Game_Actors
+     */
     actor(actorId: number): Game_Actor;
 }
 
 /**
- * -----------------------------------------------------------------------------
- * Game_Unit
- *
- * The superdeclare class of Game_Party and Game_Troop.
+ * Superclass of Game_Party & Game_Troop
+ * 
+ * @class Game_Unit
  */
 declare class Game_Unit {
     protected _inBattle: boolean;
 
+    /**
+     * Returns true if unit is in battle.
+     * 
+     * @returns {boolean} 
+     * @memberof Game_Unit
+     */
     inBattle(): boolean;
+    /**
+     * Returns the list of battlers.
+     * 
+     * @returns {Array<Game_Battler>} 
+     * @memberof Game_Unit
+     */
     members(): Array<Game_Battler>;
+    /**
+     * Returns the list of alive battlers.
+     * 
+     * @returns {Array<Game_Battler>} 
+     * @memberof Game_Unit
+     */
     aliveMembers(): Array<Game_Battler>;
+    /**
+     * Returns the list of dead battlers.
+     * 
+     * @returns {Array<Game_Battler>} 
+     * @memberof Game_Unit
+     */
     deadMembers(): Array<Game_Battler>;
+    /**
+     * Returns the list of movable members.
+     * 
+     * @returns {Array<Game_Battler>} 
+     * @memberof Game_Unit
+     */
     movableMembers(): Array<Game_Battler>;
+    /**
+     * Clears the unit's actions.
+     * 
+     * @memberof Game_Unit
+     */
     clearActions(): void;
+    /**
+     * Returns the agility of the unit.
+     * 
+     * @returns {number} 
+     * @memberof Game_Unit
+     */
     agility(): number;
     tgrSum(): number;
+    /**
+     * Returns a random target from the game unit.
+     * 
+     * @returns {Game_Battler} 
+     * @memberof Game_Unit
+     */
     randomTarget(): Game_Battler;
+    /**
+     * Returns a random dead target from the game unit.
+     * 
+     * @returns {Game_Battler} 
+     * @memberof Game_Unit
+     */
     randomDeadTarget(): Game_Battler;
     smoothTarget(index: number): Game_Battler;
     smoothDeadTarget(index: number): Game_Battler;
+    /**
+     * Clears the action results.
+     * 
+     * @memberof Game_Unit
+     */
     clearResults(): void;
+    /**
+     * Handler for when battle is started.
+     * 
+     * @memberof Game_Unit
+     */
     onBattleStart(): void;
+    /**
+     * Handler for when battle has ended.
+     * 
+     * @memberof Game_Unit
+     */
     onBattleEnd(): void;
+    /**
+     * Creates the action's of the game unit.
+     * 
+     * @memberof Game_Unit
+     */
     makeActions(): void;
+    /**
+     * Selects a member of the unit given a battler.
+     * 
+     * @param {Game_Battler} activeMember 
+     * @memberof Game_Unit
+     */
     select(activeMember: Game_Battler): void;
+    /**
+     * Returns true if all members of the unit are dead.
+     * 
+     * @returns {boolean} 
+     * @memberof Game_Unit
+     */
     isAllDead(): boolean;
     substituteBattler(): Game_Battler;
 }
@@ -8225,6 +10925,7 @@ declare class Game_Unit {
  *
  * The game object declare class for the party. Information such as gold and items is
  * included.
+ * @class Game_Party
  */
 declare class Game_Party extends Game_Unit {
     static ABILITY_ENCOUNTER_HALF: number;
@@ -8245,73 +10946,355 @@ declare class Game_Party extends Game_Unit {
     protected _weapons: {[itemId: number]: number};
     protected _armors: {[itemId: number]: number};
 
+    /**
+     * Returns all party members.
+     * 
+     * @returns {Array<Game_Actor>} 
+     * @memberof Game_Party
+     */
     members(): Array<Game_Actor>;
+    /**
+     * Returns the living party members.
+     * 
+     * @returns {Array<Game_Actor>} 
+     * @memberof Game_Party
+     */
     aliveMembers(): Array<Game_Actor>;
+    /**
+     * Returns the dead party members.
+     * 
+     * @returns {Array<Game_Actor>} 
+     * @memberof Game_Party
+     */
     deadMembers(): Array<Game_Actor>;
+    /**
+     * Returns the movable members in the party.
+     * 
+     * @returns {Array<Game_Actor>} 
+     * @memberof Game_Party
+     */
     movableMembers(): Array<Game_Actor>;
+    /**
+     * Returns the battle members in the party.
+     * 
+     * @returns {Array<Game_Actor>} 
+     * @memberof Game_Party
+     */
     battleMembers(): Array<Game_Actor>;
+    /**
+     * Initialize all party items.
+     * 
+     * @memberof Game_Party
+     */
     initAllItems(): void;
+    /**
+     * Returns true if the game party exists.
+     * 
+     * @returns {boolean} 
+     * @memberof Game_Party
+     */
     exists(): boolean;
+    /**
+     * Returns the size of the party.
+     * 
+     * @returns {number} 
+     * @memberof Game_Party
+     */
     size(): number;
+    /**
+     * Returns true if the game party is empty.
+     * 
+     * @returns {boolean} 
+     * @memberof Game_Party
+     */
     isEmpty(): boolean;
+    /**
+     * Returns the maximum battle members in the party.
+     * 
+     * @returns {number} 
+     * @memberof Game_Party
+     */
     maxBattleMembers(): number;
+    /**
+     * Returns the leader of the party.
+     * 
+     * @returns {Game_Actor} 
+     * @memberof Game_Party
+     */
     leader(): Game_Actor;
+    /**
+     * Revive the battle members of the party.
+     * 
+     * @memberof Game_Party
+     */
     reviveBattleMembers(): void;
     items(): Array<RPG.Item>;
+    /**
+     * Returns the weapons of the party.
+     * 
+     * @returns {Array<RPG.Weapon>} 
+     * @memberof Game_Party
+     */
     weapons(): Array<RPG.Weapon>;
+    /**
+     * Returns the party's armor.
+     * 
+     * @returns {Array<RPG.Armor>} 
+     * @memberof Game_Party
+     */
     armors(): Array<RPG.Armor>;
+    /**
+     * Returns the party's equippable items.
+     * 
+     * @returns {Array<RPG.EquipItem>} 
+     * @memberof Game_Party
+     */
     equipItems(): Array<RPG.EquipItem>;
+    /**
+     * Returns all items within the party's posession.
+     * 
+     * @returns {Array<RPG.BaseItem>} 
+     * @memberof Game_Party
+     */
     allItems(): Array<RPG.BaseItem>;
     itemContainer(item: RPG.BaseItem): {[itemId: number]: number};
+    /**
+     * Sets up the starting party members.
+     * 
+     * @memberof Game_Party
+     */
     setupStartingMembers(): void;
     name(): string;
+    /**
+     * Sets up a test battle with the party.
+     * 
+     * @memberof Game_Party
+     */
     setupBattleTest(): void;
+    /**
+     * Sets up the battle test members.
+     * 
+     * @memberof Game_Party
+     */
     setupBattleTestMembers(): void;
+    /**
+     * Sets up the battle test items.
+     * 
+     * @memberof Game_Party
+     */
     setupBattleTestItems(): void;
+    /**
+     * Returns the highest level in the party.
+     * 
+     * @returns {number} 
+     * @memberof Game_Party
+     */
     highestLevel(): number;
+    /**
+     * Adds an actor to the party given the actor id.
+     * 
+     * @param {number} actorId 
+     * @memberof Game_Party
+     */
     addActor(actorId: number): void;
+    /**
+     * Removes an actor from the party given the actor id.
+     * 
+     * @param {number} actorId 
+     * @memberof Game_Party
+     */
     removeActor(actorId: number): void;
+    /**
+     * Returns party gold.
+     * 
+     * @returns {number} 
+     * @memberof Game_Party
+     */
     gold(): number;
+    /**
+     * Increases the party gold given a specified amount.
+     * 
+     * @param {number} amount 
+     * @memberof Game_Party
+     */
     gainGold(amount: number): void;
+    /**
+     * Decreases the party gold given a specified amount.
+     * 
+     * @param {number} amount 
+     * @memberof Game_Party
+     */
     loseGold(amount: number): void;
+    /**
+     * Returns maximum gold of the party.
+     * 
+     * @returns {number} 
+     * @memberof Game_Party
+     */
     maxGold(): number;
+    /**
+     * Returns the number of steps the party has taken.
+     * 
+     * @returns {number} 
+     * @memberof Game_Party
+     */
     steps(): number;
+    /**
+     * Increases the number of steps the party has taken.
+     * 
+     * @memberof Game_Party
+     */
     increaseSteps(): void;
+    /**
+     * Returns the number of items in the possession of the party of the
+     * given item.
+     * @param {RPG.BaseItem} item 
+     * @returns {number} 
+     * @memberof Game_Party
+     */
     numItems(item: RPG.BaseItem): number;
+    /**
+     * Returns the maximum number of items of the given item.
+     * 
+     * @param {RPG.BaseItem} item 
+     * @returns {number} 
+     * @memberof Game_Party
+     */
     maxItems(item: RPG.BaseItem): number;
     hasMaxItems(item: RPG.BaseItem): boolean;
+    /**
+     * Returns true if the party has the given item;
+     * if includeEquip is set to true, this will also check party equipment.
+     * @param {RPG.BaseItem} item 
+     * @param {boolean} includeEquip 
+     * @returns {boolean} 
+     * @memberof Game_Party
+     */
     hasItem(item: RPG.BaseItem, includeEquip: boolean): boolean;
+    /**
+     * Returns true if any party member has the specified equip item.
+     * 
+     * @param {RPG.EquipItem} item 
+     * @returns {boolean} 
+     * @memberof Game_Party
+     */
     isAnyMemberEquipped(item: RPG.EquipItem): boolean;
     gainItem(item: RPG.BaseItem, amount: number, includeEquip: boolean): void;
     discardMembersEquip(item: RPG.EquipItem, amount: number): void;
     loseItem(item: RPG.BaseItem, amount: number, includeEquip: boolean): void;
+    /**
+     * Has the party consume the given item.
+     * 
+     * @param {RPG.BaseItem} item 
+     * @memberof Game_Party
+     */
     consumeItem(item: RPG.BaseItem): void;
+    /**
+     * Returns true if the party can use the item.
+     * 
+     * @param {RPG.BaseItem} item 
+     * @returns {boolean} 
+     * @memberof Game_Party
+     */
     canUse(item: RPG.BaseItem): boolean;
     canInput(): boolean;
+    /**
+     * Handler for when the player walks.
+     * 
+     * @memberof Game_Party
+     */
     onPlayerWalk(): void;
+    /**
+     * Returns the actor that will be used in the current menu;
+     * this is for menu scenes that target one actor.
+     * @returns {Game_Actor} 
+     * @memberof Game_Party
+     */
     menuActor(): Game_Actor;
     setMenuActor(actor: Game_Actor): void;
     makeMenuActorNext(): void;
     makeMenuActorPrevious(): void;
     targetActor(): Game_Actor;
     setTargetActor(actor: Game_Actor): void;
+    /**
+     * Returns the last item selected by the game party.
+     * 
+     * @returns {RPG.BaseItem} 
+     * @memberof Game_Party
+     */
     lastItem(): RPG.BaseItem;
     setLastItem(item: RPG.BaseItem): void;
     swapOrder(index1: number, index2: number): void;
+    /**
+     * Returns the characters that go on the save life.
+     * 
+     * @returns {Array<Array<any>>} 
+     * @memberof Game_Party
+     */
     charactersForSavefile(): Array<Array<any>>;
+    /**
+     * Returns the actor faces for the save file.
+     * 
+     * @returns {Array<Array<any>>} 
+     * @memberof Game_Party
+     */
     facesForSavefile(): Array<Array<any>>;
     partyAbility(abilityId: number): boolean;
+    /**
+     * Returns true if the encounter rate is set to half.
+     * 
+     * @returns {boolean} 
+     * @memberof Game_Party
+     */
     hasEncounterHalf(): boolean;
+    /**
+     * Returns true if the encounter rate is set to none.
+     * 
+     * @returns {boolean} 
+     * @memberof Game_Party
+     */
     hasEncounterNone(): boolean;
     hasCancelSurprise(): boolean;
+    /**
+     * Returns true if the party has an increased chance of preemptive strike.
+     * 
+     * @returns {boolean} 
+     * @memberof Game_Party
+     */
     hasRaisePreemptive(): boolean;
+    /**
+     * Returns true if the party has double gold in effect.
+     * 
+     * @returns {boolean} 
+     * @memberof Game_Party
+     */
     hasGoldDouble(): boolean;
     hasDropItemDouble(): boolean;
     ratePreemptive(troopAgi: number): number;
     rateSurprise(troopAgi: number): number;
+    /**
+     * Performs victory motion for the entire party.
+     * 
+     * @memberof Game_Party
+     */
     performVictory(): void;
+    /**
+     * Performs escape motion for the entire party.
+     * 
+     * @memberof Game_Party
+     */
     performEscape(): void;
+    /**
+     * Remove battle states from all actors in the party.
+     * 
+     * @memberof Game_Party
+     */
     removeBattleStates(): void;
+    /**
+     * Refreshes the motion on all actors in the party.
+     * 
+     * @memberof Game_Party
+     */
     requestMotionRefresh(): void;
 }
 
@@ -8320,6 +11303,7 @@ declare class Game_Party extends Game_Unit {
  * Game_Troop
  *
  * The game object declare class for a troop and the battle-related data.
+ * @class Game_Troop
  */
 declare class Game_Troop extends Game_Unit {
     static LETTER_TABLE_HALF: Array<string>;
@@ -8332,26 +11316,119 @@ declare class Game_Troop extends Game_Unit {
     protected _turnCount: number;
     protected _namesCount: {[name: string]: number};
 
+    /**
+     * Returns all enemies in the battle.
+     * 
+     * @returns {Array<Game_Enemy>} 
+     * @memberof Game_Troop
+     */
     members(): Array<Game_Enemy>;
+    /**
+     * Returns all alive enemies.
+     * 
+     * @returns {Array<Game_Enemy>} 
+     * @memberof Game_Troop
+     */
     aliveMembers(): Array<Game_Enemy>;
+    /**
+     * Returns all dead enemies.
+     * 
+     * @returns {Array<Game_Enemy>} 
+     * @memberof Game_Troop
+     */
     deadMembers(): Array<Game_Enemy>;
+    /**
+     * Returns movable enemies.
+     * 
+     * @returns {Array<Game_Enemy>} 
+     * @memberof Game_Troop
+     */
     movableMembers(): Array<Game_Enemy>;
+    /**
+     * Returns true if event is running.
+     * 
+     * @returns {boolean} 
+     * @memberof Game_Troop
+     */
     isEventRunning(): boolean;
+    /**
+     * Updates the game interpreter.
+     * 
+     * @memberof Game_Troop
+     */
     updateInterpreter(): void;
+    /**
+     * Returns the turn count.
+     * 
+     * @returns {number} 
+     * @memberof Game_Troop
+     */
     turnCount(): number;
     members(): Array<Game_Enemy>;
     clear(): void;
+    /**
+     * Returns troop information from the database.
+     * 
+     * @returns {RPG.Troop} 
+     * @memberof Game_Troop
+     */
     troop(): RPG.Troop;
     setup(troopId: number): void;
+    /**
+     * Creates unique names for each enemy.
+     * 
+     * @memberof Game_Troop
+     */
     makeUniqueNames(): void;
+    /**
+     * Returns the letter table for enemy troops.
+     * 
+     * @returns {Array<string>} 
+     * @memberof Game_Troop
+     */
     letterTable(): Array<string>;
+    /**
+     * Returns the name of enemies within the troop.
+     * 
+     * @returns {Array<string>} 
+     * @memberof Game_Troop
+     */
     enemyNames(): Array<string>;
     meetsConditions(page: RPG.BattleEventPage): boolean;
     setupBattleEvent(): void;
+    /**
+     * Increases the turn number.
+     * 
+     * @memberof Game_Troop
+     */
     increaseTurn(): void;
+    /**
+     * Returns the total exp of all members of the enemy troop.
+     * 
+     * @returns {number} 
+     * @memberof Game_Troop
+     */
     expTotal(): number;
+    /**
+     * Return the total gold of all enemies.
+     * 
+     * @returns {number} 
+     * @memberof Game_Troop
+     */
     goldTotal(): number;
+    /**
+     * Returns the gold rate based on game party gold rate.
+     * 
+     * @returns {number} 
+     * @memberof Game_Troop
+     */
     goldRate(): number;
+    /**
+     * Creates the drop items for all members of the enemy troop, and
+     * returns the item information.
+     * @returns {Array<RPG.BaseItem>} 
+     * @memberof Game_Troop
+     */
     makeDropItems(): Array<RPG.BaseItem>;
 }
 
@@ -8361,6 +11438,7 @@ declare class Game_Troop extends Game_Unit {
  *
  * The game object declare class for a map. It contains scrolling and passage
  * determination functions.
+ * @class Game_Map
  */
 declare class Game_Map {
     protected _interpreter: Game_Interpreter;
@@ -8388,31 +11466,161 @@ declare class Game_Map {
     protected _needsRefresh: boolean;
 
     setup(mapId: number): void;
+    /**
+     * Returns true if an event is running.
+     * 
+     * @returns {boolean} 
+     * @memberof Game_Map
+     */
     isEventRunning(): boolean;
+    /**
+     * Returns tile width.
+     * 
+     * @returns {number} 
+     * @memberof Game_Map
+     */
     tileWidth(): number;
+    /**
+     * Returns tile height.
+     * 
+     * @returns {number} 
+     * @memberof Game_Map
+     */
     tileHeight(): number;
+    /**
+     * Returns map id.
+     * 
+     * @returns {number} 
+     * @memberof Game_Map
+     */
     mapId(): number;
+    /**
+     * Returns the tileset id.
+     * 
+     * @returns {number} 
+     * @memberof Game_Map
+     */
     tilesetId(): number;
+    /**
+     * Returns the display x coordinate.
+     * 
+     * @returns {number} 
+     * @memberof Game_Map
+     */
     displayX(): number;
+    /**
+     * Returns the display y coordinate.
+     * 
+     * @returns {number} 
+     * @memberof Game_Map
+     */
     displayY(): number;
     parallaxName(): string;
+    /**
+     * Returns the name of battle back 1.
+     * 
+     * @returns {string} 
+     * @memberof Game_Map
+     */
     battleback1Name(): string;
+    /**
+     * Returns the name of battle back 2.
+     * 
+     * @returns {string} 
+     * @memberof Game_Map
+     */
     battleback2Name(): string;
     requestRefresh(mapId: number): void;
+    /**
+     * Returns true if the name display is enabled.
+     * 
+     * @returns {boolean} 
+     * @memberof Game_Map
+     */
     isNameDisplayEnabled(): boolean;
+    /**
+     * Disables name display.
+     * 
+     * @memberof Game_Map
+     */
     disableNameDisplay(): void;
+    /**
+     * Enable name display.
+     * 
+     * @memberof Game_Map
+     */
     enableNameDisplay(): void;
+    /**
+     * Creates the vehicles for the game map.
+     * 
+     * @memberof Game_Map
+     */
     createVehicles(): void;
+    /**
+     * Refreshes the vehicles on the game map.
+     * 
+     * @memberof Game_Map
+     */
     refereshVehicles(): void;
     vehicles(): Array<Game_Vehicle>;
+    /**
+     * Returns the game vehicle specified by type.
+     * 
+     * @param {string} type 
+     * @returns {Game_Vehicle} 
+     * @memberof Game_Map
+     */
     vehicle(type: string): Game_Vehicle;
+    /**
+     * Returns the game boat.
+     * 
+     * @returns {Game_Vehicle} 
+     * @memberof Game_Map
+     */
     boat(): Game_Vehicle;
+    /**
+     * Returns the game ship.
+     * 
+     * @returns {Game_Vehicle} 
+     * @memberof Game_Map
+     */
     ship(): Game_Vehicle;
+    /**
+     * Returns the game airship.
+     * 
+     * @returns {Game_Vehicle} 
+     * @memberof Game_Map
+     */
     airship(): Game_Vehicle;
     setupEvents(): void;
+    /**
+     * Returns all events on the game map.
+     * 
+     * @returns {Array<Game_Event>} 
+     * @memberof Game_Map
+     */
     events(): Array<Game_Event>;
+    /**
+     * Returns an event, given the event id.
+     * 
+     * @param {number} eventId 
+     * @returns {Game_Event} 
+     * @memberof Game_Map
+     */
     event(eventId: number): Game_Event;
+    /**
+     * Erases the event given the event id.
+     * 
+     * @param {number} eventId 
+     * @memberof Game_Map
+     */
     eraseEvent(eventId: number): void;
+    /**
+     * Returns all the parallel running common events.
+     * 
+     * @returns {Array<RPG.CommonEvent>} 
+     * @memberof Game_Map
+     */
     parallelCommonEvents(): Array<RPG.CommonEvent>;
     setupScroll(): void;
     setupParallax(): void;
@@ -8420,19 +11628,103 @@ declare class Game_Map {
     setDisplayPos(x: number, y: number): void;
     parallaxOx(): number;
     parallaxOy(): number;
+    /**
+     * Returns the tilset of the game map.
+     * 
+     * @returns {RPG.Tileset} 
+     * @memberof Game_Map
+     */
     tileset(): RPG.Tileset;
+    /**
+     * Returns the tileset flags of the game map.
+     * 
+     * @returns {Array<number>} 
+     * @memberof Game_Map
+     */
     tilesetFlags(): Array<number>;
+    /**
+     * Returns the display name of the game map.
+     * 
+     * @returns {string} 
+     * @memberof Game_Map
+     */
     displayName(): string;
+    /**
+     * Returns the map width.
+     * 
+     * @returns {number} 
+     * @memberof Game_Map
+     */
     width(): number;
+    /**
+     * Returns the map height.
+     * 
+     * @returns {number} 
+     * @memberof Game_Map
+     */
     height(): number;
+    /**
+     * Returns the map data.
+     * 
+     * @returns {Array<number>} 
+     * @memberof Game_Map
+     */
     data(): Array<number>;
+    /**
+     * Returns true if the map loops horizontally.
+     * 
+     * @returns {boolean} 
+     * @memberof Game_Map
+     */
     isLoopHorizontal(): boolean;
+    /**
+     * Returns true if the map loops vertically.
+     * 
+     * @returns {boolean} 
+     * @memberof Game_Map
+     */
     isLoopVertical(): boolean;
+    /**
+     * Returns true if dash is disabled on the map.
+     * 
+     * @returns {boolean} 
+     * @memberof Game_Map
+     */
     isDashDisabled(): boolean;
+    /**
+     * Returns the list of possible encounters on the current map.
+     * 
+     * @returns {Array<RPG.Map.Encounter>} 
+     * @memberof Game_Map
+     */
     encounterList(): Array<RPG.Map.Encounter>;
+    /**
+     * Returns the number of encounter steps on the map.
+     * 
+     * @returns {number} 
+     * @memberof Game_Map
+     */
     encounterStep(): number;
+    /**
+     * Returns true if the map is an over world map.
+     * 
+     * @returns {boolean} 
+     * @memberof Game_Map
+     */
     isOverworld(): boolean;
+    /**
+     * Returns the screen tile x coordinate.
+     * 
+     * @returns {number} 
+     * @memberof Game_Map
+     */
     screenTileX(): number;
+    /**
+     * Returns the screen tile y coordinate.
+     * 
+     * @returns {number} 
+     * @memberof Game_Map
+     */
     screenTileY(): number;
     adjustX(x: number): number;
     adjustY(y: number): number;
@@ -8445,12 +11737,39 @@ declare class Game_Map {
     deltaX(x1: number, x2: number): number;
     deltaY(y1: number, y2: number): number;
     distance(x1: number, y1: number, x2: number, y2: number): number;
+    /**
+     * Converts the x coordinate from canvas to map coordinate x.
+     * 
+     * @param {number} x 
+     * @returns {number} 
+     * @memberof Game_Map
+     */
     canvasToMapX(x: number): number;
+    /**
+     * Converts the y coordinate from canvas to map y coordinate.
+     * 
+     * @param {number} y 
+     * @returns {number} 
+     * @memberof Game_Map
+     */
     canvasToMapY(y: number): number;
+    /**
+     * Auto plays the game map.
+     * 
+     * @memberof Game_Map
+     */
     autoplay(): void;
     refreshIfNeeded(): void;
     refresh(): void;
     refreshTileEvents(): void;
+    /**
+     * Returns the game events at the specified
+     * x and y position.
+     * @param {number} x 
+     * @param {number} y 
+     * @returns {Array<Game_Event>} 
+     * @memberof Game_Map
+     */
     eventsXy(x: number, y: number): Array<Game_Event>;
     eventsXyNt(x: number, y: number): Array<Game_Event>;
     tileEventsXy(x: number, y: number): Array<Game_Event>;
@@ -8459,8 +11778,25 @@ declare class Game_Map {
     scrollLeft(distance: number): void;
     scrollRight(distance: number): void;
     scrollUp(distance: number): void;
+    /**
+     * Returns true if the x and y coordinates are valid.
+     * 
+     * @param {number} x 
+     * @param {number} y 
+     * @returns {boolean} 
+     * @memberof Game_Map
+     */
     isValid(x: number, y: number): boolean;
     checkPassage(x: number, y: number, bit: number): boolean;
+    /**
+     * Returns the tile id at the specified x, y, and z coordinates.
+     * 
+     * @param {number} x 
+     * @param {number} y 
+     * @param {number} z 
+     * @returns {number} 
+     * @memberof Game_Map
+     */
     tileId(x: number, y: number, z: number): number;
     layeredTiles(x: number, y: number): Array<number>;
     allTiles(x: number, y: number): Array<number>;
@@ -8470,6 +11806,14 @@ declare class Game_Map {
     isShipPassable(x: number, y: number): boolean;
     isAirshipLandOk(x: number, y: number): boolean;
     checkLayeredTilesFlags(x: number, y: number, bit: number): boolean;
+    /**
+     * Returns true if the specified element at the given x and y coordinates
+     * is a ladder.
+     * @param {number} x 
+     * @param {number} y 
+     * @returns {boolean} 
+     * @memberof Game_Map
+     */
     isLadder(x: number, y: number): boolean;
     isBush(x: number, y: number): boolean;
     isCounter(x: number, y: number): boolean;
@@ -8478,22 +11822,72 @@ declare class Game_Map {
     regionId(x: number, y: number): number;
     startScroll(direction: number, distance: number, speed: number): void;
     isScrolling(): boolean;
+    /**
+     * Updates the game map, given that the scene is active.
+     * 
+     * @param {boolean} sceneActive 
+     * @memberof Game_Map
+     */
     update(sceneActive: boolean): void;
     updateScroll(): void;
     scrollDistance(): number;
     doScroll(direction: number, distance: number): void;
+    /**
+     * Updates all events on the map.
+     * 
+     * @memberof Game_Map
+     */
     updateEvents(): void;
+    /**
+     * Updates all game vehicles on the map.
+     * 
+     * @memberof Game_Map
+     */
     updateVehicles(): void;
+    /**
+     * Updates the map parallaxes.
+     * 
+     * @memberof Game_Map
+     */
     updateParallax(): void;
+    /**
+     * Changes them ap tileset, given the tileset id.
+     * 
+     * @param {number} tilesetId 
+     * @memberof Game_Map
+     */
     changeTileset(tilesetId: number): void;
     changeBattleback(battleback1Name: string, battleback2Name: string): void;
     changeParallax(name: string, loopX: boolean, loopY: boolean, sx: number, sy: number): void;
+    /**
+     * Updates the map's game interpreter.
+     * 
+     * @memberof Game_Map
+     */
     updateInterpreter(): void;
+    /**
+     * Unlocks an event on the map given the event id.
+     * 
+     * @param {number} eventId 
+     * @memberof Game_Map
+     */
     unlockEvent(eventId: number): void;
     setupStartingEvent(): boolean;
     setupTestEvent(): boolean;
     setupStartingMapEvent(): boolean;
+    /**
+     * Sets up an auto run common event.
+     * 
+     * @returns {boolean} 
+     * @memberof Game_Map
+     */
     setupAutorunCommonEvent(): boolean;
+    /**
+     * Returns true if any event is starting on the map.
+     * 
+     * @returns {boolean} 
+     * @memberof Game_Map
+     */
     isAnyEventStarting(): boolean;
 }
 
@@ -8503,6 +11897,7 @@ declare class Game_Map {
  *
  * The game object declare class for a common event. It contains functionality for
  * running parallel process events.
+ * @class Game_CommonEvent
  */
 declare class Game_CommonEvent {
     protected _commonEventId: number;
@@ -8510,10 +11905,38 @@ declare class Game_CommonEvent {
 
     constructor(commonEventId: number);
 
+    /**
+     * Returns the common event information from the database.
+     * 
+     * @returns {RPG.CommonEvent} 
+     * @memberof Game_CommonEvent
+     */
     event(): RPG.CommonEvent;
+    /**
+     * Returns the common event's list of event commands.
+     * 
+     * @returns {Array<RPG.EventCommand>} 
+     * @memberof Game_CommonEvent
+     */
     list(): Array<RPG.EventCommand>;
+    /**
+     * Refreshes the common event.
+     * 
+     * @memberof Game_CommonEvent
+     */
     refresh(): void;
+    /**
+     * Returns true if the common event is active.
+     * 
+     * @returns {boolean} 
+     * @memberof Game_CommonEvent
+     */
     isActive(): boolean;
+    /**
+     * Updates the common event.
+     * 
+     * @memberof Game_CommonEvent
+     */
     update(): void;
 }
 
@@ -8523,6 +11946,7 @@ declare class Game_CommonEvent {
  *
  * The superdeclare class of Game_Character. It handles basic information, such as
  * coordinates and images, shared by all characters.
+ * @class Game_CharacterBase
  */
 declare class Game_CharacterBase {
     protected _x: number;
@@ -8564,26 +11988,96 @@ declare class Game_CharacterBase {
     initMembers(): void;
     pos(x: number, y: number): boolean;
     posNt(x: number, y: number): boolean;
+    /**
+     * Returns the move speed of the game character.
+     * 
+     * @returns {number} 
+     * @memberof Game_CharacterBase
+     */
     moveSpeed(): number;
     setMoveSpeed(moveSpeed: number): void;
+    /**
+     * Returns the move frequency of the character.
+     * 
+     * @returns {number} 
+     * @memberof Game_CharacterBase
+     */
     moveFrequency(): number;
     setMoveFrequency(moveFrequency: number): void;
     opacity(): number;
     setOpacity(opacity: number): void;
+    /**
+     * Returns the blend mode of the character;
+     * these are represented by numbers.
+     * @returns {number} 
+     * @memberof Game_CharacterBase
+     */
     blendMode(): number;
+    /**
+     * Sets the blend mode of the character;
+     * these are represented by numbers.
+     * @param {number} blendMode 
+     * @memberof Game_CharacterBase
+     */
     setBlendMode(blendMode: number): void;
+    /**
+     * Returns true if the character is
+     * normal priority; this means you can collide with them.
+     * @returns {boolean} 
+     * @memberof Game_CharacterBase
+     */
     isNormalPriority(): boolean;
     setPriorityType(priorityType: number): void;
+    /**
+     * Returns true if the character is moving.
+     * 
+     * @returns {boolean} 
+     * @memberof Game_CharacterBase
+     */
     isMoving(): boolean;
+    /**
+     * Returns true if the character is jumping.
+     * 
+     * @returns {boolean} 
+     * @memberof Game_CharacterBase
+     */
     isJumping(): boolean;
+    /**
+     * Returns the jump height of base character.
+     * 
+     * @returns {number} 
+     * @memberof Game_CharacterBase
+     */
     jumpHeight(): number;
+    /**
+     * Returns true if the character is stopping.
+     * 
+     * @returns {boolean} 
+     * @memberof Game_CharacterBase
+     */
     isStopping(): boolean;
     checkStop(threshold: number): boolean;
+    /**
+     * Resets the step count of the character.
+     * 
+     * @memberof Game_CharacterBase
+     */
     resetStopCount(): void;
     realMoveSpeed(): number;
     distancePerFrame(): number;
+    /**
+     * Returns true if the character is dashing.
+     * 
+     * @returns {boolean} 
+     * @memberof Game_CharacterBase
+     */
     isDashing(): boolean;
     isDebugThrough(): boolean;
+    /**
+     * Straightens the character.
+     * 
+     * @memberof Game_CharacterBase
+     */
     straighten(): void;
     reverseDir(d: number): number;
     canPass(x: number, y: number, d: number): boolean;
@@ -8596,14 +12090,50 @@ declare class Game_CharacterBase {
     copyPosition(character: Game_Player): void;
     locate(x: number, y: number): void;
     direction(): number;
+    /**
+     * Sets the direction of the character based on numpad
+     * directions.
+     * @param {number} d 
+     * @memberof Game_CharacterBase
+     */
     setDirection(d: number): void;
+    /**
+     * Returns true if the character is a tile; these
+     * are events without character sprites.
+     * @returns {boolean} 
+     * @memberof Game_CharacterBase
+     */
     isTile(): boolean;
+    /**
+     * Returns true if the character is an object character;
+     * these are events with character sprites.
+     * @returns {boolean} 
+     * @memberof Game_CharacterBase
+     */
     isObjectCharacter(): boolean;
     shiftY(): number;
     scrolledX(): number;
     scrolledY(): number;
+    /**
+     * Returns the character's scrreen x position.
+     * 
+     * @returns {number} 
+     * @memberof Game_CharacterBase
+     */
     screenX(): number;
+    /**
+     * Returns the character's screen y position.
+     * 
+     * @returns {number} 
+     * @memberof Game_CharacterBase
+     */
     screenY(): number;
+    /**
+     * Returns the character's screen z position.
+     * 
+     * @returns {number} 
+     * @memberof Game_CharacterBase
+     */
     screenZ(): number;
     isNearTheScreen(): boolean;
     update(): void;
@@ -8612,19 +12142,64 @@ declare class Game_CharacterBase {
     updateMove(): void;
     updateAnimation(): void;
     animationWait(): number;
+    /**
+     * Updates the character's animation count.
+     * 
+     * @memberof Game_CharacterBase
+     */
     updateAnimationCount(): void;
     updatePattern(): void;
     maxPattern(): number;
+    /**
+     * Returns the pattern of the character; these are the walking 
+     * patterns.
+     * @returns {number} 
+     * @memberof Game_CharacterBase
+     */
     pattern(): number;
+    /**
+     * Sets the pattern of the character, given 
+     * a pattern number.
+     * @param {number} pattern 
+     * @memberof Game_CharacterBase
+     */
     setPattern(pattern: number): void;
     isOriginalPattern(): boolean;
+    /**
+     * Resets the pattern of the character.
+     * 
+     * @memberof Game_CharacterBase
+     */
     resetPattern(): void;
     refreshBushDepth(): void;
     isOnLadder(): boolean;
     isOnBush(): boolean;
+    /**
+     * Returns the terrain tag of the character.
+     * 
+     * @returns {number} 
+     * @memberof Game_CharacterBase
+     */
     terrainTag(): number;
+    /**
+     * Returns the region id of the character.
+     * 
+     * @returns {number} 
+     * @memberof Game_CharacterBase
+     */
     regionId(): number;
+    /**
+     * Increases the character steps.
+     * 
+     * @memberof Game_CharacterBase
+     */
     increaseSteps(): void;
+    /**
+     * Returns the tile id of character.
+     * 
+     * @returns {number} 
+     * @memberof Game_CharacterBase
+     */
     tileId(): number;
     characterName(): string;
     characterIndex(): number;
@@ -8639,24 +12214,99 @@ declare class Game_CharacterBase {
     jump(xPlus: number, yPlus: number): void;
     hasWalkAnime(): boolean;
     setWalkAnime(walkAnime: boolean): void;
+    /**
+     * Returns true if the character has step animation.
+     * 
+     * @returns {boolean} 
+     * @memberof Game_CharacterBase
+     */
     hasStepAnime(): boolean;
     setStepAnime(stepAnime: boolean): void;
+    /**
+     * Returns true if the character is set to a fixed direction.
+     * 
+     * @returns {boolean} 
+     * @memberof Game_CharacterBase
+     */
     isDirectionFixed(): boolean;
+    /**
+     * Sets the character to be fixed in a specified direction
+     * given a boolean value.
+     * @param {boolean} directionFix 
+     * @memberof Game_CharacterBase
+     */
     setDirectionFix(directionFix: boolean): void;
+    /**
+     * Returns true if the character is set to pass through.
+     * 
+     * @returns {boolean} 
+     * @memberof Game_CharacterBase
+     */
     isThrough(): boolean;
     setThrough(through: boolean): void;
     isTransparent(): boolean;
+    /**
+     * Returns the bush depth around the character.
+     * 
+     * @returns {number} 
+     * @memberof Game_CharacterBase
+     */
     bushDepth(): number;
     setTransparent(transparent: boolean): void;
+    /**
+     * Requests an animation given the animation id.
+     * 
+     * @param {number} animationId 
+     * @memberof Game_CharacterBase
+     */
     requestAnimation(animationId: number): void;
+    /**
+     * Requests the balloon animation given the balloon id.
+     * 
+     * @param {number} balloonId 
+     * @memberof Game_CharacterBase
+     */
     requestBalloon(balloonId: number): void;
+    /**
+     * Returns the animation id.
+     * 
+     * @returns {number} 
+     * @memberof Game_CharacterBase
+     */
     animationId(): number;
+    /**
+     * Returns the id of the balloon animation.
+     * 
+     * @returns {number} 
+     * @memberof Game_CharacterBase
+     */
     balloonId(): number;
+    /**
+     * Starts the requested animation.
+     * 
+     * @memberof Game_CharacterBase
+     */
     startAnimation(): void;
+    /**
+     * Stars a balloon animation.
+     * 
+     * @memberof Game_CharacterBase
+     */
     startBalloon(): void;
     isAnimationPlaying(): boolean;
+    /**
+     * Returns true if a balloon animation is playing.
+     * 
+     * @returns {boolean} 
+     * @memberof Game_CharacterBase
+     */
     isBalloonPlaying(): boolean;
     endAnimation(): void;
+    /**
+     * Ends the balloon animation on the character.
+     * 
+     * @memberof Game_CharacterBase
+     */
     endBalloon(): void;
 }
 
@@ -8665,6 +12315,7 @@ declare class Game_CharacterBase {
  * Game_Character
  *
  * The superdeclare class of Game_Player, Game_Follower, GameVehicle, and Game_Event.
+ * @class Game_Character
  */
 declare class Game_Character extends Game_CharacterBase {
     static ROUTE_END: number;
@@ -8722,36 +12373,165 @@ declare class Game_Character extends Game_CharacterBase {
     protected _waitCount: number;
 
     initMembers(): void;
+    /**
+     * Memorizes the movement route.
+     * 
+     * @memberof Game_Character
+     */
     memorizeMoveRoute(): void;
+    /**
+     * Restores the original movement route.
+     * 
+     * @memberof Game_Character
+     */
     restoreMoveRoute(): void;
+    /**
+     * Returns true if the move route is being forced.
+     * 
+     * @returns {boolean} 
+     * @memberof Game_Character
+     */
     isMoveRouteForcing(): boolean;
+    /**
+     * Sets the move route of the game character.
+     * 
+     * @param {RPG.MoveRoute} moveRoute 
+     * @memberof Game_Character
+     */
     setMoveRoute(moveRoute: RPG.MoveRoute): void;
+    /**
+     * Forces the move route of the game character.
+     * 
+     * @param {RPG.MoveRoute} moveRoute 
+     * @memberof Game_Character
+     */
     forceMoveRoute(moveRoute: RPG.MoveRoute): void;
     updateStop(): void;
+    /**
+     * Updates the game character's move routine.
+     * 
+     * @memberof Game_Character
+     */
     updateRoutineMove(): void;
+    /**
+     * Processes the given move commands.
+     * 
+     * @param {RPG.MoveCommand} command 
+     * @memberof Game_Character
+     */
     processMoveCommand(command: RPG.MoveCommand): void;
     deltaXFrom(x: number): number;
     deltaYFrom(y: number): number;
+    /**
+     * Move's the game character at random.
+     * 
+     * @memberof Game_Character
+     */
     moveRandom(): void;
+    /**
+     * Moves the game character toward the other game character.
+     * 
+     * @param {Game_Character} character 
+     * @memberof Game_Character
+     */
     moveTowardCharacter(character: Game_Character): void;
+    /**
+     * Moves the game character away from the other game character.
+     * 
+     * @param {Game_Character} character 
+     * @memberof Game_Character
+     */
     moveAwayFromCharacter(character: Game_Character): void;
+    /**
+     * Turns the game character toward the other game character.
+     * 
+     * @param {Game_Character} character 
+     * @memberof Game_Character
+     */
     turnTowardCharacter(character: Game_Character): void;
+    /**
+     * Turns the game character away from the other game character.
+     * 
+     * @param {Game_Character} character 
+     * @memberof Game_Character
+     */
     turnAwayFromCharacter(character: Game_Character): void;
+    /**
+     * Turns the game character toward the player.
+     * 
+     * @memberof Game_Character
+     */
     turnTowardPlayer(): void;
+    /**
+     * Turns the game character away from the player.
+     * 
+     * @memberof Game_Character
+     */
     turnAwayFromPlayer(): void;
+    /**
+     * Moves the game character toward the player.
+     * 
+     * @memberof Game_Character
+     */
     moveTowardPlayer(): void;
+    /**
+     * Moves the game character away from the player.
+     * 
+     * @memberof Game_Character
+     */
     moveAwayFromPlayer(): void;
+    /**
+     * Moves the game character forward.
+     * 
+     * @memberof Game_Character
+     */
     moveForward(): void;
+    /**
+     * Moves the game character backward.
+     * 
+     * @memberof Game_Character
+     */
     moveBackward(): void;
+    /**
+     * Handles the end of the move route.
+     * 
+     * @memberof Game_Character
+     */
     processRouteEnd(): void;
     advanceMoveRouteIndex(): void;
+    /**
+     * Turns the game character right by 90 degrees.
+     * 
+     * @memberof Game_Character
+     */
     turnRight90(): void;
+    /**
+     * Turns the game character left by 90 degrees.
+     * 
+     * @memberof Game_Character
+     */
     turnLeft90(): void;
     turn180(): void;
+    /**
+     * Turns the game character or left by 90 degrees.
+     * 
+     * @memberof Game_Character
+     */
     turnRightOrLeft90(): void;
+    /**
+     * Turns the game character at random.
+     * 
+     * @memberof Game_Character
+     */
     turnRandom(): void;
     swap(character: Game_Character): void;
     findDirectionTo(goalX: number, goalY: number): number;
+    /**
+     * Returns the search limit for path finding.
+     * 
+     * @returns {number} 
+     * @memberof Game_Character
+     */
     searchLimit(): number;
 }
 
@@ -8761,6 +12541,7 @@ declare class Game_Character extends Game_CharacterBase {
  *
  * The game object declare class for the player. It contains event starting
  * determinants and map scrolling functions.
+ * @class Game_Player
  */
 declare class Game_Player extends Game_Character {
     protected _vehicleType: string;
@@ -8777,72 +12558,340 @@ declare class Game_Player extends Game_Character {
     protected _followers: Game_Followers;
     protected _encounterCount: number;
 
+    /**
+     * Clears the transfer information for the player.
+     * 
+     * @memberof Game_Player
+     */
     clearTransferInfo(): void;
+    /**
+     * Returns the player followers (party members).
+     * 
+     * @returns {Game_Followers} 
+     * @memberof Game_Player
+     */
     followers(): Game_Followers;
+    /**
+     * Refreshes the game player.
+     * 
+     * @memberof Game_Player
+     */
     refresh(): void;
+    /**
+     * Returns true if the player is stopping.
+     * 
+     * @returns {boolean} 
+     * @memberof Game_Player
+     */
     isStopping(): boolean;
+    /**
+     * Reserves a transfer of the player to the specified map, at the given
+     * x and y coordinates, facing the given direction (d). Using a specific fade.
+     * @param {number} mapId 
+     * @param {number} x 
+     * @param {number} y 
+     * @param {number} [d] 
+     * @param {number} [fadeType] 
+     * @memberof Game_Player
+     */
     reserveTransfer(mapId: number, x: number, y: number, d?: number, fadeType?: number): void;
     requestMapReload(): void;
     isTransferring(): boolean;
+    /**
+     * Returns the new map id.
+     * 
+     * @returns {number} 
+     * @memberof Game_Player
+     */
     newMapId(): number;
     fadeType(): number;
+    /**
+     * Performs a transfer of the player to a different area or map.
+     * 
+     * @memberof Game_Player
+     */
     performTransfer(): void;
     isMapPassable(x: number, y: number, d: number): boolean;
+    /**
+     * Returns the current vehicles the player is riding in.
+     * 
+     * @returns {Game_Vehicle} 
+     * @memberof Game_Player
+     */
     vehicle(): Game_Vehicle;
+    /**
+     * Returns true if the player is in a boat.
+     * 
+     * @returns {boolean} 
+     * @memberof Game_Player
+     */
     isInBoat(): boolean;
+    /**
+     * Returns true if the player is in a ship.
+     * 
+     * @returns {boolean} 
+     * @memberof Game_Player
+     */
     isInShip(): boolean;
+    /**
+     * Returns true if the player is in an airship.
+     * 
+     * @returns {boolean} 
+     * @memberof Game_Player
+     */
     isInAirship(): boolean;
+    /**
+     * Returns true if the player is in a vehicle.
+     * 
+     * @returns {boolean} 
+     * @memberof Game_Player
+     */
     isInVehicle(): boolean;
+    /**
+     * Returns true if the player is in their normal state.
+     * 
+     * @returns {boolean} 
+     * @memberof Game_Player
+     */
     isNormal(): boolean;
     isDashing(): boolean;
+    /**
+     * Returns true if the player is dashing.
+     * 
+     * @returns {boolean} 
+     * @memberof Game_Player
+     */
+    isDashRing(): boolean;
     isDebugThrough(): boolean;
     isCollided(x: number, y: number): boolean;
+    /**
+     * Returns the player's center x coordinate.
+     * 
+     * @returns {number} 
+     * @memberof Game_Player
+     */
     centerX(): number;
+    /**
+     * Returns the player's center y coordinate.
+     * 
+     * @returns {number} 
+     * @memberof Game_Player
+     */
     centerY(): number;
     center(x: number, y: number): void;
     locate(x: number, y: number): void;
     increaseSteps(): void;
+    /**
+     * Creates the encounter count for the player.
+     * 
+     * @memberof Game_Player
+     */
     makeEncounterCount(): void;
+    /**
+     * Creates the encounter troop id and returns it.
+     * 
+     * @returns {number} 
+     * @memberof Game_Player
+     */
     makeEncounterTroopId(): number;
     meetsEncounterConditions(encounter: RPG.Map.Encounter): boolean;
+    /**
+     * Executes an encounter.
+     * 
+     * @returns {boolean} 
+     * @memberof Game_Player
+     */
     executeEncounter(): boolean;
+    /**
+     * Has the player start a map event at the given x and y coordinates.
+     * Also passing the triggers and whether the event start is normal.
+     * @param {number} x 
+     * @param {number} y 
+     * @param {Array<number>} triggers 
+     * @param {boolean} normal 
+     * @memberof Game_Player
+     */
     startMapEvent(x: number, y: number, triggers: Array<number>, normal: boolean): void;
     moveByInput(): void;
+    /**
+     * Returns true if the player can move.
+     * 
+     * @returns {boolean} 
+     * @memberof Game_Player
+     */
     canMove(): boolean;
+    /**
+     * Gets the input direction of the player as a number.
+     * 
+     * @returns {number} 
+     * @memberof Game_Player
+     */
     getInputDirection(): number;
     executeMove(direction: number): void;
     update(sceneActive?: boolean): void;
+    /**
+     * Updates the dashing of the player.
+     * 
+     * @memberof Game_Player
+     */
     updateDashing(): void;
+    /**
+     * Returns true if the dash button is pressed.
+     * 
+     * @returns {boolean} 
+     * @memberof Game_Player
+     */
     isDashButtonPressed(): boolean;
     updateScroll(lastScrolledX: number, lastScrolledY: number): void;
+    /**
+     * Updates the vehicle.
+     * 
+     * @memberof Game_Player
+     */
     updateVehicle(): void;
+    /**
+     * Updates the player getting on the vehicle.
+     * 
+     * @memberof Game_Player
+     */
     updateVehicleGetOn(): void;
+    /**
+     * Updates the player getting off the vehicle.
+     * 
+     * @memberof Game_Player
+     */
     updateVehicleGetOff(): void;
     updateNonmoving(wasMoving: boolean): void;
     triggerAction(): boolean;
     triggerButtonAction(): boolean;
+    /**
+     * Returns true if the player triggered a touch action.
+     * 
+     * @returns {boolean} 
+     * @memberof Game_Player
+     */
     triggerTouchAction(): boolean;
     triggerTouchActionD1(x1: number, y1: number): boolean;
     triggerTouchActionD2(x2: number, y2: number): boolean;
     triggerTouchActionD3(x2: number, y2: number): boolean;
+    /**
+     * Updates the player encounter count.
+     * 
+     * @memberof Game_Player
+     */
     updateEncounterCount(): void;
+    /**
+     * Returns true if the player can encounter enemies.
+     * 
+     * @returns {boolean} 
+     * @memberof Game_Player
+     */
     canEncounter(): boolean;
+    /**
+     * Returns the encounter progress value of the player.
+     * 
+     * @returns {number} 
+     * @memberof Game_Player
+     */
     encounterProgressValue(): number;
     checkEventTriggerHere(triggers: Array<number>): void;
     checkEventTriggerThere(triggers: Array<number>): void;
+    /**
+     * Returns true if the player can start local events.
+     * 
+     * @returns {boolean} 
+     * @memberof Game_Player
+     */
     canStartLocalEvents(): boolean;
+    /**
+     * Returns true if the player is getting on/off a vehicle.
+     * 
+     * @returns {boolean} 
+     * @memberof Game_Player
+     */
     getOnOffVehicle(): boolean;
+    /**
+     * Returns true if the player is getting on a vehicle.
+     * 
+     * @returns {boolean} 
+     * @memberof Game_Player
+     */
     getOnVehicle(): boolean;
+    /**
+     * Returns true if the player is getting off a vehicle.
+     * 
+     * @returns {boolean} 
+     * @memberof Game_Player
+     */
     getOffVehicle(): boolean;
+    /**
+     * Forces the player to move forward.
+     * 
+     * @memberof Game_Player
+     */
     forceMoveForward(): void;
+    /**
+     * Returns true if the player is on a floor that does damage.
+     * 
+     * @returns {boolean} 
+     * @memberof Game_Player
+     */
     isOnDamageFloor(): boolean;
+    /**
+     * Moves the player straight, given a direction.
+     * 
+     * @param {number} d 
+     * @memberof Game_Player
+     */
     moveStraight(d: number): void;
+    /**
+     * Moves the player diagonally, given a horizontal
+     * and vertical direction. The numpad represents the directions.
+     * @param {number} horz 
+     * @param {number} vert 
+     * @memberof Game_Player
+     */
     moveDiagonally(horz: number, vert: number): void;
+    /**
+     * Has the player jump in the given direction at the specified
+     * x and y coordinate. This x and y will be added to the player's current
+     * position. 
+     * @param {number} xPlus 
+     * @param {number} yPlus 
+     * @memberof Game_Player
+     */
     jump(xPlus: number, yPlus: number): void;
+    /**
+     * Shows the player followers.
+     * 
+     * @memberof Game_Player
+     */
     showFollowers(): void;
+    /**
+     * Hides the player followers.
+     * 
+     * @memberof Game_Player
+     */
     hideFollowers(): void;
+    /**
+     * Gather followers around the player.
+     * 
+     * @memberof Game_Player
+     */
     gatherFollowers(): void;
+    /**
+     * Returns true if the followers are currently gathering.
+     * 
+     * @returns {boolean} 
+     * @memberof Game_Player
+     */
     areFollowersGathering(): boolean;
+    /**
+     * Returns true if the followers are gathered.
+     * 
+     * @returns {boolean} 
+     * @memberof Game_Player
+     */
     areFollowersGathered(): boolean;
 }
 
@@ -8852,6 +12901,7 @@ declare class Game_Player extends Game_Character {
  *
  * The game object declare class for a follower. A follower is an allied character,
  * other than the front character, displayed in the party.
+ * @class Game_Follower
  */
 declare class Game_Follower extends Game_Character {
     protected _memberIndex: number;
@@ -8859,9 +12909,32 @@ declare class Game_Follower extends Game_Character {
     constructor(memberIndex: number);
 
     refresh(): void;
+    /**
+     * Returns the current actor.
+     * 
+     * @returns {Game_Actor} 
+     * @memberof Game_Follower
+     */
     actor(): Game_Actor;
+    /**
+     * Returns true if the follower is visible.
+     * 
+     * @returns {boolean} 
+     * @memberof Game_Follower
+     */
     isVisible(): boolean;
+    /**
+     * Updates the game follower.
+     * 
+     * @memberof Game_Follower
+     */
     update(): void;
+    /**
+     * Has the follower chase a game actor.
+     * 
+     * @param {Game_Character} character 
+     * @memberof Game_Follower
+     */
     chaseCharacter(character: Game_Character): void;
 }
 
@@ -8870,28 +12943,105 @@ declare class Game_Follower extends Game_Character {
  * Game_Followers
  *
  * The wrapper declare class for a follower array.
+ * @class Game_Followers
  */
 declare class Game_Followers {
     protected _visible: boolean;
     protected _gathering: boolean;
     protected _data: Array<Game_Follower>;
 
+    /**
+     * Returns true if the followers are visible.
+     * 
+     * @returns {boolean} 
+     * @memberof Game_Followers
+     */
     isVisible(): boolean;
+    /**
+     * Shows  the followers.
+     * 
+     * @memberof Game_Followers
+     */
     show(): void;
+    /**
+     * Hides the followers.
+     * 
+     * @memberof Game_Followers
+     */
     hide(): void;
+    /**
+     * Returns the followers at the specified index.
+     * 
+     * @param {number} index 
+     * @returns {Game_Follower} 
+     * @memberof Game_Followers
+     */
     follower(index: number): Game_Follower;
     forEach(callback: () => void, thisObject: any): void;
     reverseEach(callback: () => void, thisObject: any): void;
+    /**
+     * Refreshes the game followers.
+     * 
+     * @memberof Game_Followers
+     */
     refresh(): void;
+    /**
+     * Updates the game followers.
+     * 
+     * @memberof Game_Followers
+     */
     update(): void;
+    /**
+     * Updates the movement of game followers.
+     * 
+     * @memberof Game_Followers
+     */
     updateMove(): void;
     jumpAll(): void;
     synchronize(x: number, y: number, d: number): void;
+    /**
+     * Gathers the followers.
+     * 
+     * @memberof Game_Followers
+     */
     gather(): void;
+    /**
+     * Returns true if the followers are gathering.
+     * 
+     * @returns {boolean} 
+     * @memberof Game_Followers
+     */
     areGathering(): boolean;
+    /**
+     * Returns the visible followers.
+     * 
+     * @returns {Array<Game_Follower>} 
+     * @memberof Game_Followers
+     */
     visibleFollowers(): Array<Game_Follower>;
+    /**
+     * Returns true if the followers are moving.
+     * 
+     * @returns {boolean} 
+     * @memberof Game_Followers
+     */
     areMoving(): boolean;
+    /**
+     * Returns true if the followers are gathered.
+     * 
+     * @returns {boolean} 
+     * @memberof Game_Followers
+     */
     areGathered(): boolean;
+    /**
+     * Returns true if the specified follower is collided at the specified x and y
+     *coordinate.
+     * 
+     * @param {number} x 
+     * @param {number} y 
+     * @returns {boolean} 
+     * @memberof Game_Followers
+     */
     isSomeoneCollided(x: number, y: number): boolean;
 }
 
@@ -8900,6 +13050,7 @@ declare class Game_Followers {
  * Game_Vehicle
  *
  * The game object declare class for a vehicle.
+ * @class Game_Vehicle
  */
 declare class Game_Vehicle extends Game_Character {
     protected _type: string;
@@ -8910,34 +13061,172 @@ declare class Game_Vehicle extends Game_Character {
 
     constructor(type: string);
     initMembers(): void;
+    /**
+     * Returns true if the vehicle is a boat.
+     * 
+     * @returns {boolean} 
+     * @memberof Game_Vehicle
+     */
     isBoat(): boolean;
+    /**
+     * Returns true if the vehicle is a ship.
+     * 
+     * @returns {boolean} 
+     * @memberof Game_Vehicle
+     */
     isShip(): boolean;
+    /**
+     * Returns true if the vehicle is an airship.
+     * 
+     * @returns {boolean} 
+     * @memberof Game_Vehicle
+     */
     isAirship(): boolean;
+    /**
+     * Resets the direction of the vehicle.
+     * 
+     * @memberof Game_Vehicle
+     */
     resetDirection(): void;
     initMoveSpeed(): void;
+    /**
+     * Returns the current vehicle.
+     * 
+     * @returns {RPG.System.Vehicle} 
+     * @memberof Game_Vehicle
+     */
     vehicle(): RPG.System.Vehicle;
     loadSystemSettings(): void;
+    /**
+     * Refreshes the game vehicle.
+     * 
+     * @memberof Game_Vehicle
+     */
     refresh(): void;
     setLocation(mapId: number, x: number, y: number): void;
     pos(x: number, y: number): boolean;
     isMapPassable(x: number, y: number, d: number): boolean;
+    /**
+     * Gets on the vehicle.
+     * 
+     * @memberof Game_Vehicle
+     */
     getOn(): void;
+    /**
+     * Gets off the vehicle.
+     * 
+     * @memberof Game_Vehicle
+     */
     getOff(): void;
+    /**
+     * Sets the bgm associated with the vehicle.
+     * 
+     * @param {RPG.AudioFile} bgm 
+     * @memberof Game_Vehicle
+     */
     setBgm(bgm: RPG.AudioFile): void;
+    /**
+     * Plays the bgm associated with the vehicle.
+     * 
+     * @memberof Game_Vehicle
+     */
     playBgm(): void;
+    /**
+     * Syncs the vehicle with the player.
+     * 
+     * @memberof Game_Vehicle
+     */
     syncWithPlayer(): void;
+    /**
+     * Returns the screen y position of the vehicle.
+     * 
+     * @returns {number} 
+     * @memberof Game_Vehicle
+     */
     screenY(): number;
+    /**
+     * Returns the shadow x position of the vehicle's shadow.
+     * 
+     * @returns {number} 
+     * @memberof Game_Vehicle
+     */
     shadowX(): number;
+    /**
+     * Returns the shadow y position of the vehicle's shadow.
+     * 
+     * @returns {number} 
+     * @memberof Game_Vehicle
+     */
     shadowY(): number;
+    /**
+     * Returns the shadow opacity of the vehicle's shadow.
+     * 
+     * @returns {number} 
+     * @memberof Game_Vehicle
+     */
     shadowOpacity(): number;
+    /**
+     * Returns true if the vehicle can move.
+     * 
+     * @returns {boolean} 
+     * @memberof Game_Vehicle
+     */
     canMove(): boolean;
+    /**
+     * Updates the vehicle.
+     * 
+     * @memberof Game_Vehicle
+     */
     update(): void;
+    /**
+     * Updates the airship.
+     * 
+     * @memberof Game_Vehicle
+     */
     updateAirship(): void;
+    /**
+     * Updates airship altitude.
+     * 
+     * @memberof Game_Vehicle
+     */
     updateAirshipAltitude(): void;
+    /**
+     * Returns the max altitude of the vehicle.
+     * 
+     * @returns {number} 
+     * @memberof Game_Vehicle
+     */
     maxAltitude(): number;
+    /**
+     * Returns true if the vehicle is at it's lowest altitude.
+     * 
+     * @returns {boolean} 
+     * @memberof Game_Vehicle
+     */
     isLowest(): boolean;
+    /**
+     * Returns true if the vehicle is at it's highest altitude.
+     * 
+     * @returns {boolean} 
+     * @memberof Game_Vehicle
+     */
     isHighest(): boolean;
+    /**
+     * Returns true if take off is ok.
+     * 
+     * @returns {boolean} 
+     * @memberof Game_Vehicle
+     */
     isTakeoffOk(): boolean;
+    /**
+     * Returns true if the vehicle is capable of landing at the specified
+     * x, y coordinate, with the specified direction (d).
+     * @param {number} x 
+     * @param {number} y 
+     * @param {number} d 
+     * @returns {boolean} 
+     * @memberof Game_Vehicle
+     */
     isLandOk(x: number, y: number, d: number): boolean;
 }
 
@@ -8947,6 +13236,7 @@ declare class Game_Vehicle extends Game_Character {
  *
  * The game object declare class for an event. It contains functionality for event page
  * switching and running parallel process events.
+ * @class Game_Event
  */
 declare class Game_Event extends Game_Character {
     protected _mapId: number;
@@ -8964,39 +13254,150 @@ declare class Game_Event extends Game_Character {
     constructor(mapId: number, eventId: number);
 
     initMembers(): void;
+    /**
+     * Returns the event id of the game event.
+     * 
+     * @returns {number} 
+     * @memberof Game_Event
+     */
     eventId(): number;
+    /**
+     * Returns the event database information.
+     * 
+     * @returns {RPG.Event} 
+     * @memberof Game_Event
+     */
     event(): RPG.Event;
+    /**
+     * Returns the event page created in the database.
+     * 
+     * @returns {RPG.EventPage} 
+     * @memberof Game_Event
+     */
     page(): RPG.EventPage;
+    /**
+     * Returns the list of event commands on the current page of the game event.
+     * 
+     * @returns {Array<RPG.EventCommand>} 
+     * @memberof Game_Event
+     */
     list(): Array<RPG.EventCommand>;
     isCollidedWithCharacters(x: number, y: number): boolean;
     isCollidedWithEvents(x: number, y: number): boolean;
+    /**
+     * Returns true if the event has collided with the player character
+     * at the specified x and y coordinates.
+     * @param {number} x 
+     * @param {number} y 
+     * @returns {boolean} 
+     * @memberof Game_Event
+     */
     isCollidedWithPlayerCharacters(x: number, y: number): boolean;
+    /**
+     * Locks the game event.
+     * 
+     * @memberof Game_Event
+     */
     lock(): void;
+    /**
+     * Unlocks the game eveent.
+     * 
+     * @memberof Game_Event
+     */
     unlock(): void;
     updateStop(): void;
+    /**
+     * Updates the self movement of the game event.
+     * 
+     * @memberof Game_Event
+     */
     updateSelfMovement(): void;
     stopCountThreshold(): number;
     moveTypeRandom(): void;
     moveTypeTowardPlayer(): void;
+    /**
+     * Returns true if the game event is near the player.
+     * 
+     * @returns {boolean} 
+     * @memberof Game_Event
+     */
     isNearThePlayer(): boolean;
     moveTypeCustom(): void;
+    /**
+     * Returns true if the event is staring.
+     * 
+     * @returns {boolean} 
+     * @memberof Game_Event
+     */
     isStarting(): boolean;
+    /**
+     * Clears the starting flag.
+     * 
+     * @memberof Game_Event
+     */
     clearStartingFlag(): void;
     isTriggerIn(triggers: Array<number>): boolean;
+    /**
+     * Starts the game event.
+     * 
+     * @memberof Game_Event
+     */
     start(): void;
+    /**
+     * Erases the event.
+     * 
+     * @memberof Game_Event
+     */
     erase(): void;
+    /**
+     * Refreshes the game event.
+     * 
+     * @memberof Game_Event
+     */
     refresh(): void;
+    /**
+     * Finds the proper page index of the game event for
+     * event command processing.
+     * @returns {number} 
+     * @memberof Game_Event
+     */
     findProperPageIndex(): number;
     meetsConditions(page: RPG.EventPage): boolean;
+    /**
+     * Sets up the event page.
+     * 
+     * @memberof Game_Event
+     */
     setupPage(): void;
+    /**
+     * Clears the page settings of the game event.
+     * 
+     * @memberof Game_Event
+     */
     clearPageSettings(): void;
+    /**
+     * Sets up the event page settings.
+     * 
+     * @memberof Game_Event
+     */
     setupPageSettings(): void;
     isOriginalPattern(): boolean;
+    /**
+     * Resets the pattern of the game event.
+     * 
+     * @memberof Game_Event
+     */
     resetPattern(): void;
     checkEventTriggerAuto(): void;
     update(): void;
     updateParallel(): void;
     locate(x: number, y: number): void;
+    /**
+     * Forces the game event to move along the specified route.
+     * 
+     * @param {RPG.MoveRoute} moveRoute 
+     * @memberof Game_Event
+     */
     forceMoveRoute(moveRoute: RPG.MoveRoute): void;
 }
 
@@ -9005,6 +13406,7 @@ declare class Game_Event extends Game_Character {
  * Game_Interpreter
  *
  * The interpreter for running event commands.
+ * @class Game_Interpreter
  */
 declare class Game_Interpreter {
     protected _depth: number;
@@ -9025,25 +13427,120 @@ declare class Game_Interpreter {
 
     constructor(depth: number);
     checkOverflow(): void;
+    /**
+     * Clears the interpreter.
+     * 
+     * @memberof Game_Interpreter
+     */
     clear(): void;
+    /**
+     * Sets up the interpreter with the list of event commands, and the given
+     * event Id.
+     * 
+     * @param {Array<RPG.EventCommand>} list 
+     * @param {number} eventId 
+     * @memberof Game_Interpreter
+     */
     setup(list: Array<RPG.EventCommand>, eventId: number): void;
+    /**
+     * Returns the currrent eventId.
+     * 
+     * @returns {number} 
+     * @memberof Game_Interpreter
+     */
     eventId(): number;
+    /**
+     * Returns true if the event is on the current map.
+     * 
+     * @returns {boolean} 
+     * @memberof Game_Interpreter
+     */
     isOnCurrentMap(): boolean;
+    /**
+     * Returns true after setting up the reserved common event.
+     * 
+     * @returns {boolean} 
+     * @memberof Game_Interpreter
+     */
     setupReservedCommonEvent(): boolean;
+    /**
+     * Returns true if the interpreter is running.
+     * 
+     * @returns {boolean} 
+     * @memberof Game_Interpreter
+     */
     isRunning(): boolean;
     update(): void;
+    /**
+     * Updates the child game interpreter.
+     * 
+     * @returns {boolean} 
+     * @memberof Game_Interpreter
+     */
     updateChild(): boolean;
+    /**
+     * Updates the wait of the game interpreter.
+     * 
+     * @returns {boolean} 
+     * @memberof Game_Interpreter
+     */
     updateWait(): boolean;
     updateWaitCount(): boolean;
     updateWaitMode(): boolean;
+    /**
+     * Sets the wait mode of the interpreter.
+     * 
+     * @param {string} waitMode 
+     * @memberof Game_Interpreter
+     */
     setWaitMode(waitMode: string): void;
+    /**
+     * sets a specified wait duration for the interpreter.
+     * 
+     * @param {number} duration 
+     * @memberof Game_Interpreter
+     */
     wait(duration: number): void;
     fadeSpeed(): number;
+    /**
+     * Executes the event command;
+     * returns true or false based on execution.
+     * @returns {boolean} 
+     * @memberof Game_Interpreter
+     */
     executeCommand(): boolean;
+    /**
+     * Checks if the interpreter has frozen.
+     * 
+     * @returns {boolean} 
+     * @memberof Game_Interpreter
+     */
     checkFreeze(): boolean;
+    /**
+     * Terminates the game interpreter.
+     * 
+     * @memberof Game_Interpreter
+     */
     terminate(): void;
+    /**
+     * Skips a conditional branch on the interpreter.
+     * 
+     * @memberof Game_Interpreter
+     */
     skipBranch(): void;
+    /**
+     * Returns the current event command.
+     * 
+     * @returns {RPG.EventCommand} 
+     * @memberof Game_Interpreter
+     */
     currentCommand(): RPG.EventCommand;
+    /**
+     * Returns the next event code.
+     * 
+     * @returns {number} 
+     * @memberof Game_Interpreter
+     */
     nextEventCode(): number;
     iterateActorId(param: number, callback: (actor: Game_Actor) => void): void;
     iterateActorEx(param1: number, param2: number, callback: (actor: Game_Actor) => void): void;
@@ -9628,6 +14125,1535 @@ declare class Game_Interpreter {
     command356(): boolean;
     pluginCommand(command: string, args: Array<string>): void;
 }
+
+
+declare class Scene_Base extends Stage {
+    protected _active: boolean;
+    protected _fadeSign: number;
+    protected _fadeDuration: number;
+    protected _fadeSprite: ScreenSprite;
+    protected _imageReservationId: any | number;
+    protected _windowLayer: WindowLayer;
+
+    /**
+     * Attach a reservation to the reserve queue
+     * 
+     * @memberof Scene_Base
+     */
+    attachReservation(): void;
+    /**
+     * Remove the reservation from the reserve queue.
+     * 
+     * @memberof Scene_Base
+     */
+    detachReservation(): void;
+    /**
+     * Creates the scene's important properties.
+     * 
+     * @memberof Scene_Base
+     */
+    create(): void;
+    /**
+     * Returns whether the scene is active or not.
+     * 
+     * @returns {boolean} 
+     * @memberof Scene_Base
+     */
+    isActive(): boolean;
+    /**
+     * Returns if the scene is ready to start or not.
+     * 
+     * @returns {boolean} 
+     * @memberof Scene_Base
+     */
+    isReady(): boolean;
+    /**
+     * Starts the scene.
+     * 
+     * @memberof Scene_Base
+     */
+    start(): void;
+    /**
+     * Updates the scene.
+     * 
+     * @memberof Scene_Base
+     */
+    update(): void;
+    /**
+     * Stops the scene.
+     * 
+     * @memberof Scene_Base
+     */
+    stop(): void;
+    /**
+     * Returns a boolean value.
+     * Checks if the Scene is busy processing an event or
+     * other conditions.
+     * @returns {boolean} 
+     * @memberof Scene_Base
+     */
+    isBusy(): boolean;
+    /**
+     * Terminates/ends the scene.
+     * 
+     * @memberof Scene_Base
+     */
+    terminate(): void;
+    /**
+     * Creates the window layer on the current scene
+     * for displaying any and all windows.
+     * @memberof Scene_Base
+     */
+    createWindowLayer(): void;
+    /**
+    * Adds a child window to the windowLayer process.
+    * 
+    * @method addWindow
+    * @param {Window_Base}
+    * @instance 
+    * @memberof Scene_Base
+    */
+    addWindow(window: Window_Base): void;
+    /**
+    * Request a fadeIn screen process.
+    * 
+    * @method startFadeIn
+    * @param {Number} [duration=30] The time the process will take for fadeIn the screen
+    * @param {Boolean} [white=false] If true the fadein will be process with a white color else it's will be black
+    * 
+    * @instance 
+    * @memberof Scene_Base
+    */
+    startFadeIn(duration: number, white: boolean): void;
+    /**
+    * Request a fadeOut screen process.
+    * 
+    * @method startFadeOut
+    * @param {Number} [duration=30] The time the process will take for fadeOut the screen
+    * @param {Boolean} [white=false] If true the fadeOut will be process with a white color else it's will be black
+    * 
+    * @instance 
+    * @memberof Scene_Base
+    */
+    startFadeOut(duration: number, white: boolean): void;
+    createFadeSprite(white: boolean): void;
+    /**
+     * Updates the game's fade.
+     * 
+     * @memberof Scene_Base
+     */
+    updateFade(): void;
+    updateChildren(): void;
+    /**
+     * Pops the current scene and returns to the previous
+     * scene if available.
+     * @memberof Scene_Base
+     */
+    popScene(): void;
+    /**
+     * Checks for game over.
+     * 
+     * @memberof Scene_Base
+     */
+    checkGameover(): void;
+    fadeOutAll(): void;
+    /**
+     * Returns the fade speed.
+     * 
+     * @returns {number} 
+     * @memberof Scene_Base
+     */
+    fadeSpeed(): number;
+    /**
+     * Returns the slow fade speed.
+     * 
+     * @returns {number} 
+     * @memberof Scene_Base
+     */
+    slowFadeSpeed(): number;
+}
+
+/**
+ * The scene class for initialize the entire game.
+ * 
+ * @class Scene_Boot
+ * @extends {Scene_Base}
+ */
+declare class Scene_Boot extends Scene_Base {
+    protected _startDate: Date;
+
+    /**
+     * Loads the system images upon booting the game.
+     * 
+     * @memberof Scene_Boot
+     */
+    loadSystemImages(): void;
+    /**
+     * Loads the system window image for showing
+     * all the windows in game.
+     * @memberof Scene_Boot
+     */
+    loadSystemWindowImage(): void;
+    /**
+     * Returns true if the game font is loaded.
+     * 
+     * @returns {boolean} 
+     * @memberof Scene_Boot
+     */
+    isGameFontLoaded(): boolean;
+    updateDocumentTitle(): void;
+    /**
+     * Checks the player location upon booting the game.
+     * 
+     * @memberof Scene_Boot
+     */
+    checkPlayerLocation(): void;
+}
+
+/**
+ * The scene class of the title screen.
+ * 
+ * @class Scene_Title
+ * @extends {Scene_Base}
+ */
+declare class Scene_Title extends Scene_Base {
+    protected _commandWindow: Window_TitleCommand;
+    protected _backSprite1: Sprite;
+    protected _backSprite2: Sprite;
+    protected _gameTitleSprite: Sprite;
+
+    /**
+     * Creates the title scene background.
+     * 
+     * @memberof Scene_Title
+     */
+    createBackground(): void;
+    /**
+     * Creates the title screen foreground.
+     * 
+     * @memberof Scene_Title
+     */
+    createForeground(): void;
+    /**
+     * Draws the game title.
+     * 
+     * @memberof Scene_Title
+     */
+    drawGameTitle(): void;
+    centerSprite(sprite: Sprite): void;
+    /**
+     * Creates the command window on the title scene.
+     * 
+     * @memberof Scene_Title
+     */
+    createCommandWindow(): void;
+    /**
+     * Handler for the new game command.
+     * 
+     * @memberof Scene_Title
+     */
+    commandNewGame(): void;
+    /**
+     * Handler for the continue command.
+     * 
+     * @memberof Scene_Title
+     */
+    commandContinue(): void;
+    /**
+     * Handler for the options command.
+     * 
+     * @memberof Scene_Title
+     */
+    commandOptions(): void;
+    /**
+     * Plays the title screen music
+     * upon enter the title scene.
+     * @memberof Scene_Title
+     */
+    playTitleMusic(): void;
+}
+
+/**
+ * The scene class of the map screen.
+ * 
+ * @class Scene_Map
+ * @extends {Scene_Base}
+ */
+declare class Scene_Map extends Scene_Base {
+    protected _waitCount: number;
+    protected _encounterEffectDuration: number;
+    protected _mapLoaded: boolean;
+    protected _touchCount: number;
+    protected _transfer: boolean;
+
+    protected _spriteset: Spriteset_Map;
+    protected _mapNameWindow: Window_MapName;
+    protected _scrollTextWindow: Window_ScrollText;
+    protected _messageWindow: Window_Message;
+
+    menuCalling: boolean;
+
+    /**
+     * Handler for when the map scene is loaded.
+     * 
+     * @memberof Scene_Map
+     */
+    onMapLoaded(): void;
+    /**
+     * Speeds up the updateMain if
+     * the map scene is in fast forward mode.
+     * @memberof Scene_Map
+     */
+    updateMainMultiply(): void;
+    /**
+     * Updates the main $game globals
+     * if the map scene is active.
+     * @memberof Scene_Map
+     */
+    updateMain(): void;
+    /**
+     * Returns true if the player
+     * is holding down the confirm button to
+     * fast forward through text.
+     * @returns {boolean} 
+     * @memberof Scene_Map
+     */
+    isFastForward(): boolean;
+    /**
+     * Stops the map scene and prepares
+     * for a new scene.
+     * @memberof Scene_Map
+     */
+    stop(): void;
+    /**
+     * Returns true if the map scene needs a slow fade in.
+     * 
+     * @returns {boolean} 
+     * @memberof Scene_Map
+     */
+    needsFadeIn(): boolean;
+    /**
+     * Returns true if the map scene needs a slow fade out.
+     * 
+     * @returns {boolean} 
+     * @memberof Scene_Map
+     */
+    needsSlowFadeOut(): boolean;
+    updateWaitCount(): boolean;
+    /**
+     * Constantly checks if the player
+     * is touching the map, then processes
+     * a map touch for mouse based player character movement.
+     * @memberof Scene_Map
+     */
+    updateDestination(): void;
+    /**
+     * Returns true if the map scene is
+     * active and the player can move. Used for
+     * mouse movement on the map scene.
+     * @returns {boolean} 
+     * @memberof Scene_Map
+     */
+    isMapTouchOk(): boolean;
+    /**
+     * Processes the map touch and turns it
+     * into coordinates for the player character to move to.
+     * @memberof Scene_Map
+     */
+    processMapTouch(): void;
+    isSceneChangeOk(): boolean;
+    /**
+     * Updates the scene.
+     * 
+     * @memberof Scene_Map
+     */
+    updateScene(): void;
+    /**
+     * Creates all the display objects on the map scene;
+     * this includes the sprites, window layer, windows, and more.
+     * @memberof Scene_Map
+     */
+    createDisplayObjects(): void;
+    /**
+     * Creates the spriteset on the map scene; 
+     * this shows all the characters and events on the map.
+     * @memberof Scene_Map
+     */
+    createSpriteset(): void;
+    /**
+     * Creates all the windows on the map scene
+     * contains other window creation methods.
+     * @memberof Scene_Map
+     */
+    createAllWindows(): void;
+    /**
+    * Creates the map name window within
+    * the map scene; display map name.
+    * @memberof Scene_Map
+    */
+    createMapNameWindow(): void;
+    /**
+     * Creates the message window for displaying
+     * text on the map scene. Commonly used with the
+     * showText command.
+     * @memberof Scene_Map
+     */
+    createMessageWindow(): void;
+    /**
+     * Creates a scrolling text window on the map scene.
+     * 
+     * @memberof Scene_Map
+     */
+    createScrollTextWindow(): void;
+    /**
+     * Checks if the player is transferring;
+     * if the player is transferring, move to a new map scene.
+     * @memberof Scene_Map
+     */
+    updateTransferPlayer(): void;
+    /**
+     * Processes starting an encounter on the map scene.
+     * 
+     * @memberof Scene_Map
+     */
+    updateEncounter(): void;
+    /**
+     * Processes calling the menu on the map scene.
+     * 
+     * @memberof Scene_Map
+     */
+    updateCallMenu(): void;
+    /**
+     * Returns true if the menu is enabled
+     * in the database.
+     * @returns {boolean} 
+     * @memberof Scene_Map
+     */
+    isMenuEnabled(): boolean;
+    /**
+     * Returns true if the menu is called
+     * via an input trigger.
+     * @returns {boolean} 
+     * @memberof Scene_Map
+     */
+    isMenuCalled(): boolean;
+    /**
+     * Calls the standard RPGMakerMV menu scene.
+     * 
+     * @memberof Scene_Map
+     */
+    callMenu(): void;
+    /**
+     * Checks if debug is called via input trigger
+     * and starts the debug scene.
+     * 
+     * @memberof Scene_Map
+     */
+    updateCallDebug(): void;
+    /**
+     * Returns true if the debug
+     * scene is called via button press and in play test mode.
+     * @returns {boolean} 
+     * @memberof Scene_Map
+     */
+    isDebugCalled(): boolean;
+    fadeInForTransfer(): void;
+    fadeOutForTransfer(): void;
+    /**
+     * Launches into the battle scene.
+     * 
+     * @memberof Scene_Map
+     */
+    launchBattle(): void;
+    /**
+     * Stops all audio on battle start.
+     * 
+     * @memberof Scene_Map
+     */
+    stopAudioOnBattleStart(): void;
+    /**
+     * Starts the encounter effect on the map scene.
+     * 
+     * @memberof Scene_Map
+     */
+    startEncounterEffect(): void;
+    updateEncounterEffect(): void;
+    /**
+     * Takes a snapshot of the map scene for displaying
+     * on the battle scene if no battleback is present.
+     * @memberof Scene_Map
+     */
+    snapForBattleBackground(): void;
+    /**
+     * Starts a flash encounter effect on the map scene
+     * given a duration of the flash.
+     * @param {number} duration 
+     * @memberof Scene_Map
+     */
+    startFlashForEncounter(duration: number): void;
+    /**
+     * Returns the speed of the encounter effect.
+     * 
+     * @returns {number} 
+     * @memberof Scene_Map
+     */
+    encounterEffectSpeed(): number;
+}
+
+/**
+ * The super class of all menu-type scenes.
+ * 
+ * @class Scene_MenuBase
+ * @extends {Scene_Base}
+ */
+declare class Scene_MenuBase extends Scene_Base {
+    /**
+     * The current actor selected in the base menu scene.
+     * 
+     * @protected
+     * @type {Game_Actor}
+     * @memberof Scene_MenuBase
+     */
+    protected _actor: Game_Actor;
+    /**
+     * The background sprite used to display the scene background.
+     * 
+     * @protected
+     * @type {Sprite}
+     * @memberof Scene_MenuBase
+     */
+    protected _backgroundSprite: Sprite;
+    /**
+     * The help window attached to the base menu scene.
+     * 
+     * @protected
+     * @type {Window_Help}
+     * @memberof Scene_MenuBase
+     */
+    protected _helpWindow: Window_Help;
+
+    /**
+     * Returns the current game actor.
+     * 
+     * @returns {Game_Actor} 
+     * @memberof Scene_MenuBase
+     */
+    actor(): Game_Actor;
+    /**
+     * Updates the current actor.
+     * 
+     * @memberof Scene_MenuBase
+     */
+    updateActor(): void;
+    /**
+     * Creates the background of the base menu scene.
+     * 
+     * @memberof Scene_MenuBase
+     */
+    createBackground(): void;
+    /**
+     * Sets the background opacity of the base menu scene background.
+     * 
+     * @param {number} opacity 
+     * @memberof Scene_MenuBase
+     */
+    setBackgroundOpacity(opacity: number): void;
+    /**
+     * Creates the help window.
+     * 
+     * @memberof Scene_MenuBase
+     */
+    createHelpWindow(): void;
+    /**
+     * Moves to the next actor in the party.
+     * 
+     * @memberof Scene_MenuBase
+     */
+    nextActor(): void;
+    /**
+     * Moves to the previous actor in the party.
+     * 
+     * @memberof Scene_MenuBase
+     */
+    previousActor(): void;
+    onActorChange(): void;
+}
+
+
+/**
+ * -----------------------------------------------------------------------------
+ * Scene_Menu
+ *
+ * The scene class of the menu screen.
+ * @class Scene_Menu
+ * @extends {Scene_MenuBase}
+ */
+declare class Scene_Menu extends Scene_MenuBase {
+    protected _commandWindow: Window_MenuCommand;
+    protected _goldWindow: Window_Gold;
+    protected _statusWindow: Window_MenuStatus;
+
+    /**
+     * Creates the main menu window on the 
+     * menu scene; contains the commands for
+     * menu usage.
+     * @memberof Scene_Menu
+     */
+    createCommandWindow(): void;
+    /**
+     * Creates the gold window on the menu scene.
+     * 
+     * @memberof Scene_Menu
+     */
+    createGoldWindow(): void;
+    /**
+     * Creates the status window on the menu scene.
+     * 
+     * @memberof Scene_Menu
+     */
+    createStatusWindow(): void;
+    /**
+     * Handler for what to do when the 'item'
+     * command is clicked.
+     * @memberof Scene_Menu
+     */
+    commandItem(): void;
+    commandPersonal(): void;
+    commandFormation(): void;
+    /**
+     * Handler for what to do when the 'option'
+     * command is clicked.
+     * @memberof Scene_Menu
+     */
+    commandOptions(): void;
+    /**
+     * Handler for what to do when the 'save'
+     * command is clicked.
+     * @memberof Scene_Menu
+     */
+    commandSave(): void;
+    /**
+     * Handler for what to do when the 'game end'
+     * command is clicked.
+     * @memberof Scene_Menu
+     */
+    commandGameEnd(): void;
+    onPersonalOk(): void;
+    onPersonalCancel(): void;
+    onFormationOk(): void;
+    onFormationCancel(): void;
+}
+
+/**
+ * -----------------------------------------------------------------------------
+ * Scene_ItemBase
+ *
+ * The superclass of Scene_Item and Scene_Skill.
+ * @class Scene_ItemBase
+ * @extends {Scene_MenuBase}
+ */
+ declare class Scene_ItemBase extends Scene_MenuBase {
+    protected _actorWindow: Window_MenuActor;
+    protected _itemWindow: Window_Selectable;
+
+    /**
+     * Creates the actor window within the base item scene.
+     * 
+     * @memberof Scene_ItemBase
+     */
+    createActorWindow(): void;
+    /**
+     * Returns the item attached to the item window within the base item scene.
+     * 
+     * @returns {*} 
+     * @memberof Scene_ItemBase
+     */
+    item(): any;
+    /**
+     * Returns the current game actor.
+     * 
+     * @returns {Game_Actor} 
+     * @memberof Scene_ItemBase
+     */
+    user(): Game_Actor;
+    /**
+     * Returns true if the cursor is left.
+     * 
+     * @returns {boolean} 
+     * @memberof Scene_ItemBase
+     */
+    isCursorLeft(): boolean;
+    /**
+     * Shows the sub window.
+     * 
+     * @param {Window_Base} window 
+     * @memberof Scene_ItemBase
+     */
+    showSubWindow(window: Window_Base): void;
+    /**
+     * Hides the sub window.
+     * 
+     * @param {Window_Base} window 
+     * @memberof Scene_ItemBase
+     */
+    hideSubWindow(window: Window_Base): void;
+    onActorOk(): void;
+    onActorCancel(): void;
+    determineItem(): void;
+    /**
+     * Uses the current item.
+     * 
+     * @memberof Scene_ItemBase
+     */
+    useItem(): void;
+    /**
+     * Activates the item window.
+     * 
+     * @memberof Scene_ItemBase
+     */
+    activateItemWindow(): void;
+    itemTargetActors(): Game_Actor;
+    /**
+     * Returns true if the user (game actor) can use the item.
+     * 
+     * @returns {boolean} 
+     * @memberof Scene_ItemBase
+     */
+    canUse(): boolean;
+    /**
+     * Returns true if the item effects are valid on the target(the user).
+     * 
+     * @returns {boolean} 
+     * @memberof Scene_ItemBase
+     */
+    isItemEffectsValid(): boolean;
+    applyItem(): void;
+    /**
+     * Checks the common event set on the item.
+     * 
+     * @memberof Scene_ItemBase
+     */
+    checkCommonEvent(): void;
+}
+
+/**
+ * -----------------------------------------------------------------------------
+ * Scene_Item
+ *
+ * The scene class of the item screen.
+ * @class Scene_Item
+ * @extends {Scene_ItemBase}
+ */
+declare class Scene_Item extends Scene_ItemBase {
+    protected _categoryWindow: Window_ItemCategory;
+
+    /**
+     * Creates the category window on the
+     * item scene.
+     * @memberof Scene_Item
+     */
+    createCategoryWindow(): void;
+    /**
+     * Creates the item window on the item
+     * scene.
+     * @memberof Scene_Item
+     */
+    createItemWindow(): void;
+    /**
+     * Handler for when a cataegory is selected
+     * on the item scene.
+     * @memberof Scene_Item
+     */
+    onCategoryOk(): void;
+    /**
+     * Handler for when an item is selected
+     * on the item scene.
+     * @memberof Scene_Item
+     */
+    onItemOk(): void;
+    /**
+     * Handler for when an item selection
+     * is canceled on the item scene.
+     * @memberof Scene_Item
+     */
+    onItemCancel(): void;
+    /**
+     * Plays a sound effect when the
+     * item is confirmed.
+     * @memberof Scene_Item
+     */
+    playSeForItem(): void;
+}
+
+/**
+ * -----------------------------------------------------------------------------
+ * Scene_Skill
+ *
+ * The scene class of the skill screen.
+ * @class Scene_Skill
+ * @extends {Scene_ItemBase}
+ */
+ declare class Scene_Skill extends Scene_ItemBase {
+    protected _skillTypeWindow: Window_SkillType;
+
+    /**
+     * Creates the window for skill types
+     * within the skill scene.
+     * @memberof Scene_Skill
+     */
+    createSkillTypeWindow(): void;
+    /**
+     * Creates the status window within
+     * the skill scene.
+     * @memberof Scene_Skill
+     */
+    createStatusWindow(): void;
+    /**
+     * Creates the item window
+     * within the skill scene.
+     * @memberof Scene_Skill
+     */
+    createItemWindow(): void;
+    refreshActor(): void;
+    /**
+     * Handler for when a skill is
+     * selected/confirmed within the skill scene.
+     * @memberof Scene_Skill
+     */
+    commandSkill(): void;
+    onItemCancel(): void;
+    /**
+     * Plays a sound effect on item
+     * confirmation withiin the skill scene.
+     * @memberof Scene_Skill
+     */
+    playSeForItem(): void;
+    /**
+     * Handler for when an an actor is
+     * changed within the skill scene.
+     * @memberof Scene_Skill
+     */
+    onActorChange(): void;
+}
+
+/**
+ * -----------------------------------------------------------------------------
+ * Scene_Equip
+ *
+ * The scene class of the equipment screen.
+ * @class Scene_Equip
+ * @extends Scene_MenuBase
+ */
+declare class Scene_Equip extends Scene_MenuBase {
+    protected _statusWindow: Window_EquipStatus;
+    protected _commandWindow: Window_EquipCommand;
+    protected _slotWindow: Window_EquipSlot;
+    protected _itemWindow: Window_EquipItem;
+
+    /**
+     * Creates the status window within the equip scene.
+     * 
+     * @memberof Scene_Equip
+     */
+    createStatusWindow(): void;
+    /**
+     * Creates the status window within the equip scene.
+     * 
+     * @memberof Scene_Equip
+     */
+    createCommandWindow(): void;
+    /**
+     * Creates the slot window within the  equip scene.
+     * 
+     * @memberof Scene_Equip
+     */
+    createSlotWindow(): void;
+    /**
+     * Creates the item window within the equip scene.
+     * 
+     * @memberof Scene_Equip
+     */
+    createItemWindow(): void;
+    /**
+     * Refreshes the actor within the equip scene.
+     * 
+     * @memberof Scene_Equip
+     */
+    refreshActor(): void;
+    /**
+     * Handler for the equip command.
+     * 
+     * @memberof Scene_Equip
+     */
+    commandEquip(): void;
+    /**
+     * Handler for the optimize command.
+     * 
+     * @memberof Scene_Equip
+     */
+    commandOptimize(): void;
+    commandClear(): void;
+    onSlotOk(): void;
+    onSlotCancel(): void;
+    onItemOk(): void;
+    onItemCancel(): void;
+    onActorChange(): void;
+}
+
+/**
+ * -----------------------------------------------------------------------------
+ * Scene_Status
+ *
+ * The scene class of the status screen.
+ * @class Scene_Status
+ * @extends {Scene_MenuBase}
+ */
+ declare class Scene_Status extends Scene_MenuBase {
+    protected _statusWindow: Window_Status;
+
+    /**
+     * Refreshes the actor within the status scene.
+     * 
+     * @memberof Scene_Status
+     */
+    refreshActor(): void;
+    /**
+     * Handler for when the actor is changed within the status scene.
+     * 
+     * @memberof Scene_Status
+     */
+    onActorChange(): void;
+}
+
+/**
+ * -----------------------------------------------------------------------------
+ * Scene_Options
+ *
+ * The scene class of the options screen.
+ * @class Scene_Options
+ * @extends {Scene_MenuBase}
+ */
+declare class Scene_Options extends Scene_MenuBase {
+    protected _optionsWindow: Window_Options;
+
+    createOptionsWindow(): void;
+}
+
+/**
+ * -----------------------------------------------------------------------------
+ * Scene_File
+ *
+ * The superclass of Scene_Save and Scene_Load.
+ * @class Scene_File
+ * @extends {Scene_MenuBase}
+ */
+declare class Scene_File extends Scene_MenuBase {
+    protected _listWindow: Window_SavefileList;
+
+    /**
+     * Returns the current savefileId.
+     * 
+     * @memberof Scene_File
+     */
+    savefileId(): void;
+    createHelpWindow(): void;
+    createListWindow(): void;
+    /**
+     * The current mode of the scene;
+     * the modes are 'save' or 'load'.
+     * @memberof Scene_File
+     */
+    mode(): void;
+    activateListWindow(): void;
+    helpWindowText(): string;
+    /**
+     * Returns the index of the first
+     * save file.
+     * @returns {number} 
+     * @memberof Scene_File
+     */
+    firstSavefileIndex(): number;
+    /**
+     * Handler for when a 
+     * save file is selected within the file scene.
+     * @memberof Scene_File
+     */
+    onSavefileOk(): void;
+}
+
+/**
+ * -----------------------------------------------------------------------------
+ * Scene_Save
+ *
+ * The scene class of the save screen.
+ * @class Scene_Save
+ * @extends {Scene_File}
+ */
+ declare class Scene_Save extends Scene_File {
+    /**
+     * Returns the mode of the
+     * save scene.
+     * @returns {string} 
+     * @memberof Scene_Save
+     */
+    mode(): string;
+    helpWindowText(): string;
+    /**
+     * Returns the index of the first
+     * save file within the save scene.
+     * @returns {number} 
+     * @memberof Scene_Save
+     */
+    firstSavefileIndex(): number;
+    /**
+     * Handler for when a save file
+     * is confirmed within the save scene.
+     * @memberof Scene_Save
+     */
+    onSavefileOk(): void;
+    /**
+     * Handler for when save is a success.
+     * 
+     * @memberof Scene_Save
+     */
+    onSaveSuccess(): void;
+    /**
+     * Handler for when save fails.
+     * 
+     * @memberof Scene_Save
+     */
+    onSaveFailure(): void;
+}
+
+/**
+ * -----------------------------------------------------------------------------
+ * Scene_Load
+ *
+ * The scene class of the load screen.
+ * @class Scene_Load
+ * @extends {Scene_File}
+ */
+declare class Scene_Load extends Scene_File {
+    protected _loadSuccess: boolean;
+
+    /**
+     * Returns the mode of the
+     * load scene.
+     * @returns {string} 
+     * @memberof Scene_Load
+     */
+    mode(): string;
+    /**
+     * Returns the help window text on the
+     * game load scene.
+     * @returns {string} 
+     * @memberof Scene_Load
+     */
+    helpWindowText(): string;
+    firstSavefileIndex(): number;
+    onSavefileOk(): void;
+    onLoadSuccess(): void;
+    onLoadFailure(): void;
+    reloadMapIfUpdated(): void;
+}
+
+/**
+ * -----------------------------------------------------------------------------
+ * Scene_GameEnd
+ *
+ * The scene class of the game end screen.
+ * @class Scene_GameEnd
+ * @extends {Scene_MenuBase}
+ */
+declare class Scene_GameEnd extends Scene_MenuBase {
+    protected _commandWindow: Window_GameEnd;
+
+    stop(): void;
+    /**
+     * Creates the background for
+     * the game end scene.
+     * @memberof Scene_GameEnd
+     */
+    createBackground(): void;
+    /**
+     * Creates the command window
+     * for the game end screen.
+     * @memberof Scene_GameEnd
+     */
+    createCommandWindow(): void;
+    /**
+     * Handler for when to title
+     * is clicked within the game end screen.
+     * @memberof Scene_GameEnd
+     */
+    commandToTitle(): void;
+}
+
+/**
+ * -----------------------------------------------------------------------------
+ * Scene_Shop
+ *
+ * The scene class of the shop screen.
+ * @class Scene_Shop
+ * @extends {Scene_MenuBase}
+ */
+declare class Scene_Shop extends Scene_MenuBase {
+    protected _goods: Array<Array<any>>;
+    protected _purchaseOnly: boolean;
+    protected _item: RPG.BaseItem;
+
+    protected _goldWindow: Window_Gold;
+    protected _commandWindow: Window_ShopCommand;
+    protected _dummyWindow: Window_Base;
+    protected _numberWindow: Window_ShopNumber;
+    protected _statusWindow: Window_ShopStatus;
+    protected _buyWindow: Window_ShopBuy;
+    protected _categoryWindow: Window_ItemCategory;
+    protected _sellWindow: Window_ShopSell;
+    protected _helpWindow: Window_Help;
+
+    prepare(goods: Array<Array<any>>, purchaseOnly: boolean): void;
+    /**
+     * Creates the gold window on the shop scene.
+     * 
+     * @memberof Scene_Shop
+     */
+    createGoldWindow(): void;
+    /**
+     * Creates the command window for buying or selling.
+     * 
+     * @memberof Scene_Shop
+     */
+    createCommandWindow(): void;
+    createDummyWindow(): void;
+    /**
+     * Creates the number input window on the shop scene.
+     * 
+     * @memberof Scene_Shop
+     */
+    createNumberWindow(): void;
+    /**
+     * Creates the status window.
+     * 
+     * @memberof Scene_Shop
+     */
+    createStatusWindow(): void;
+    /**
+     * Creates the buy window.
+     * 
+     * @memberof Scene_Shop
+     */
+    createBuyWindow(): void;
+    /**
+     * Creates the category window.
+     * 
+     * @memberof Scene_Shop
+     */
+    createCategoryWindow(): void;
+    /**
+     * Creates the sell window.
+     * 
+     * @memberof Scene_Shop
+     */
+    createSellWindow(): void;
+    /**
+     * Activates the buy window within the shop scene.
+     * 
+     * @memberof Scene_Shop
+     */
+    activateBuyWindow(): void;
+    /**
+     * Activates the sell window within the shop scene.
+     * 
+     * @memberof Scene_Shop
+     */
+    activateSellWindow(): void;
+    /**
+     * Handler for pressing buy within the shop scene.
+     * 
+     * @memberof Scene_Shop
+     */
+    commandBuy(): void;
+    /**
+     * Handler for pressing sell within the shop scene.
+     * 
+     * @memberof Scene_Shop
+     */
+    commandSell(): void;
+    /**
+     * Handler for when buying is confirmed.
+     * 
+     * @memberof Scene_Shop
+     */
+    onBuyOk(): void;
+    /**
+     * Handler for when buying is cancelled.
+     * 
+     * @memberof Scene_Shop
+     */
+    onBuyCancel(): void;
+    onCategoryOk(): void;
+    onCategoryCancel(): void;
+    onSellOk(): void;
+    onSellCancel(): void;
+    onNumberOk(): void;
+    onNumberCancel(): void;
+    doBuy(number: number): void;
+    doSell(number: number): void;
+    endNumberInput(): void;
+    /**
+     * Returns the maximum number bought.
+     * 
+     * @returns {number} 
+     * @memberof Scene_Shop
+     */
+    maxBuy(): number;
+    /**
+     * Returns the maximum number sold.
+     * 
+     * @returns {number} 
+     * @memberof Scene_Shop
+     */
+    maxSell(): number;
+    /**
+     * Returns the player gold within
+     * the shop scene.
+     * @returns {number} 
+     * @memberof Scene_Shop
+     */
+    money(): number;
+    /**
+     * Returns the currency unit of the
+     * game within the shop scene.
+     * @returns {string} 
+     * @memberof Scene_Shop
+     */
+    currencyUnit(): string;
+    /**
+     * Returns the buying price for the current item.
+     * 
+     * @returns {number} 
+     * @memberof Scene_Shop
+     */
+    buyingPrice(): number;
+    /**
+     * Returns the selling price for the current item.
+     * 
+     * @returns {number} 
+     * @memberof Scene_Shop
+     */
+    sellingPrice(): number;
+}
+
+/**
+ * -----------------------------------------------------------------------------
+ * Scene_Name
+ *
+ * The scene class of the name input screen.
+ * @class Scene_Name
+ * @extends {Scene_MenuBase}
+ */
+declare class Scene_Name extends Scene_MenuBase {
+    /**
+     * Prepares the name input scene for giving the specified
+     * actor at actorId a name with a maximum number of characters
+     * given by maxLength.
+     * @param {number} actorId 
+     * @param {number} maxLength 
+     * @memberof Scene_Name
+     */
+    prepare(actorId: number, maxLength: number): void;
+    /**
+     * Creates the edit window.
+     * 
+     * @memberof Scene_Name
+     */
+    createEditWindow(): void;
+    /**
+     * Creates the input window.
+     * 
+     * @memberof Scene_Name
+     */
+    createInputWindow(): void;
+    /**
+     * Handler for when ok is processed on the name input scene.
+     * 
+     * @memberof Scene_Name
+     */
+    onInputOk(): void;
+}
+
+/**
+ * -----------------------------------------------------------------------------
+ * Scene_Debug
+ *
+ * The scene class of the debug screen.
+ * @class Scene_Debug
+ * @extends {Scene_MenuBase}
+ */
+declare class Scene_Debug extends Scene_MenuBase {
+    /**
+     * Creates the range window.
+     * 
+     * @memberof Scene_Debug
+     */
+    createRangeWindow(): void;
+    /**
+     * Creates the edit window.
+     * 
+     * @memberof Scene_Debug
+     */
+    createEditWindow(): void;
+    /**
+     * Creates the debug help .window.
+     * 
+     * @memberof Scene_Debug
+     */
+    createDebugHelpWindow(): void;
+    onRangeOk(): void;
+    onEditCancel(): void;
+    refreshHelpWindow(): void;
+    /**
+     * Returns the help text within the 
+     * debug scene.
+     * @returns {string} 
+     * @memberof Scene_Debug
+     */
+    helpText(): string;
+}
+
+/**
+ * -----------------------------------------------------------------------------
+ * Scene_Battle
+ *
+ * The scene class of the battle screen.
+ * @class Scene_Battle
+ * @extends {Scene_Base}
+ */
+declare class Scene_Battle extends Scene_Base {
+    protected _spriteset: Spriteset_Battle;
+    protected _statusWindow: Window_BattleStatus;
+    protected _partyCommandWindow: Window_PartyCommand;
+    protected _actorCommandWindow: Window_ActorCommand;
+    protected _skillWindow: Window_BattleSkill;
+    protected _itemWindow: Window_BattleItem;
+    protected _actorWindow: Window_BattleActor;
+    protected _enemyWindow: Window_BattleEnemy;
+    protected _logWindow: Window_BattleLog;
+    protected _helpWindow: Window_Help;
+    protected _messageWindow: Window_Message;
+    protected _scrollTextWindow: Window_ScrollText;
+
+    updateBattleProcess(): void;
+    isAnyInputWindowActive(): boolean;
+    changeInputWindow(): void;
+    /**
+     * Stops the battle scene.
+     * 
+     * @memberof Scene_Battle
+     */
+    stop(): void;
+    /**
+     * Returns true if the battle needs a slow fade out.
+     * 
+     * @returns {boolean} 
+     * @memberof Scene_Battle
+     */
+    needsSlowFadeOut(): boolean;
+    /**
+     * Updates the status window on the battle scene.
+     * 
+     * @memberof Scene_Battle
+     */
+    updateStatusWindow(): void;
+    /**
+     * Updates the position of the battle scene windows.
+     * 
+     * @memberof Scene_Battle
+     */
+    updateWindowPositions(): void;
+    /**
+     * Creates all the display objects including:
+     * the spritesheet, window layer, windows, and more.
+     * 
+     * @memberof Scene_Battle
+     */
+    createDisplayObjects(): void;
+    /**
+     * Creates the spriteset within
+     * the battle scene. This includes
+     * sprites for actors, enemies, etc.
+     * @memberof Scene_Battle
+     */
+    createSpriteset(): void;
+    /**
+     * Creates all the windows within the
+     * battle scene.
+     * @memberof Scene_Battle
+     */
+    createAllWindows(): void;
+    /**
+     * Creates the log window.
+     * 
+     * @memberof Scene_Battle
+     */
+    createLogWindow(): void;
+    createStatusWindow(): void;
+    createPartyCommandWindow(): void;
+    /**
+     * Creates the actor command window.
+     * 
+     * @memberof Scene_Battle
+     */
+    createActorCommandWindow(): void;
+    /**
+     * Creates the help window.
+     * 
+     * @memberof Scene_Battle
+     */
+    createHelpWindow(): void;
+    /**
+     * Creates the skill window.
+     * 
+     * @memberof Scene_Battle
+     */
+    createSkillWindow(): void;
+    /**
+     * Creates the item window.
+     * 
+     * @memberof Scene_Battle
+     */
+    createItemWindow(): void;
+    /**
+     * Creates the actor window.
+     * 
+     * @memberof Scene_Battle
+     */
+    createActorWindow(): void;
+    /**
+     * Creates the enemy window.
+     * 
+     * @memberof Scene_Battle
+     */
+    createEnemyWindow(): void;
+    /**
+     * Creates the message window on the battle scene.
+     * 
+     * @memberof Scene_Battle
+     */
+    createMessageWindow(): void;
+    /**
+     * Creates the scroll text window.
+     * 
+     * @memberof Scene_Battle
+     */
+    createScrollTextWindow(): void;
+    refreshStatus(): void;
+    startPartyCommandSelection(): void;
+    /**
+     * Handler for the fight command on battle start..
+     * 
+     * @memberof Scene_Battle
+     */
+    commandFight(): void;
+    /**
+     * Handler for the escape command on battle start.
+     * 
+     * @memberof Scene_Battle
+     */
+    commandEscape(): void;
+    startActorCommandSelection(): void;
+    /**
+     * Handler for the attack command.
+     * 
+     * @memberof Scene_Battle
+     */
+    commandAttack(): void;
+    /**
+     * Handler for the skill command.
+     * 
+     * @memberof Scene_Battle
+     */
+    commandSkill(): void;
+    /**
+     * Handler for the guard command.
+     * 
+     * @memberof Scene_Battle
+     */
+    commandGuard(): void;
+    /**
+     * Handler for the item command.
+     * 
+     * @memberof Scene_Battle
+     */
+    commandItem(): void;
+    /**
+     * Selects the next command in the battle scene.
+     * 
+     * @memberof Scene_Battle
+     */
+    selectNextCommand(): void;
+    /**
+     * Selects the previous command in the battle scene.
+     * 
+     * @memberof Scene_Battle
+     */
+    selectPreviousCommand(): void;
+    selectActorSelection(): void;
+    onActorOk(): void;
+    onActorCancel(): void;
+    selectEnemySelection(): void;
+    /**
+     * Handler for when an enemy is selected.
+     * 
+     * @memberof Scene_Battle
+     */
+    onEnemyOk(): void;
+    onEnemyCancel(): void;
+    /**
+     * Handler for when a skill is selected.
+     * 
+     * @memberof Scene_Battle
+     */
+    onSkillOk(): void;
+    onSkillCancel(): void;
+    onItemOk(): void;
+    onItemCancel(): void;
+    onSelectAction(): void;
+    endCommandSelection(): void;
+}
+
+/**
+ * -----------------------------------------------------------------------------
+ * Scene_Gameover
+ *
+ * The scene class of the game over screen.
+ * @class Scene_Gameover
+ * @extends {Scene_Base}
+ */
+declare class Scene_Gameover extends Scene_Base {
+    protected _backSprite: Sprite;
+
+    stop(): void;
+    /**
+     * Plays the game over music
+     * within the game over scene.
+     * @memberof Scene_Gameover
+     */
+    playGameoverMusic(): void;
+    /**
+     * Creates the background of
+     * the game over scene.
+     * @memberof Scene_Gameover
+     */
+    createBackground(): void;
+    isTriggered(): boolean;
+    /**
+     * Returns to the title scene (Scene_Title).
+     * @memberof Scene_Gameover
+     */
+    gotoTitle(): void;
+}
 /**
  * -----------------------------------------------------------------------------
  * Sprite_Base
@@ -9635,17 +15661,77 @@ declare class Game_Interpreter {
  * The sprite class with a feature which displays animations.
  */
 declare class Sprite_Base extends Sprite {
+    /**
+     * The animation sprites assigned to the
+     * sprite object.
+     * @protected
+     * @type {Array<Sprite_Animation>}
+     * @memberof Sprite_Base
+     */
     protected _animationSprites: Array<Sprite_Animation>;
+    /**
+     * The target that will have the animations applied
+     * to it.
+     * @protected
+     * @type {Sprite_Base}
+     * @memberof Sprite_Base
+     */
     protected _effectTarget: Sprite_Base;
+    /**
+     * Property determining the sprite's visibility.
+     *
+     * @protected
+     * @type {boolean}
+     * @memberof Sprite_Base
+     */
     protected _hiding: boolean;
 
+    /**
+     * Creates an instance of Sprite_Base.
+     * @memberof Sprite_Base
+     */
     constructor();
 
+    /**
+     * Hides the sprite.
+     *
+     * @memberof Sprite_Base
+     */
     hide(): void;
+    /**
+     * Shows the sprite.
+     *
+     * @memberof Sprite_Base
+     */
     show(): void;
+    /**
+     * Updadtes the visibility of the sprite based
+     * on the _hiding property.
+     * @memberof Sprite_Base
+     */
     updateVisibility(): void;
+    /**
+     * Updates the animation sprites, cloning them;
+     * if the sprite is playing, pushes the sprites into
+     * animation sprites, otherwise the sprite is removed.
+     * @memberof Sprite_Base
+     */
     updateAnimationSprites(): void;
+    /**
+     * Starts a new animation on the current
+     * sprite by assigning a new Sprite_Animation object to the
+     * sprite's parent.
+     * @param {RPG.Animation} animation
+     * @param {boolean} mirror
+     * @param {number} delay
+     * @memberof Sprite_Base
+     */
     startAnimation(animation: RPG.Animation, mirror: boolean, delay: number): void;
+    /**
+     * Returns true if an animation is currently playing.
+     * @returns {boolean}
+     * @memberof Sprite_Base
+     */
     isAnimationPlaying(): boolean;
 }
 
@@ -9661,15 +15747,83 @@ declare class Sprite_Button extends Sprite {
     protected _hotFrame: Rectangle;
     protected _clickHandler: () => void;
 
+    /**
+     * Update method, which checks if the sprite is being touched and updates
+     * the current frame.
+     *
+     * @memberof Sprite_Button
+     */
     updateFrame(): void;
+    /**
+     * Set the button sprites cold frame.
+     *
+     * @param {number} x
+     * @param {number} y
+     * @param {number} width
+     * @param {number} height
+     *
+     * @memberof Sprite_Button
+     *
+     */
     setColdFrame(x: number, y: number, width: number, height: number): void;
+    /**
+     * Set the button sprites hot frame
+     *
+     * @param {number} x
+     * @param {number} y
+     * @param {number} width
+     * @param {number} height
+     *
+     * @memberof Sprite_Button
+     *
+     */
     setHotFrame(x: number, y: number, width: number, height: number): void;
+    /**
+     * Creates a new handler and binds it to the button.
+     *
+     * @param {function} height
+     * @memberof Sprite_Button
+     */
     setClickHandler(method: () => void): void;
+    /**
+     * Calls the handler method bound to the button.
+     *
+     * @param {function} height
+     * @memberof Sprite_Button
+     */
     callClickHandler(): void;
+    /**
+     * Processes weather or not the button is being touched and calls the handler
+     * bound to the button.
+     * @memberof Sprite_Button
+     */
     processTouch(): void;
+    /**
+     * Returns true if the sprite button is currently active.
+     * @returns {boolean}
+     * @memberof Sprite_Button
+     */
     isActive(): boolean;
+    /**
+     * Returns true is the button is presently being touched.
+     * @returns {boolean}
+     * @memberof Sprite_Button
+     */
     isButtonTouched(): boolean;
+    /**
+     * Changes the x coordinate of the screen to local sprite x coordinate.
+     * @param {number} x
+     * @returns {number}
+     * @memberof Sprite_Button
+     */
     canvasToLocalX(x: number): number;
+    /**
+     * Changes the y coordinate of the screen
+     * to local sprite y coordinate.
+     * @param {number} y
+     * @returns {number}
+     * @memberof Sprite_Button
+     */
     canvasToLocalY(y: number): number;
 }
 
@@ -9680,43 +15834,160 @@ declare class Sprite_Button extends Sprite {
  * The sprite for displaying a character.
  */
 declare class Sprite_Character extends Sprite_Base {
+    /**
+     * The Game_Character object assigned
+     * to the sprite.
+     * @protected
+     * @type {Game_Character}
+     * @memberof Sprite_Character
+     */
     protected _character: Game_Character;
     protected _balloonDuration: number;
     protected _tilesetId: number;
     protected _upperBody: Sprite;
     protected _lowerBody: Sprite;
     protected _bushDepth: number;
+    /**
+     * The current balloon sprite
+     * assigned to the sprite.
+     * @protected
+     * @type {Sprite_Balloon}
+     * @memberof Sprite_Character
+     */
     protected _balloonSprite: Sprite_Balloon;
 
+    /**
+     * Creates an instance of Sprite_Character.
+     * @param {Game_Character} character
+     * @memberof Sprite_Character
+     */
     constructor(character: Game_Character);
 
     initMembers(): void;
+    /**
+     * Sets the current Game_Character object
+     * attached to the sprite.
+     * @param {Game_Character} character
+     * @memberof Sprite_Character
+     */
     setCharacter(character: Game_Character): void;
+    /**
+     * Returns true if the Game_Character object
+     * tileId is greater than 0.
+     * @returns {boolean}
+     * @memberof Sprite_Character
+     */
     isTile(): boolean;
     tilesetBitmap(tileId: number): Bitmap;
+    /**
+     * Updates the bitmap of the sprite character.
+     * 
+     * @memberof Sprite_Character
+     */
     updateBitmap(): void;
+    /**
+     * Returns true if the sprite character image has changed.
+     * 
+     * @returns {boolean} 
+     * @memberof Sprite_Character
+     */
     isImageChanged(): boolean;
     setTileBitmap(): void;
+    /**
+     * Sets the sprite character bitmap.
+     * 
+     * @memberof Sprite_Character
+     */
     setCharacterBitmap(): void;
+    /**
+     * Updates the sprite character frame.
+     * 
+     * @memberof Sprite_Character
+     */
     updateFrame(): void;
+    /**
+     * Updates the sprite character tile frame.
+     * 
+     * @memberof Sprite_Character
+     */
     updateTileFrame(): void;
+    /**
+     * Updates the sprite character -- character frame.
+     * 
+     * @memberof Sprite_Character
+     */
     updateCharacterFrame(): void;
     characterBlockX(): number;
     characterBlockY(): number;
-    characterPatternX(): void;
+    /**
+     * Returns the character x pattern.
+     * 
+     * @returns {number} 
+     * @memberof Sprite_Character
+     */
+    characterPatternX(): number;
+    /**
+     * Returns the character y pattern.
+     * 
+     * @returns {number} 
+     * @memberof Sprite_Character
+     */
     characterPatternY(): number;
+    /**
+     * Returns the pattern width.
+     * 
+     * @returns {number} 
+     * @memberof Sprite_Character
+     */
     patternWidth(): number;
+    /**
+     * Returns the pattern height.
+     * 
+     * @returns {number} 
+     * @memberof Sprite_Character
+     */
     patternHeight(): number;
     updateHalfBodySprites(): void;
     createHalfBodySprites(): void;
+    /**
+     * Updates the position of the sprite character.
+     * 
+     * @memberof Sprite_Character
+     */
     updatePosition(): void;
     updateAnimation(): void;
     updateOther(): void;
     setupAnimation(): void;
+    /**
+     * Sets up the Game_Character object
+     * balloon sprite, and calls the startBalloon method.
+     * @memberof Sprite_Character
+     */
     setupBalloon(): void;
+    /**
+     * Starts the balloon sprite on the
+     * Game_Character object.
+     * @memberof Sprite_Character
+     */
     startBalloon(): void;
+    /**
+     * Processes the balloon sprite, calls
+     * the endBaloon method if the balloon sprite is done playing.
+     * @memberof Sprite_Character
+     */
     updateBalloon(): void;
+    /**
+     * Ends the balloon sprite, removing it from
+     * the Game_Character object sprite.
+     * @memberof Sprite_Character
+     */
     endBalloon(): void;
+    /**
+     * Returns true if a balloon animation
+     * is playing on the character.
+     * @returns {boolean}
+     * @memberof Sprite_Character
+     */
     isBalloonPlaying(): boolean;
 }
 
@@ -9741,24 +16012,105 @@ declare class Sprite_Battler extends Sprite_Base {
     constructor(battler?: Game_Battler);
 
     initMembers(): void;
+    /**
+     * Sets the game battler of the sprite battler.
+     * 
+     * @param {Game_Battler} battler 
+     * @memberof Sprite_Battler
+     */
     setBattler(battler: Game_Battler): void;
+    /**
+     * Sets the home position of the sprite battler to the given
+     * x and y coordinates.
+     * @param {number} x 
+     * @param {number} y 
+     * @memberof Sprite_Battler
+     */
     setHome(x: number, y: number): void;
+    /**
+     * Updates the main loop of the sprite battler.
+     * 
+     * @memberof Sprite_Battler
+     */
     updateMain(): void;
+    /**
+     * Updates the bitmap of the sprite battler.
+     * 
+     * @memberof Sprite_Battler
+     */
     updateBitmap(): void;
+    /**
+     * Updates the sprite battler's current frame.
+     * 
+     * @memberof Sprite_Battler
+     */
     updateFrame(): void;
+    /**
+     * Updates movement on the sprite battler.
+     * 
+     * @memberof Sprite_Battler
+     */
     updateMove(): void;
+    /**
+     * Updates the position of the sprite battler.
+     * 
+     * @memberof Sprite_Battler
+     */
     updatePosition(): void;
+    /**
+     * Updates the sprite battler animation.
+     * 
+     * @memberof Sprite_Battler
+     */
     updateAnimation(): void;
+    /**
+     * Updates the damage pop up for the sprite battler.
+     * 
+     * @memberof Sprite_Battler
+     */
     updateDamagePopup(): void;
     updateSelectionEffect(): void;
+    /**
+     * Sets up animation on the sprite battler.
+     * 
+     * @memberof Sprite_Battler
+     */
     setupAnimation(): void;
+    /**
+     * Sets up damage popup on the sprite battler.
+     * 
+     * @memberof Sprite_Battler
+     */
     setupDamagePopup(): void;
     damageOffsetX(): number;
     damageOffsetY(): number;
     startMove(x: number, y: number, duration: number): void;
+    /**
+     * Handler for when movement has ended.
+     * 
+     * @memberof Sprite_Battler
+     */
     onMoveEnd(): void;
+    /**
+     * Returns false for sprite battler.
+     * 
+     * @returns {boolean} 
+     * @memberof Sprite_Battler
+     */
     isEffecting(): boolean;
+    /**
+     * Returns true if the sprite for the battler
+     * is moving.
+     * @returns {boolean}
+     * @memberof Sprite_Battler
+     */
     isMoving(): boolean;
+    /**
+     * Returns true if the sprite battler is in the home position.
+     * 
+     * @returns {boolean} 
+     * @memberof Sprite_Battler
+     */
     inHomePosition(): boolean;
 }
 
@@ -9801,28 +16153,122 @@ declare class Sprite_Actor extends Sprite_Battler {
     protected _stateSprite: Sprite_StateOverlay;
     protected _actor: Game_Actor;
 
+    /**
+     * Creates an instance of Sprite_Actor; can be passed
+     * a battler on creation.
+     * @param {Game_Actor} [battler] 
+     * @memberof Sprite_Actor
+     */
     constructor(battler?: Game_Actor);
 
+    /**
+     * Creates the main sprite of the sprite actor.
+     * 
+     * @memberof Sprite_Actor
+     */
     createMainSprite(): void;
+    /**
+     * Creates the shadow sprite of the sprite actor.
+     * 
+     * @memberof Sprite_Actor
+     */
     createShadowSprite(): void;
+    /**
+     * Sets the weapon sprite of the sprite actor.
+     * 
+     * @memberof Sprite_Actor
+     */
     createWeaponSprite(): void;
+    /**
+     * Creates the state sprite of the sprite actor.
+     * 
+     * @memberof Sprite_Actor
+     */
     createStateSprite(): void;
+    /**
+     * Sets the battler of the sprite actor.
+     * 
+     * @param {Game_Actor} battler 
+     * @memberof Sprite_Actor
+     */
     setBattler(battler: Game_Actor): void;
+    /**
+     * Moves the sprite actor to the start position.
+     * 
+     * @memberof Sprite_Actor
+     */
     moveToStartPosition(): void;
     setActorHome(index: number): void;
     updateShadow(): void;
+    /**
+     * Sets up motion on the sprite actor.
+     * 
+     * @memberof Sprite_Actor
+     */
     setupMotion(): void;
+    /**
+     * Sets up weapon animation on the sprite actor.
+     * 
+     * @memberof Sprite_Actor
+     */
     setupWeaponAnimation(): void;
+    /**
+     * Starts the motion given the specified motion
+     * type.
+     * @param {string} motionType 
+     * @memberof Sprite_Actor
+     */
     startMotion(motionType: string): void;
     updateTargetPosition(): void;
+    /**
+     * Updates the sprite actor's movement.
+     * 
+     * @memberof Sprite_Actor
+     */
     updateMove(): void;
+    /**
+     * Updates the sprite actor's motion.
+     * 
+     * @memberof Sprite_Actor
+     */
     updateMotion(): void;
     updateMotionCount(): void;
+    /**
+     * Returns the speed of the motion for the sprite actor.
+     * 
+     * @returns {number} 
+     * @memberof Sprite_Actor
+     */
     motionSpeed(): number;
+    /**
+     * Refreshes the motion of the sprite actor.
+     * 
+     * @memberof Sprite_Actor
+     */
     refreshMotion(): void;
+    /**
+     * Starts the entry motion of the sprite actor.
+     * 
+     * @memberof Sprite_Actor
+     */
     startEntryMotion(): void;
+    /**
+     * Has the sprite actor step forward.
+     * 
+     * @memberof Sprite_Actor
+     */
     stepForward(): void;
+    /**
+     * Has the sprite actor step back.
+     * 
+     * @memberof Sprite_Actor
+     */
     stepBack(): void;
+    /**
+     * Has the sprite actor retreat.
+     * 
+     * @memberof Sprite_Actor
+     */
     retreat(): void;
     damageOffsetX(): number;
     damageOffsetY(): number;
@@ -9847,28 +16293,115 @@ declare class Sprite_Enemy extends Sprite_Battler {
     constructor(battler: Game_Enemy);
 
     createStateIconSprite(): void;
+    /**
+     * Sets the battler to an instance of game enemy.
+     * 
+     * @param {Game_Enemy} battler Instance of game enemy.
+     * @memberof Sprite_Enemy
+     */
     setBattler(battler: Game_Enemy): void;
     loadBitmap(name: string, hue: number): void;
+    /**
+     * Updates the state sprite on the sprite enemy.
+     * 
+     * @memberof Sprite_Enemy
+     */
     updateStateSprite(): void;
     initVisibility(): void;
     setupEffect(): void;
     startEffect(effectType: string): void;
+    /**
+     * Starts the appearinig effect on the sprite enemy.
+     * 
+     * @memberof Sprite_Enemy
+     */
     startAppear(): void;
+    /**
+     * Starts the disappearing effect on the sprite enemy.
+     * 
+     * @memberof Sprite_Enemy
+     */
     startDisappear(): void;
+    /**
+     * Starts the whiten effect on the sprite enemy.
+     * 
+     * @memberof Sprite_Enemy
+     */
     startWhiten(): void;
+    /**
+     * Starts the blink effect on the sprite enemy.
+     * 
+     * @memberof Sprite_Enemy
+     */
     startBlink(): void;
+    /**
+     * Starts the collapse effect of the sprite
+     * enemy.
+     * @memberof Sprite_Enemy
+     */
     startCollapse(): void;
+    /**
+     * Starts the boss collapse effect of the sprite
+     * enemy.
+     * @memberof Sprite_Enemy
+     */
     startBossCollapse(): void;
+    /**
+     * Starts the instant collapse effect of the sprite enemy.
+     * 
+     * @memberof Sprite_Enemy
+     */
     startInstantCollapse(): void;
     updateEffect(): void;
+    /**
+     * Returns true if the effect type on the sprite enemy
+     * is not null.
+     * @returns {boolean} 
+     * @memberof Sprite_Enemy
+     */
     isEffecting(): boolean;
+    /**
+     * Revers the sprite enemy to a normal state.
+     * 
+     * @memberof Sprite_Enemy
+     */
     revertToNormal(): void;
+    /**
+     * Updates the whiten effect on the sprite enemy.
+     * 
+     * @memberof Sprite_Enemy
+     */
     updateWhiten(): void;
+    /**
+     * Updates the blink effect on the sprite enemy.
+     * 
+     * @memberof Sprite_Enemy
+     */
     updateBlink(): void;
+    /**
+     * Updates the appear effect on the sprite enemy.
+     * 
+     * @memberof Sprite_Enemy
+     */
     updateAppear(): void;
     updateDisappear(): void;
+    /**
+     * Updates the collapse effect.
+     * 
+     * @memberof Sprite_Enemy
+     */
     updateCollapse(): void;
+    /**
+     * Updates the boss collapse effect.
+     * 
+     * @memberof Sprite_Enemy
+     */
     updateBossCollapse(): void;
+    /**
+     * Updates the instant collapse effect.
+     * 
+     * @memberof Sprite_Enemy
+     */
     updateInstantCollapse(): void;
     damageOffsetX(): number;
     damageOffsetY(): number;
@@ -9903,29 +16436,115 @@ declare class Sprite_Animation extends Sprite {
 
     initMembers(): void;
     setup(target: Sprite_Base, animation: RPG.Animation, mirror: boolean, delay: number): void;
+    /**
+     * Removes the sprite animation.
+     * 
+     * @memberof Sprite_Animation
+     */
     remove(): void;
     setupRate(): void;
     setupDuration(): void;
+    /**
+     * Updates the flash animation of the sprite animation.
+     * 
+     * @memberof Sprite_Animation
+     */
     updateFlash(): void;
     updateScreenFlash(): void;
+    /**
+     * Returns the absolute x position of the sprite animation.
+     * 
+     * @returns {number} 
+     * @memberof Sprite_Animation
+     */
     absoluteX(): number;
+    /**
+     * Returns the absolute y position of the sprite aniamtion.
+     * 
+     * @returns {number} 
+     * @memberof Sprite_Animation
+     */
     absoluteY(): number;
+    /**
+     * Updates the hiding of the sprite animation.
+     * 
+     * @memberof Sprite_Animation
+     */
     updateHiding(): void;
+    /**
+     * Returns true if the sprite animation is playing.
+     * 
+     * @returns {boolean} 
+     * @memberof Sprite_Animation
+     */
     isPlaying(): boolean;
+    /**
+     * Loads the bitmaps of the sprite animation.
+     * 
+     * @memberof Sprite_Animation
+     */
     loadBitmaps(): void;
+    /**
+     * Returns true if the sprite animation is ready.
+     * 
+     * @returns {boolean} 
+     * @memberof Sprite_Animation
+     */
     isReady(): boolean;
+    /**
+     * Create the sprites of the sprite animation.
+     * 
+     * @memberof Sprite_Animation
+     */
     createSprites(): void;
+    /**
+     * Create the cell sprites of the sprite animation.
+     * 
+     * @memberof Sprite_Animation
+     */
     createCellSprites(): void;
+    /**
+     * Create the screen flash sprite of the sprite animation.
+     * 
+     * @memberof Sprite_Animation
+     */
     createScreenFlashSprite(): void;
+    /**
+     * Updates the main loop of the sprite animation.
+     * 
+     * @memberof Sprite_Animation
+     */
     updateMain(): void;
+    /**
+     * Updates the position of the sprite animation.
+     * 
+     * @memberof Sprite_Animation
+     */
     updatePosition(): void;
+    /**
+     * Updates the frame of the sprite aniamtion.
+     * 
+     * @memberof Sprite_Animation
+     */
     updateFrame(): void;
+    /**
+     * Returns the current frame index of the sprite aniamtion.
+     * 
+     * @returns {number} 
+     * @memberof Sprite_Animation
+     */
     currentFrameIndex(): number;
     updateAllCellSprites(frame: Array<Array<number>>): void;
     updateCellSprite(sprite: Sprite, cell: Array<number>): void;
     processTimingData(timing: RPG.Animation.Timing): void;
     startFlash(color: Array<number>, duration: number): void;
     startScreenFlash(color: Array<number>, duration: number): void;
+    /**
+     * Starts hiding the sprite animation.
+     * 
+     * @param {number} duration The duration of the hide.
+     * @memberof Sprite_Animation
+     */
     startHiding(duration: number): void;
 }
 
@@ -9943,14 +16562,53 @@ declare class Sprite_Damage extends Sprite {
 
     setup(target: Game_Actor): void;
     setupCriticalEffect(): void;
+    /**
+     * Returns the digit width of the sprite damage.
+     * 
+     * @returns {number} 
+     * @memberof Sprite_Damage
+     */
     digitWidth(): number;
+    /**
+     * Returns the digit height of the sprite damage.
+     * 
+     * @returns {number} 
+     * @memberof Sprite_Damage
+     */
     digitHeight(): number;
+    /**
+     * Creates the miss display of the damage sprite.
+     * 
+     * @memberof Sprite_Damage
+     */
     createMiss(): void;
     createDigits(baseRow: number, value: number): void;
+    /**
+     * Creates the child sprite of the damage sprite for displaying damage.
+     * 
+     * @returns {Sprite} 
+     * @memberof Sprite_Damage
+     */
     createChildSprite(): Sprite;
     updateChild(sprite: Sprite): void;
+    /**
+     * Updates the flash of the damage sprite.
+     * 
+     * @memberof Sprite_Damage
+     */
     updateFlash(): void;
+    /**
+     * Updates the opacity of the damage sprite.
+     * 
+     * @memberof Sprite_Damage
+     */
     updateOpacity(): void;
+    /**
+     * Returns true if the damage sprite is playing.
+     * 
+     * @returns {boolean} 
+     * @memberof Sprite_Damage
+     */
     isPlaying(): boolean;
 }
 
@@ -9969,11 +16627,31 @@ declare class Sprite_StateIcon extends Sprite {
     protected _animationCount: number;
     protected _animationIndex: number;
 
+    /**
+     * Initializes the sprite state icon properties.
+     * 
+     * @memberof Sprite_StateIcon
+     */
     initMembers(): void;
+    /**
+     * Loads the bitmap of the sprite state icon.
+     * 
+     * @memberof Sprite_StateIcon
+     */
     loadBitmap(): void;
     setup(battler: Game_Battler): void;
     animationWait(): number;
+    /**
+     * Updates the icon displayed in the icon sprite.
+     * 
+     * @memberof Sprite_StateIcon
+     */
     updateIcon(): void;
+    /**
+     * Updates the state icon sprite frame.
+     * 
+     * @memberof Sprite_StateIcon
+     */
     updateFrame(): void;
 }
 
@@ -9989,11 +16667,31 @@ declare class Sprite_StateOverlay extends Sprite_Base {
     protected _animationCount: number;
     protected _pattern: number;
 
+    /**
+     * Initialize the overlay sprite properties.
+     * 
+     * @memberof Sprite_StateOverlay
+     */
     initMembers(): void;
+    /**
+     * Loads the bitmap of the overlay sprite.
+     * 
+     * @memberof Sprite_StateOverlay
+     */
     loadBitmap(): void;
     setup(battler: Game_Battler): void;
     animationWait(): number;
+    /**
+     * Updates the overlay sprite pattern.
+     * 
+     * @memberof Sprite_StateOverlay
+     */
     updatePattern(): void;
+    /**
+     * Updates the overlay sprite frame.
+     * 
+     * @memberof Sprite_StateOverlay
+     */
     updateFrame(): void;
 }
 
@@ -10008,12 +16706,38 @@ declare class Sprite_Weapon extends Sprite_Base {
     protected _animationCount: number;
     protected _pattern: number;
 
+    /**
+     * Initializes the members of the weapon sprite object.
+     * 
+     * @memberof Sprite_Weapon
+     */
     initMembers(): void;
     setup(weaponImageId: number): void;
     animationWait(): number;
+    /**
+     * Updates the pattern of the weapon sprite.
+     * 
+     * @memberof Sprite_Weapon
+     */
     updatePattern(): void;
+    /**
+     * Loads the bitmap of the weapon sprite.
+     * 
+     * @memberof Sprite_Weapon
+     */
     loadBitmap(): void;
+    /**
+     * Updates the weapon sprite frames.
+     * 
+     * @memberof Sprite_Weapon
+     */
     updateFrame(): void;
+    /**
+     * Returns true if the weapon sprite is playing.
+     * 
+     * @returns {boolean} 
+     * @memberof Sprite_Weapon
+     */
     isPlaying(): boolean;
 }
 
@@ -10030,11 +16754,45 @@ declare class Sprite_Balloon extends Sprite_Base {
     initMembers(): void;
     loadBitmap(): void;
     setup(balloonId: number): void;
+    /**
+     * Updates the balloon sprite.
+     * 
+     * @memberof Sprite_Balloon
+     */
     update(): void;
+    /**
+     * Updates the balloon sprite frame.
+     * 
+     * @memberof Sprite_Balloon
+     */
     updateFrame(): void;
+    /**
+     * Returns the speed of the balloon animation.
+     * 
+     * @returns {number} 
+     * @memberof Sprite_Balloon
+     */
     speed(): number;
+    /**
+     * Returns the wait time.
+     * 
+     * @returns {number} 
+     * @memberof Sprite_Balloon
+     */
     waitTime(): number;
+    /**
+     * Returns the frame index of the balloon animation.
+     * 
+     * @returns {number} 
+     * @memberof Sprite_Balloon
+     */
     frameIndex(): number;
+    /**
+     * Returns true if the balloon animation is playing.
+     * 
+     * @returns {boolean} 
+     * @memberof Sprite_Balloon
+     */
     isPlaying(): boolean;
 }
 
@@ -10070,11 +16828,42 @@ declare class Sprite_Picture extends Sprite {
 declare class Sprite_Timer extends Sprite {
     protected _seconds: number;
 
+    /**
+     * Creates the bitmap of the sprite timer.
+     * 
+     * @memberof Sprite_Timer
+     */
     createBitmap(): void;
+    /**
+     * Updates the bitmap of the sprite timer.
+     * 
+     * @memberof Sprite_Timer
+     */
     updateBitmap(): void;
+    /**
+     * Redraws the sprite timer.
+     * 
+     * @memberof Sprite_Timer
+     */
     redraw(): void;
+    /**
+     * Returns the text of the timer.
+     * 
+     * @returns {string} The text displayed on the timer.
+     * @memberof Sprite_Timer
+     */
     timerText(): string;
+    /**
+     * Updates the positon of the sprite timer.
+     * 
+     * @memberof Sprite_Timer
+     */
     updatePosition(): void;
+    /**
+     * Updates the visibility of the sprite timer.
+     * 
+     * @memberof Sprite_Timer
+     */
     updateVisibility(): void;
 }
 
@@ -10087,8 +16876,23 @@ declare class Sprite_Timer extends Sprite {
 declare class Sprite_Destination extends Sprite {
     protected _frameCount: number;
 
+    /**
+     * Creates the destination bitmap of the destination sprite.
+     * 
+     * @memberof Sprite_Destination
+     */
     createBitmap(): void;
+    /**
+     * Updates the position of the destination sprite.
+     * 
+     * @memberof Sprite_Destination
+     */
     updatePosition(): void;
+    /**
+     * Updates the destination sprite animation.
+     * 
+     * @memberof Sprite_Destination
+     */
     updateAnimation(): void;
 }
 
@@ -10109,19 +16913,84 @@ declare class Spriteset_Base extends Sprite {
     protected _flashSprite: ScreenSprite;
     protected _fadeSprite: ScreenSprite;
 
+    /**
+     * Creates the lower layer including the base sprites.
+     * 
+     * @memberof Spriteset_Base
+     */
     createLowerLayer(): void;
+    /**
+     * Creates the upper layer including the pictures,
+     * timer, and screen sprites.
+     * @memberof Spriteset_Base
+     */
     createUpperLayer(): void;
+    /**
+     * Create the base sprite.
+     * 
+     * @memberof Spriteset_Base
+     */
     createBaseSprite(): void;
+    /**
+     * Creates the tone changer sprite.
+     * 
+     * @memberof Spriteset_Base
+     */
     createToneChanger(): void;
+    /**
+     * Creates the WebGL toner.
+     * 
+     * @memberof Spriteset_Base
+     */
     createWebGLToneChanger(): void;
+    /**
+     * Creates the Canvas tone.
+     * 
+     * @memberof Spriteset_Base
+     */
     createCanvasToneChanger(): void;
+    /**
+     * Creates a new sprite picture on the spritesetb ase.
+     * 
+     * @memberof Spriteset_Base
+     */
     createPictures(): void;
+    /**
+     * Creates a new Sprite timer on the spriteset base.
+     * 
+     * @memberof Spriteset_Base
+     */
     createTimer(): void;
+    /**
+     * Creates the screen sprite.
+     * 
+     * @memberof Spriteset_Base
+     */
     createScreenSprites(): void;
+    /**
+     * Updates the screen sprites on the spriteset base.
+     * 
+     * @memberof Spriteset_Base
+     */
     updateScreenSprites(): void;
     updateToneChanger(): void;
+    /**
+     * Updates the WebGL tone changer.
+     * 
+     * @memberof Spriteset_Base
+     */
     updateWebGLToneChanger(): void;
+    /**
+     * Updates the Canvas tone changer.
+     * 
+     * @memberof Spriteset_Base
+     */
     updateCanvasToneChanger(): void;
+    /**
+     * Updates the position of spriteset base.
+     * 
+     * @memberof Spriteset_Base
+     */
     updatePosition(): void;
 }
 
@@ -10141,22 +17010,82 @@ declare class Spriteset_Map extends Spriteset_Base {
     protected _weather: Weather;
     protected _parallaxName: string;
 
+    /**
+     * Hides the map spriteset character sprites.
+     * 
+     * @memberof Spriteset_Map
+     */
     hideCharacters(): void;
+    /**
+     * Creates the map spriteset parallax.
+     * 
+     * @memberof Spriteset_Map
+     */
     createParallax(): void;
+    /**
+     * Creates the map spriteset tile map.
+     * 
+     * @memberof Spriteset_Map
+     */
     createTilemap(): void;
+    /**
+     * Loads the map spriteset tileset.
+     * 
+     * @memberof Spriteset_Map
+     */
     loadTileset(): void;
+    /**
+     * Creates the map spriteset character sprite.
+     * 
+     * @memberof Spriteset_Map
+     */
     createCharacters(): void;
+    /**
+     * Creates the map spriteset shadow sprite.
+     * 
+     * @memberof Spriteset_Map
+     */
     createShadow(): void;
+    /**
+     * Creates the map spriteset destination sprite.
+     * 
+     * @memberof Spriteset_Map
+     */
     createDestination(): void;
+    /**
+     * Creates the map spriteset weather.
+     * 
+     * @memberof Spriteset_Map
+     */
     createWeather(): void;
+    /**
+     * Updates the map spriteset tileset.
+     * 
+     * @memberof Spriteset_Map
+     */
     updateTileset(): void;
     /**
      * Simple fix for canvas parallax issue, destroy old parallax and readd to  the tree.
      */
     protected _canvasReAddParallax(): void;
     updateParallax(): void;
+    /**
+     * Updates the map spriteset tile map.
+     * 
+     * @memberof Spriteset_Map
+     */
     updateTilemap(): void;
+    /**
+     * Updates the map spriteset shadow.
+     * 
+     * @memberof Spriteset_Map
+     */
     updateShadow(): void;
+    /**
+     * Updates the map spriteset weather.
+     * 
+     * @memberof Spriteset_Map
+     */
     updateWeather(): void;
 }
 
@@ -10175,50 +17104,258 @@ declare class Spriteset_Battle extends Spriteset_Base {
     protected _enemySprites: Array<Sprite_Enemy>;
     protected _actorSprites: Array<Sprite_Actor>;
 
+    /**
+     * Creates the background of the battle spriteset.
+     * 
+     * @memberof Spriteset_Battle
+     */
     createBackground(): void;
+    /**
+     * Creates the battlefield of the battle spriteset.
+     * 
+     * @memberof Spriteset_Battle
+     */
     createBattleField(): void;
+    /**
+     * Creates the battleback of the battle spriteset.
+     * 
+     * @memberof Spriteset_Battle
+     */
     createBattleback(): void;
+    /**
+     * Updates the battleback of the battle spriteset.
+     * 
+     * @memberof Spriteset_Battle
+     */
     updateBattleback(): void;
+    /**
+     * Locates the battleback and adjusts the coordinates of the
+     * battleback.
+     * @memberof Spriteset_Battle
+     */
     locateBattleback(): void;
+    /**
+     * Returns battleb ack 2 of the battle spriteset.
+     * 
+     * @returns {Bitmap} Instance of the Bitmap class.
+     * @memberof Spriteset_Battle
+     */
     battleback1Bitmap(): Bitmap;
+    /**
+     * Returns battleback 2 of the battle spriteset.
+     * 
+     * @returns {Bitmap} Instance of the Bitmap class.
+     * @memberof Spriteset_Battle
+     */
     battleback2Bitmap(): Bitmap;
+    /**
+     * 
+     * 
+     * @returns {string} Name of battleback 1 bitmap.
+     * @memberof Spriteset_Battle
+     */
     battleback1Name(): string;
+    /**
+     * 
+     * 
+     * @returns {string} Name of battleback 2 bitmap.
+     * @memberof Spriteset_Battle
+     */
     battleback2Name(): string;
+    /**
+     * Returns the battleback 1 name as a string.
+     * 
+     * @returns {string} Name of overworld battleback 1 bitmap.
+     * @memberof Spriteset_Battle
+     */
     overworldBattleback1Name(): string;
+    /**
+     * Returns the battleback 2 name as a string.
+     * 
+     * @returns {string} Name of overworld battleback 2 bitmap.
+     * @memberof Spriteset_Battle
+     */
     overworldBattleback2Name(): string;
+    /**
+     * 
+     * 
+     * @returns {string} Name of the normal battleback 1 bitmap.
+     * @memberof Spriteset_Battle
+     */
     normalBattleback1Name(): string;
+    /**
+     * 
+     * 
+     * @returns {string} Name of the normal battleback 2 bitmap.
+     * @memberof Spriteset_Battle
+     */
     normalBattleback2Name(): string;
+    /**
+     * Given the specified terrtain type, return
+     * the battleback 1 name.
+     * @param {number} type Terrain type.
+     * @returns {string} Name of the terrtain battleback 1 bitmap.
+     * @memberof Spriteset_Battle
+     */
     terrainBattleback1Name(type: number): string;
+    /**
+     * Given the specified terrain type, return
+     * the battleback 2 name.
+     * @param {number} type Terrain type.
+     * @returns {string} Name of the terrain battleback 2 bitmap.
+     * @memberof Spriteset_Battle
+     */
     terrainBattleback2Name(type: number): string;
+    /**
+     * 
+     * 
+     * @returns {string} Name of the default battleback 1 name.
+     * @memberof Spriteset_Battle
+     */
     defaultBattleback1Name(): string;
+    /**
+     * 
+     * 
+     * @returns {string} Name of the default battleback 2 name.
+     * @memberof Spriteset_Battle
+     */
     defaultBattleback2Name(): string;
+    /**
+     * 
+     * 
+     * @returns {string} Name of the ship battleback 1  bitmap.
+     * @memberof Spriteset_Battle
+     */
     shipBattleback1Name(): string;
+    /**
+     * 
+     * 
+     * @returns {string} Name of the ship battleback 2 bitmap.
+     * @memberof Spriteset_Battle
+     */
     shipBattleback2Name(): string;
     autotileType(z: number): number;
+    /**
+     * Creates sprite enemies for the battle spriteset.
+     * 
+     * @memberof Spriteset_Battle
+     */
     createEnemies(): void;
     compareEnemySprite(a: Sprite_Enemy, b: Sprite_Enemy): number;
+    /**
+     * Creates sprite actors for the battle spriteset.
+     * 
+     * @memberof Spriteset_Battle
+     */
     createActors(): void;
+    /**
+     * Updates the actor sprites on the battle spriteset.
+     * 
+     * @memberof Spriteset_Battle
+     */
     updateActors(): void;
+    /**
+     * Returns all battler sprites on the battle spriteset.
+     * 
+     * @returns {Array<Sprite_Battler>} 
+     * @memberof Spriteset_Battle
+     */
     battlerSprites(): Array<Sprite_Battler>;
+    /**
+     * Returns true if animation is playing on the battle spriteset.
+     * 
+     * @returns {boolean} 
+     * @memberof Spriteset_Battle
+     */
     isAnimationPlaying(): boolean;
     isEffecting(): boolean;
+    /**
+     * Returns true if any sprite actor or enemy is moving.
+     * 
+     * @returns {boolean} Representing whether any battle participants are moving.
+     * @memberof Spriteset_Battle
+     */
     isAnyoneMoving(): boolean;
+    /**
+     * Returns true if the battle spriteset is busy.
+     * 
+     * @returns {boolean} 
+     * @memberof Spriteset_Battle
+     */
     isBusy(): boolean;
 }
+//=============================================================================
+// rpg_windows.js v1.5.0
+//=============================================================================
+
+//-----------------------------------------------------------------------------
+// Window_Base
+//
+// The superclass of all windows within the game.
 
 /**
  * -----------------------------------------------------------------------------
  * Window_Base
  *
  * The superclass of all windows within the game.
+ *
+ * Super class of all windows within the game.
+ * Inherits from the Window class.
+ * @class Window_Base
+ * @extends {Window}
  */
 declare class Window_Base extends _Window {
+    /**
+     * The standard icon width;
+     * default is 32.
+     * @protected
+     * @static
+     * @type {number}
+     * @memberof Window_Base
+     */
     protected static _iconWidth: number;
+    /**
+     * The standard icon height;
+     * default is 32.
+     * @protected
+     * @static
+     * @type {number}
+     * @memberof Window_Base
+     */
     protected static _iconHeight: number;
+    /**
+     * The standard face width;
+     * default is 144.
+     * @protected
+     * @static
+     * @type {number}
+     * @memberof Window_Base
+     */
     protected static _faceWidth: number;
+    /**
+     * The standard face height;
+     * default is 144.
+     * @protected
+     * @static
+     * @type {number}
+     * @memberof Window_Base
+     */
     protected static _faceHeight: number;
-
+    /**
+     * The opening property; determines if
+     * the window is opening.
+     * @protected
+     * @type {boolean}
+     * @memberof Window_Base
+     */
     protected _opening: boolean;
+    /**
+     * The closing property; determines if
+     * the window is closing.
+     * @protected
+     * @type {boolean}
+     * @memberof Window_Base
+     */
     protected _closing: boolean;
 
     opacity: number;
@@ -10226,102 +17363,746 @@ declare class Window_Base extends _Window {
     contents: Bitmap;
     windowskin: Bitmap;
 
+    /**
+     * Creates an instance of Window_Base.
+     * @param {number} x 
+     * @param {number} y 
+     * @param {number} width 
+     * @param {number} height 
+     * @memberof Window_Base
+     */
     constructor(x: number, y: number, width: number, height: number);
 
+    /**
+     * Returns the standard line height of the current window;
+     * default is 36.
+     * @returns {number} 
+     * @memberof Window_Base
+     */
     lineHeight(): number;
+    /**
+     * Returns the standard font face of the 
+     * game based on what language the game is in.
+     * @returns {string} 
+     * @memberof Window_Base
+     */
     standardFontFace(): string;
+    /**
+     * Returns the standard font size of the text
+     * in window; default is 28.
+     * @returns {number} 
+     * @memberof Window_Base
+     */
     standardFontSize(): number;
+    /**
+     * Returns the standard padding of the window;
+     * default is 18.
+     * @returns {number} 
+     * @memberof Window_Base
+     */
     standardPadding(): number;
+    /**
+     * Returns the text padding of the window;
+     * default is 6.
+     * @returns {number} 
+     * @memberof Window_Base
+     */
     textPadding(): number;
+    /**
+     * Returns the standard back opacity of the window; this is the
+     * opacity of the area behind the window's text content.
+     * Default is 192.
+     * @returns {number} 
+     * @memberof Window_Base
+     */
     standardBackOpacity(): number;
+    /**
+     * Loads the window skin from the img/system directory.
+     * 
+     * @memberof Window_Base
+     */
     loadWindowskin(): void;
+    loadWindowSkin(): void;
+    /**
+     * Updates the window padding based on the 
+     * standardPadding method.
+     * @memberof Window_Base
+     */
     updatePadding(): void;
+    /**
+     * Updates the back opacity of the window
+     * based on the standardBackOpacity method.
+     * @memberof Window_Base
+     */
     updateBackOpacity(): void;
+    /**
+     * Returns the inner content width of the window.
+     * 
+     * @returns {number} 
+     * @memberof Window_Base
+     */
     contentsWidth(): number;
+    /**
+     * Returns the inner content height of the window.
+     * 
+     * @returns {number} 
+     * @memberof Window_Base
+     */
     contentsHeight(): number;
+    /**
+     * Returns the fitting height given a number of lines based on
+     * the line height plus standard padding of the window.
+     * Default formula: numLines * lineHeight + standardPadding * 2
+     *
+     * @param {number} numLines 
+     * @returns {number} 
+     * @memberof Window_Base
+     */
     fittingHeight(numLines: number): number;
+    /**
+     * Updates the tone of the window based on the
+     * game system window tone defined in the database.
+     * @memberof Window_Base
+     */
     updateTone(): void;
+    /**
+     * Creates the contents of the window; this is the area
+     * of the window which text is drawn to.
+     * @memberof Window_Base
+     */
     createContents(): void;
+    /**
+     * Resets the font settings of the window back to the
+     * default.
+     * @memberof Window_Base
+     */
     resetFontSettings(): void;
+    /**
+     * Resets the text color of the window back to the
+     * default.
+     * @memberof Window_Base
+     */
     resetTextColor(): void;
+    /**
+     * The update method of the window; this is
+     * run every frame to do logic processing for the window.
+     * @memberof Window_Base
+     */
+    update(): void;
+    /**
+     * Updates the openness of the window when the
+     * _opening property is set to true.
+     * Openness is increased.
+     * @memberof Window_Base
+     */
     updateOpen(): void;
+    /**
+     * Updates the openness of the window when the 
+     * _closing property is set to true.
+     * Openness is decreased.
+     * @memberof Window_Base
+     */
     updateClose(): void;
+    /**
+     * Opens the window.
+     * 
+     * @memberof Window_Base
+     */
     open(): void;
+    /**
+     * Closes the window.
+     * 
+     * @memberof Window_Base
+     */
     close(): void;
+    /**
+     * Returns true if the window is currently opening.
+     *
+     * @returns {boolean} 
+     * @memberof Window_Base
+     */
     isOpening(): boolean;
+    /**
+     * Returns true if the window is currently closing.
+     * 
+     * @returns {boolean} 
+     * @memberof Window_Base
+     */
     isClosing(): boolean;
+    /**
+     * Shows the window, making it visible.
+     * 
+     * @memberof Window_Base
+     */
     show(): void;
+    /**
+     * Hides the window, making it invisible;
+     * the window is not closed when hidden.
+     * 
+     * @memberof Window_Base
+     */
     hide(): void;
+    /**
+     * Activates the window, allowing it to be processed
+     * and to update.
+     * @memberof Window_Base
+     */
     activate(): void;
+    /**
+     * Deactives the window, preventing further processing.
+     * 
+     * @memberof Window_Base
+     */
     deactivate(): void;
+    /**
+     * Returns a text color given a numbered index
+     * as a css color string; this index maps
+     * directly to the img/system/window.png colors
+     * by default.
+     * @param {number} n 
+     * @returns {*} 
+     * @memberof Window_Base
+     */
     textColor(n: number): string;
+    /**
+     * Returns the normal color as a css
+     * color string.
+     * @returns {string} 
+     * @memberof Window_Base
+     */
     normalColor(): string;
+    /**
+     * Returns the system color as a
+     * css color string.
+     * @returns {string} 
+     * @memberof Window_Base
+     */
     systemColor(): string;
+    /**
+     * Returns the crisis color as a 
+     * css color string.
+     * @returns {string} 
+     * @memberof Window_Base
+     */
     crisisColor(): string;
+    /**
+     * Returns the death color as a 
+     * css color string.
+     * @returns {string} 
+     * @memberof Window_Base
+     */
     deathColor(): string;
+    /**
+     * Returns the gauage back color as 
+     * a css color string.
+     * @returns {string} 
+     * @memberof Window_Base
+     */
     gaugeBackColor(): string;
+    /**
+     * Returns the hp gauge color 1 
+     * as a css color string.
+     * @returns {string} 
+     * @memberof Window_Base
+     */
     hpGaugeColor1(): string;
+    /**
+     * Returns the hp gauge color 2 
+     * as a css color string.
+     * @returns {string} 
+     * @memberof Window_Base
+     */
     hpGaugeColor2(): string;
+    /**
+     * Returns the mp gauge color 1
+     * as a css color string.
+     * @returns {string} 
+     * @memberof Window_Base
+     */
     mpGaugeColor1(): string;
+    /**
+     * Returns the mp gauge color 2
+     * as a css color string.
+     * @returns {string} 
+     * @memberof Window_Base
+     */
     mpGaugeColor2(): string;
+    /**
+     * Returns the mp cost color as a
+     * css color string.
+     * @returns {string} 
+     * @memberof Window_Base
+     */
     mpCostColor(): string;
+    /**
+     * Returns the power up color as a
+     * css color string.
+     * @returns {string} 
+     * @memberof Window_Base
+     */
     powerUpColor(): string;
+    /**
+     * Returns the power down color as a 
+     * css color string.
+     * @returns {string} 
+     * @memberof Window_Base
+     */
     powerDownColor(): string;
+    /**
+     * Returns the tp gauge color 1 as a 
+     * css color string.
+     * @returns {string} 
+     * @memberof Window_Base
+     */
     tpGaugeColor1(): string;
+    /**
+     * Returns tp gauge color 2 as a
+     * css color string.
+     * @returns {string} 
+     * @memberof Window_Base
+     */
     tpGaugeColor2(): string;
+    /**
+     * Returns the tp cost color as a 
+     * css color string.
+     * @returns {string} 
+     * @memberof Window_Base
+     */
     tpCostColor(): string;
+    /**
+     * Returns the pending color as a
+     * css color string.
+     * @returns {string} 
+     * @memberof Window_Base
+     */
     pendingColor(): string;
+    /**
+     * Returns the translucentOpacity for the window;
+     * The default is 160.
+     * 
+     * @returns {number} 
+     * @memberof Window_Base
+     */
     translucentOpacity(): number;
+    /**
+     * Changes the text color property given a css color string.
+     * 
+     * @param {string} color 
+     * @memberof Window_Base
+     */
     changeTextColor(color: string): void;
+    /**
+     * Changes the paintOpacity (the opacity of the text drawn to the window);
+     * if true the opacity is set to 255, otherwise the opacity is set to 160.
+     * @param {boolean} enabled 
+     * @memberof Window_Base
+     */
     changePaintOpacity(enabled: boolean): void;
+    /**
+     * Given text or a number, draws the content to the window's contents
+     * layer at the specified x and y coordinate within the max width.
+     * The text content can also be aligned with the align property.
+     * The possible alignments are: "left", "center", "right".
+     * @param {(string | number)} text 
+     * @param {number} x 
+     * @param {number} y 
+     * @param {number} maxWidth 
+     * @param {string} align 
+     * @memberof Window_Base
+     */
     drawText(text: string | number, x: number, y: number, maxWidth: number, align: string): void;
+    /**
+     * Calculates the width of a text string and
+     * returns a number.
+     * @param {string} text 
+     * @returns {number} 
+     * @memberof Window_Base
+     */
     textWidth(text: string): number;
+    /**
+     * Draws text with text codes included; this will draw
+     * icons, increase text height, and more.
+     * @param {string} text 
+     * @param {number} x 
+     * @param {number} y 
+     * @returns {number} 
+     * @memberof Window_Base
+     */
     drawTextEx(text: string, x: number, y: number): number;
+    /**
+     * Converts the escape characters and returns the text content
+     * after processing the characters.
+     * @param {string} text 
+     * @returns {string} 
+     * @memberof Window_Base
+     */
     convertEscapeCharacters(text: string): string;
-    actorName(n: number): string;
-    partyMemberName(n: number): string;
+    /**
+     * Returns the actor name given an index;
+     * the index starts from 1.
+     * @param {number} actorIndex 
+     * @returns {string} 
+     * @memberof Window_Base
+     */
+    actorName(actorIndex: number): string;
+    /**
+     * Returns a party member name given an index;
+     * the index starts from 1.
+     * @param {number} partyMemberIndex 
+     * @returns {string} 
+     * @memberof Window_Base
+     */
+    partyMemberName(partyMemberIndex: number): string;
+    /**
+     * Process each character in the text when drawTextEx
+     * is used to draw text.
+     * @param {MV.TextState} textState 
+     * @memberof Window_Base
+     */
     processCharacter(textState: MV.TextState): void;
+    /**
+     * Processes the normal characters in the text
+     * when drawTextEx is used to draw text.
+     * Normal characters are letters and numbers.
+     * @param {MV.TextState} textState 
+     * @memberof Window_Base
+     */
     processNormalCharacter(textState: MV.TextState): void;
+    /**
+     * Processes new line when drawTextEx is used to draw text.
+     * 
+     * @param {MV.TextState} textState 
+     * @memberof Window_Base
+     */
     processNewLine(textState: MV.TextState): void;
+    /**
+     * Processes new page when drawTexttEx is used to draw text.
+     * 
+     * @param {MV.TextState} textState 
+     * @memberof Window_Base
+     */
     processNewPage(textState: MV.TextState): void;
     obtainEscapeCode(textState: MV.TextState): string;
-    obtainEscapeParam(textState: MV.TextState): number;
+    /**
+     * Obtains the escape parameters from text codes in the text state
+     * when drawTextEx is used to draw text.
+     * @param {MV.TextState} textState 
+     * @returns {(number | string)} 
+     * @memberof Window_Base
+     */
+    obtainEscapeParam(textState: MV.TextState): number | string;
+    /**
+     * Processes escape characters when drawTextEx is used 
+     * for drawing text.
+     * @param {string} code 
+     * @param {MV.TextState} textState 
+     * @memberof Window_Base
+     */
     processEscapeCharacter(code: string, textState: MV.TextState): void;
+    /**
+     * Processes drawing an icon when drawTextEx is used for
+     * drawing text.
+     * @param {number} iconIndex 
+     * @param {MV.TextState} textState 
+     * @memberof Window_Base
+     */
     processDrawIcon(iconIndex: number, textState: MV.TextState): void;
+    /**
+     * Makes the font bigger by a value of 12.
+     * 
+     * @memberof Window_Base
+     */
     makeFontBigger(): void;
+    /**
+     * Makes the font smaller by a value of 12.
+     * 
+     * @memberof Window_Base
+     */
     makeFontSmaller(): void;
+    /**
+     * Calculates the text height of the textState (when using drawTextEx);
+     * if all is set to true, all lines of text are calculated, otherwise
+     * only a single line is processed.
+     * @param {MV.TextState} textState 
+     * @param {boolean} all 
+     * @returns {number} 
+     * @memberof Window_Base
+     */
     calcTextHeight(textState: MV.TextState, all: boolean): number;
+    /**
+     * Draws an icon given the specified iconIndex at the specified
+     * x and y coordinates. The Width and Height of the icon is based on the
+     * _iconWidth and _iconHeight properties.
+     * @param {number} iconIndex 
+     * @param {number} x 
+     * @param {number} y 
+     * @memberof Window_Base
+     */
     drawIcon(iconIndex: number, x: number, y: number): void;
     drawFace(faceName: string, faceIndex: number, x: number, y: number, width?: number, height?: number): void;
+    /**
+     * Draws a character (map sprites) at the specified x and y coordinate.
+     * CharacterName refers to character spritesheet, and characterIndex refers
+     * to the characterIndex on the spritesheet.
+     * @param {string} characterName 
+     * @param {number} characterIndex 
+     * @param {number} x 
+     * @param {number} y 
+     * @memberof Window_Base
+     */
     drawCharacter(characterName: string, characterIndex: number, x: number, y: number): void;
+    /**
+     * Draws a gauge at the specified x and y coordinates within the given width.
+     * Color1 and Color2 represent the gradient as css color strings of the gauge.
+     * 
+     * @param {number} x 
+     * @param {number} y 
+     * @param {number} width 
+     * @param {number} rate 
+     * @param {string} color1 
+     * @param {string} color2 
+     * @memberof Window_Base
+     */
     drawGauge(x: number, y: number, width: number, rate: number, color1: string, color2: string): void;
-    hpColor(actor: Game_Actor): void;
-    mpColor(actor: Game_Actor): void;
-    tpColor(actor: Game_Actor): void;
+    /**
+     * Returns the hp color as a css string.
+     * 
+     * @param {Game_Actor} actor 
+     * @returns {string} 
+     * @memberof Window_Base
+     */
+    hpColor(actor: Game_Actor): string;
+    /**
+     * Returns the mp color as a css color string.
+     * 
+     * @param {Game_Actor} actor 
+     * @returns {string} 
+     * @memberof Window_Base
+     */
+    mpColor(actor: Game_Actor): string;
+    /**
+     * Returns the tp color as a css color string.
+     * 
+     * @param {Game_Actor} actor 
+     * @returns {string} 
+     * @memberof Window_Base
+     */
+    tpColor(actor: Game_Actor): string;
     drawActorCharacter(actor: Game_Actor, x: number, y: number): void;
+    /**
+     * Draws the actor face at the specified x and y coordinates within
+     * the given width.
+     * @param {Game_Actor} actor 
+     * @param {number} x 
+     * @param {number} y 
+     * @param {number} width 
+     * @param {number} height 
+     * @memberof Window_Base
+     */
     drawActorFace(actor: Game_Actor, x: number, y: number, width?: number, height?: number): void;
+    /**
+     * Draws the actor name at the specified x and y coordinates within
+     * the given width.
+     * @param {Game_Actor} actor 角色
+     * @param {number} x 
+     * @param {number} y 
+     * @param {number} width 
+     * @memberof Window_Base
+     */
     drawActorName(actor: Game_Actor, x: number, y: number, width?: number): void;
+    /**
+     * Draws the actor class at the specified x and y coordinates
+     * within the given width.
+     * @param {Game_Actor} actor 
+     * @param {number} x 
+     * @param {number} y 
+     * @param {number} width 
+     * @memberof Window_Base
+     */
     drawActorClass(actor: Game_Actor, x: number, y: number, width?: number): void;
+    /**
+     * Draws the actor nickname at the specified x and y coordinates
+     * within the given width.
+     * @param {Game_Actor} actor 
+     * @param {number} x 
+     * @param {number} y 
+     * @param {number} width 
+     * @memberof Window_Base
+     */
     drawActorNickname(actor: Game_Actor, x: number, y: number, width?: number): void;
+    /**
+     * Draws the actor level at the specified x and y coordinates.
+     * 
+     * @param {Game_Actor} actor 
+     * @param {number} x 
+     * @param {number} y 
+     * @memberof Window_Base
+     */
     drawActorLevel(actor: Game_Actor, x: number, y: number): void;
+    /**
+     * Draws the actor icons at the specified x and y coordinates
+     * within the given width.
+     * @param {Game_Actor} actor 
+     * @param {number} x 
+     * @param {number} y 
+     * @param {number} width 
+     * @memberof Window_Base
+     */
     drawActorIcons(actor: Game_Actor, x: number, y: number, width?: number): void;
+    /**
+     * Draws the current and max number at the specified x and y coordinate
+     * within the given width. Color1 represents the current number and color2
+     * represents the max number when the text is drawn.
+     * @param {number} current 
+     * @param {number} max 
+     * @param {number} x 
+     * @param {number} y 
+     * @param {number} width 
+     * @param {string} color1 
+     * @param {string} color2 
+     * @memberof Window_Base
+     */
     drawCurrentAndMax(current: number, max: number, x: number, y: number, width: number, color1: string, color2: string): void;
+    /**
+     * Draws the actor hp at the specified x and y coordinates within
+     * the given width.
+     * @param {Game_Actor} actor 
+     * @param {number} x 
+     * @param {number} y 
+     * @param {number} width 
+     * @memberof Window_Base
+     */
     drawActorHp(actor: Game_Actor, x: number, y: number, width?: number): void;
+    /**
+     * Draws the actor mp at the specified x and y coordinates within
+     * the given width.
+     * @param {Game_Actor} actor 
+     * @param {number} x 
+     * @param {number} y 
+     * @param {number} width 
+     * @memberof Window_Base
+     */
     drawActorMp(actor: Game_Actor, x: number, y: number, width?: number): void;
+    /**
+     * Draws the actor tp at the specified x and y coordinates within the
+     * given width.
+     * @param {Game_Actor} actor 
+     * @param {number} x 
+     * @param {number} y 
+     * @param {number} width 
+     * @memberof Window_Base
+     */
     drawActorTp(actor: Game_Actor, x: number, y: number, width?: number): void;
+    /**
+     * Draws a simple status for the game actor passed into the method at the
+     * specified x and y coordinates within the given width.
+     * 
+     * @param {Game_Actor} actor 
+     * @param {number} x 
+     * @param {number} y 
+     * @param {number} width 
+     * @memberof Window_Base
+     */
     drawActorSimpleStatus(actor: Game_Actor, x: number, y: number, width: number): void;
+    /**
+     * Draws the item name at the specified x and y coordinates within
+     * the given width.
+     * @param {RPG.BaseItem} item 
+     * @param {number} x 
+     * @param {number} y 
+     * @param {number} width 
+     * @memberof Window_Base
+     */
     drawItemName(item: RPG.BaseItem, x: number, y: number, width?: number): void;
+    /**
+     * Draws the currency value given at the specified x and y coordinates within
+     * the width given. Useful if you want to write your own custom currency value.
+     * @param {number} value 
+     * @param {string} unit 
+     * @param {number} x 
+     * @param {number} y 
+     * @param {number} width 
+     * @memberof Window_Base
+     */
     drawCurrencyValue(value: number, unit: string, x: number, y: number, width: number): void;
-    paramchangeTextColor(change: number): string;
+    /**
+     * Changes the text color based on the powerUpColor, powerDownColor
+     * and normal color. powerUpColor is any number greater than 0, powerDownColor
+     * is any color less than 0, otherwise normal color is returned.
+     * @param {number} change 
+     * @memberof Window_Base
+     */
+    paramchangeTextColor(change: number): void;
+    /**
+     * Sets the background type of the window.
+     * 0 is 255 window opacity (standard).
+     * 1 is the window with background dimmer.
+     * Any other number changes the opacity
+     * to 0.
+     * @param {number} type 
+     * @memberof Window_Base
+     */
     setBackgroundType(type: number): void;
+    /**
+     * Shows the background dimmer sprite.
+     * 
+     * @memberof Window_Base
+     */
     showBackgroundDimmer(): void;
+    /**
+     * Hides the background dimmer sprite.
+     * 
+     * @memberof Window_Base
+     */
     hideBackgroundDimmer(): void;
+    /**
+     * Updates the background dimmer sprite opacity based on the openness
+     * of the window.
+     * @memberof Window_Base
+     */
     updateBackgroundDimmer(): void;
+    /**
+     * Refreshes the bitmap attached to the dimmer sprite
+     * based on the window dimensions.
+     * @memberof Window_Base
+     */
     refreshDimmerBitmap(): void;
+    /**
+     * Color 1 of the dimmer sprite bitmap.
+     * for the gradient.
+     * @returns {string} 
+     * @memberof Window_Base
+     */
     dimColor1(): string;
+    /**
+     * Color 2 of the dimmer sprite bitmap
+     * for the gradient.
+     * @returns {string} 
+     * @memberof Window_Base
+     */
     dimColor2(): string;
+    /**
+     * Returns the x coordinate of the mouse to
+     * a local window x coordinate.
+     * @param {number} x 
+     * @returns {number} 
+     * @memberof Window_Base
+     */
     canvasToLocalX(x: number): number;
+    /**
+     * Returns the y coordinate of the mouse
+     * to a local window y coordinate.
+     * @param {number} y 
+     * @returns {number} 
+     * @memberof Window_Base
+     */
     canvasToLocalY(y: number): number;
+    /**
+     * Reverses the face images of the 
+     * game party members.
+     * @memberof Window_Base
+     */
+    reserveFaceImages(): void;
 }
 
 /**
@@ -10330,8 +18111,23 @@ declare class Window_Base extends _Window {
  *
  * The window class with cursor movement and scroll functions.
  */
+
 declare class Window_Selectable extends Window_Base {
+    /**
+     * The index property of Window_Selectable; this is used
+     * to select items from the list within the window.
+     * @protected
+     * @type {number}
+     * @memberof Window_Selectable
+     */
     protected _index: number;
+    /**
+     * The boolean property that determines if the cursor is
+     * fixed(locked to a position).
+     * @protected
+     * @type {boolean}
+     * @memberof Window_Selectable
+     */
     protected _cursorFixed: boolean;
     protected _cursorAll: boolean;
     protected _stayCount: number;
@@ -10342,43 +18138,161 @@ declare class Window_Selectable extends Window_Base {
     protected _scrollY: number;
 
     constructor(x: number, y: number, width: number, height: number);
-
+    /**
+     * Returns the current position of the _index property.
+     * 
+     * @returns {number} 
+     * @memberof Window_Selectable
+     */
     index(): number;
+    /**
+     * Returns true if the _cursorFixed property is true;
+     * this means the cursor is locked to a position.
+     * @returns {boolean} 
+     * @memberof Window_Selectable
+     */
     cursorFixed(): boolean;
+    /**
+     * Sets the _cursorFixed property of the
+     * window.
+     * @param {boolean} cursorFixed 
+     * @memberof Window_Selectable
+     */
     setCursorFixed(cursorFixed: boolean): void;
     cursorAll(): boolean;
     setCursorAll(cursorAll: boolean): void;
+    /**
+     * Returns the maximum number of columns
+     * for the window.
+     * @returns {number} 
+     * @memberof Window_Selectable
+     */
     maxCols(): number;
+    /**
+     * Returns the maximum number of items within the window;
+     * useful to overwrite when creating a new window.
+     * This method is used to calculate the number of rows and more.
+     * @returns {number} 
+     * @memberof Window_Selectable
+     */
     maxItems(): number;
     spacing(): number;
+    /**
+     * Returns the width of an item within the window;
+     * determines the width of a column.
+     * @returns {number} 
+     * @memberof Window_Selectable
+     */
     itemWidth(): number;
+    /**
+     * Returns the height of an item within the window;
+     * determines the height of a row.
+     * @returns {number} 
+     * @memberof Window_Selectable
+     */
     itemHeight(): number;
     maxRows(): number;
+    /**
+     * Selects the current index within the window given a number.
+     * 
+     * @param {number} index 
+     * @memberof Window_Selectable
+     */
     select(index: number): void;
+    /**
+     * Deselects the currently selected index.
+     * 
+     * @memberof Window_Selectable
+     */
     deselect(): void;
+
+    /**
+     * Reselects the index based on the window's _index property.
+     * 
+     * @memberof Window_Selectable
+     */
     reselect(): void;
     row(): number;
     topRow(): number;
     maxTopRow(): number;
+    /**
+     * Sets the current top row of the given a number.
+     * The top row will then be moved to an index
+     * of the window.
+     * @param {number} row 
+     * @memberof Window_Selectable
+     */
     setTopRow(row: number): void;
     resetScroll(): void;
     maxPageRows(): number;
     maxPageItems(): number;
+    /**
+     * Returns true if the window is horizontal;
+     * means the window only has a single row.
+     * @returns {boolean} 
+     * @memberof Window_Selectable
+     */
     isHorizontal(): boolean;
     bottomRow(): number;
     setBottomRow(row: number): void;
-    topIndex(): number;
+    /**
+     * Creates a new rectangle based on itemWidth and itemHeight.
+     * The rectangle is mainly used for positioning items within
+     * the selectable window.
+     * @param {number} index 
+     * @returns {Rectangle} 
+     * @memberof Window_Selectable
+     */
     itemRect(index: number): Rectangle;
+    /**
+     * Creates a new rectangle based on itemWidth and itemHeight
+     * The rectangle is used for positioning text within
+     * the selectable window.
+     * @param {number} index 
+     * @returns {Rectangle} 
+     * @memberof Window_Selectable
+     */
     itemRectForText(index: number): Rectangle;
     setHelpWindow(helpWindow: Window_Help): void;
+    /**
+     * Shows the attached help window.
+     * 
+     * @memberof Window_Selectable
+     */
     showHelpWindow(): void;
+    /**
+     * Hides the attached help window.
+     * 
+     * @memberof Window_Selectable
+     */
     hideHelpWindow(): void;
+    /**
+     * Creates a new handler with the symbol as the handler name
+     * and a method (JS function) bound to it.
+     * @param {string} symbol 
+     * @param {*} method 
+     * @memberof Window_Selectable
+     */
     setHandler(symbol: string, method: () => void): void;
     isHandled(symbol: string): boolean;
     callHandler(symbol: string): void;
     isOpenAndActive(): boolean;
     isCursorMovable(): boolean;
+    /**
+     * Moves the cursor down; if wrap is passed
+     * as true, then it will return to the top when
+     * at the end of the list.
+     * @param {boolean} wrap 
+     * @memberof Window_Selectable
+     */
     cursorDown(wrap?: boolean): void;
+    /**
+     * Moves the cursor up; if wrap is passed 
+     * as true, then it will return to the bottom
+     * when at the top of the list.
+     * @param {boolean} wrap 
+     * @memberof Window_Selectable
+     */
     cursorUp(wrap?: boolean): void;
     cursorRight(wrap?: boolean): void;
     cursorLeft(wrap?: boolean): void;
@@ -10387,22 +18301,71 @@ declare class Window_Selectable extends Window_Base {
     scrollDown(): void;
     scrollUp(): void;
     updateArrows(): void;
+    /**
+     * Handles the processing of cursor movement.
+     * 
+     * @memberof Window_Selectable
+     */
     processCursorMove(): void;
+    /**
+     * Handles the process of attached handlers.
+     * 
+     * @memberof Window_Selectable
+     */
     processHandling(): void;
+    /**
+     * Handles the processing of the scroll wheel within
+     * the window.
+     * @memberof Window_Selectable
+     */
     processWheel(): void;
+    /**
+     * Handles the processing of touch input.
+     * 
+     * @memberof Window_Selectable
+     */
     processTouch(): void;
     isTouchedInsideFrame(): boolean;
     onTouch(triggered: boolean): void;
     hitTest(x: number, y: number): number;
     isContentsArea(x: number, y: number): boolean;
+    /**
+     * Determines if touch ok is enabled as an option;
+     * this means whether you can confirm the selection
+     * of an item within the window with touch input.
+     * @returns {boolean} 
+     * @memberof Window_Selectable
+     */
     isTouchOkEnabled(): boolean;
+    /**
+     * Determines if ok is enabled as an option;
+     * this means whether you can confirm selection
+     * of an item within the window.
+     * @returns {boolean} 
+     * @memberof Window_Selectable
+     */
     isOkEnabled(): boolean;
     isCancelEnabled(): boolean;
     isOkTriggered(): boolean;
     isCancelTriggered(): boolean;
     processOk(): void;
+    /**
+     * Plays a sound effect when okay is processed.
+     * 
+     * @memberof Window_Selectable
+     */
     playOkSound(): void;
+    /**
+     * Plays the buzzer sound effect when input is
+     * incorrect.
+     * @memberof Window_Selectable
+     */
     playBuzzerSound(): void;
+    /**
+     * Calls the ok handler and begins processing
+     * confirmation of selection.
+     * @memberof Window_Selectable
+     */
     callOkHandler(): void;
     processCancel(): void;
     callCancelHandler(): void;
@@ -10410,48 +18373,187 @@ declare class Window_Selectable extends Window_Base {
     processPagedown(): void;
     updateInputData(): void;
     updateCursor(): void;
+    /**
+     * Determines if the cursor is visible within
+     * the window.
+     * @returns {boolean} 
+     * @memberof Window_Selectable
+     */
     isCursorVisible(): boolean;
     ensureCursorVisible(): void;
     callUpdateHelp(): void;
     updateHelp(): void;
     setHelpWindowItem(item: any): void;
     isCurrentItemEnabled(): boolean;
+    /**
+     * Draws all items within the window; this method
+     * cals drawItem multiple times.
+     * @memberof Window_Selectable
+     */
     drawAllItems(): void;
     drawItem(index: number): void;
     clearItem(index: number): void;
     redrawItem(index: number): void;
     redrawCurrentItem(): void;
+    /**
+     * Refreshes the window contents.
+     * 
+     * @memberof Window_Selectable
+     */
     refresh(): void;
 }
-
 
 /**
  * -----------------------------------------------------------------------------
  * Window_Command
  *
  * The superclass of windows for selecting a command.
+ * 
+ * @class Window_Command
+ * @extends {Window_Selectable}
  */
 declare class Window_Command extends Window_Selectable {
     protected _list: Array<MV.CommandItem>;
 
-    constructor(x: number, y: number);
-
+    /**
+     * Creates an instance of Window_Command.
+     * @param {number} x 
+     * @param {number} y 
+     * @memberof Window_Command
+     */
+    constructor(x: number, y: number)
+    /**
+     * Returns the width of the window;
+     * default is 240.
+     * @returns {number} 
+     * @memberof Window_Command
+     */
     windowWidth(): number;
+    /**
+     * Returns the height of the window;
+     * takes the visible rows and passes it to the fittingHeight method.
+     * @returns {number} 
+     * @memberof Window_Command
+     */
     windowHeight(): number;
+    /**
+     * Returns the number of visible rows within the window.
+     * 
+     * @returns {number} 
+     * @memberof Window_Command
+     */
     numVisibleRows(): number;
+    /**
+     * Returns the maximum number of items within the window.
+     * 
+     * @returns {number} 
+     * @memberof Window_Command
+     */
+    maxItems(): number;
+    /**
+     * Clears the list of commands from the window;
+     * this is useful for refreshing changing commands.
+     * @memberof Window_Command
+     */
     clearCommandList(): void;
+
+    /**
+     * Convenient method for overwriting and adding
+     * commands with the addCommand method.
+     * @memberof Window_Command
+     */
     makeCommandList(): void;
-    addCommand(name: string, symbol: string, enabled?: boolean, ext?: any): void;
+    /**
+     * Adds commands to the window list with the specified
+     * parameters. The actual command can be found as an object.
+     * @param {string} name 
+     * @param {string} symbol 
+     * @param {boolean} enabled 
+     * @param {(any | object)} ext 
+     * @memberof Window_Command
+     */
+    addCommand(name: string, symbol: string, enabled: boolean, ext: any | object)
+    /**
+     * Returns the command name given an index.
+     * 
+     * @param {number} index 
+     * @returns {string} 
+     * @memberof Window_Command
+     */
     commandName(index: number): string;
+    /**
+     * Returns the command symbol given an index.
+     * 
+     * @param {number} index 
+     * @returns {string} 
+     * @memberof Window_Command
+     */
     commandSymbol(index: number): string;
+    /**
+     * Determines if the command is enabled;
+     * checks the enabled property of the command.
+     * @param {number} index 
+     * @returns {boolean} 
+     * @memberof Window_Command
+     */
     isCommandEnabled(index: number): boolean;
-    currentData(): MV.CommandItem;
+    /**
+     * Returns the command object at the current index.
+     * 
+     * @returns {object} 
+     * @memberof Window_Command
+     */
+    currentData(): object;
+    /**
+     * Returns the command symbol at the current index.
+     * 
+     * @returns {string} 
+     * @memberof Window_Command
+     */
     currentSymbol(): string;
-    currentExt(): any;
+    /**
+     * Returns the ext property of the command at the current index.
+     * 
+     * @returns {(any | object)} 
+     * @memberof Window_Command
+     */
+    currentExt(): any | object;
+    /**
+     * Finds a command object and returns the index number based
+     * on the symbol property.
+     * @param {string} symbol 
+     * @returns {number} 
+     * @memberof Window_Command
+     */
     findSymbol(symbol: string): number;
+    /**
+     * Selects a command object based on the symbol property.
+     * 
+     * @param {string} symbol 
+     * @memberof Window_Command
+     */
     selectSymbol(symbol: string): void;
-    findExt(ext: any): number;
-    selectExt(ext: any): void;
+    /**
+     * Finds a command object and returns the index number
+     * based on the ext property.
+     * @param {(any | object)} ext 
+     * @returns {number} 
+     * @memberof Window_Command
+     */
+    findExt(ext: any | object): number;
+    /**
+     * Selects a command object based on the ext property.
+     * 
+     * @param {(any | object)} ext 
+     * @memberof Window_Command
+     */
+    selectExt(ext: any | object): void;
+    /**
+     * Returns the text align of the commands;
+     * possible values are: 'left', 'center', 'right'.
+     * @returns {string} 
+     * @memberof Window_Command
+     */
     itemTextAlign(): string;
 }
 
@@ -10460,6 +18562,9 @@ declare class Window_Command extends Window_Selectable {
  * Window_HorzCommand
  *
  * The command window for the horizontal selection format.
+ * Same as Window_Command.
+ * @class Window_HorzCommand
+ * @extends {Window_Command}
  */
 declare class Window_HorzCommand extends Window_Command {
     constructor(x: number, y: number);
@@ -10470,14 +18575,40 @@ declare class Window_HorzCommand extends Window_Command {
  * Window_Help
  *
  * The window for displaying the description of the selected item.
+ * The window for display the description of the
+ * selected item given an item or a text string.
+ * @class Window_Help
+ * @extends {Window_Base}
  */
 declare class Window_Help extends Window_Base {
+    /**
+     * The text that is displayed within the window.
+     * 
+     * @protected
+     * @type {string}
+     * @memberof Window_Help
+     */
     protected _text: string;
-
+    /**
+     * Creates an instance of Window_Help.
+     * @param {number} numLines 
+     * @memberof Window_Help
+     */
     constructor(numLines?: number);
-
+    /**
+     * Sets the _text property of the window;
+     * this text will be displayed within the window.
+     * @param {string} text 
+     * @memberof Window_Help
+     */
     setText(text: string): void;
     clear(): void;
+    /**
+     * Sets the current item of the help window.
+     * 
+     * @param {RPG.BaseItem} item 
+     * @memberof Window_Help
+     */
     setItem(item: RPG.BaseItem): void;
     refresh(): void;
 }
@@ -10487,6 +18618,11 @@ declare class Window_Help extends Window_Base {
  * Window_Gold
  *
  * The window for displaying the party's gold.
+ * 
+ * Window for displaying game gold in RPGMakerMV.
+ * 
+ * @class Window_Gold
+ * @extends {Window_Base}
  */
 declare class Window_Gold extends Window_Base {
     constructor(x: number, y: number);
@@ -10494,7 +18630,19 @@ declare class Window_Gold extends Window_Base {
     windowWidth(): number;
     windowHeight(): number;
     refresh(): void;
+    /**
+     * Returns the $gameParty gold as a number.
+     * 
+     * @returns {number} 
+     * @memberof Window_Gold
+     */
     value(): number;
+    /**
+     * Returns the RPGMakerMV database currency
+     * as a string.
+     * @returns {string} 
+     * @memberof Window_Gold
+     */
     currencyUnit(): string;
 }
 
@@ -10506,23 +18654,71 @@ declare class Window_Gold extends Window_Base {
  */
 declare class Window_MenuCommand extends Window_Command {
     protected static _lastCommandSymbol: string;
-
     constructor(x: number, y: number);
-
     initCommandPosition(): void;
     makeCommandList(): void;
+    /**
+     * Adds the standard game commands to the
+     * RPGMakerMV main menu.
+     * @memberof Window_MenuCommand
+     */
     addMainCommands(): void;
+    /**
+     * Adds the standard formation command to the
+     * RPGMakerMV main menu.
+     * @memberof Window_MenuCommand
+     */
     addFormationCommand(): void;
+    /**
+     * Adds any user created commands to the 
+     * RPGMakerMV main menu.
+     * @memberof Window_MenuCommand
+     */
     addOriginalCommands(): void;
     addOptionsCommand(): void;
+    /**
+     * Adds the save command to the 
+     * RPGMakerMV main menu.
+     * @memberof Window_MenuCommand
+     */
     addSaveCommand(): void;
     addGameEndCommand(): void;
+    /**
+     * Checks if the standard game commands for the menu
+     * are needed based on database system options.
+     * @param {string} name 
+     * @returns {boolean} 
+     * @memberof Window_MenuCommand
+     */
     needsCommand(name: string): boolean;
+    /**
+     * Determines if the main commands are enabled;
+     * this is based on the settings in the database.
+     * @returns {boolean} 
+     * @memberof Window_MenuCommand
+     */
     areMainCommandsEnabled(): boolean;
     isFormationEnabled(): boolean;
+    /**
+     * Determines if the option command is enabled;
+     * based on the setting in the database.
+     * @returns {boolean} 
+     * @memberof Window_MenuCommand
+     */
     isOptionsEnabled(): boolean;
+    /**
+     * Determines if the save command is enabled;
+     * based on the setting in the database.
+     * @returns {boolean} 
+     * @memberof Window_MenuCommand
+     */
     isSaveEnabled(): boolean;
     isGameEndEnabled(): boolean;
+    /**
+     * Selects the last command in menu.
+     * 
+     * @memberof Window_MenuCommand
+     */
     selectLast(): void;
 }
 
@@ -10601,6 +18797,8 @@ declare class Window_MenuStatus extends Window_Selectable {
  *
  * 用于在道具和技能界面时选择目标的窗口
  * The window for selecting a target actor on the item and skill screens.
+ * @class Window_MenuActor
+ * @extends {Window_MenuStatus}
  */
 declare class Window_MenuActor extends Window_MenuStatus {
     constructor();
@@ -10613,12 +18811,19 @@ declare class Window_MenuActor extends Window_MenuStatus {
  * Window_ItemCategory
  *
  * The window for selecting a category of items on the item and shop screens.
+ * @class Window_ItemCategory
  */
 declare class Window_ItemCategory extends Window_HorzCommand {
     protected _itemWindow: Window_ItemList;
 
     constructor();
 
+    /**
+     * Sets the item window on the item category window.
+     * 
+     * @param {Window_ItemList} itemWindow 
+     * @memberof Window_ItemCategory
+     */
     setItemWindow(itemWindow: Window_ItemList): void;
 }
 
@@ -10627,6 +18832,7 @@ declare class Window_ItemCategory extends Window_HorzCommand {
  * Window_ItemList
  *
  * The window for selecting an item on the item screen.
+ * @class Window_ItemList
  */
 declare class Window_ItemList extends Window_Selectable {
     protected _category: string;
@@ -10635,12 +18841,43 @@ declare class Window_ItemList extends Window_Selectable {
     constructor(x: number, y: number, width: number, height: number);
 
     setCategory(category: string): void;
+    /**
+     * Returns the current item.
+     * 
+     * @returns {RPG.BaseItem} 
+     * @memberof Window_ItemList
+     */
     item(): RPG.BaseItem;
+    /**
+     * Returns true if the given item is included.
+     * 
+     * @param {RPG.BaseItem} item 
+     * @returns {boolean} 
+     * @memberof Window_ItemList
+     */
     includes(item: RPG.BaseItem): boolean;
     needsNumber(): boolean;
+    /**
+     * Returns true if the given item is enabled.
+     * 
+     * @param {RPG.BaseItem} item 
+     * @returns {boolean} 
+     * @memberof Window_ItemList
+     */
     isEnabled(item: RPG.BaseItem): boolean;
     selectLast(): void;
+    /**
+     * Creates the item list.
+     * 
+     * @memberof Window_ItemList
+     */
     makeItemList(): void;
+    /**
+     * Returns the width of the numbers.
+     * 
+     * @returns {number} 
+     * @memberof Window_ItemList
+     */
     numberWidth(): number;
     drawItemNumber(item: RPG.BaseItem, x: number, y: number, width: number): void;
 }
@@ -10650,15 +18887,53 @@ declare class Window_ItemList extends Window_Selectable {
  * Window_SkillType
  *
  * The window for selecting a skill type on the skill screen.
+ * @class Window_SkillType
  */
 declare class Window_SkillType extends Window_Command {
+    /**
+     * The current game actor attached to the window.
+     * 
+     * @protected
+     * @type {Game_Actor}
+     * @memberof Window_SkillType
+     */
     protected _actor: Game_Actor;
+    /**
+     * The current skill window attached to the window.
+     * 
+     * @protected
+     * @type {Window_SkillList}
+     * @memberof Window_SkillType
+     */
     protected _skillWindow: Window_SkillList;
 
+    /**
+     * Creates an instance of Window_SkillType.
+     * @param {number} x 
+     * @param {number} y 
+     * @memberof Window_SkillType
+     */
     constructor(x: number, y: number);
 
+    /**
+     * Sets the current actor for the skill type window.
+     * 
+     * @param {Game_Actor} actor 
+     * @memberof Window_SkillType
+     */
     setActor(actor: Game_Actor): void;
+    /**
+     * Sets the skill window for the current skill type.
+     * 
+     * @param {Window_SkillList} skillWindow 
+     * @memberof Window_SkillType
+     */
     setSkillWindow(skillWindow: Window_SkillList): void;
+    /**
+     * Selects the last command in the window.
+     * 
+     * @memberof Window_SkillType
+     */
     selectLast(): void;
 }
 
@@ -10667,13 +18942,40 @@ declare class Window_SkillType extends Window_Command {
  * Window_SkillStatus
  *
  * The window for displaying the skill user's status on the skill screen.
+ * @class Window_SkillStatus
  */
 declare class Window_SkillStatus extends Window_Base {
+    /**
+     * The current game actor attached to the window.
+     * 
+     * @protected
+     * @type {Game_Actor}
+     * @memberof Window_SkillStatus
+     */
     protected _actor: Game_Actor;
 
+    /**
+     * Creates an instance of Window_SkillStatus.
+     * @param {number} x 
+     * @param {number} y 
+     * @param {number} width 
+     * @param {number} height 
+     * @memberof Window_SkillStatus
+     */
     constructor(x: number, y: number, width: number, height: number);
 
+    /**
+     * Sets the current actor for the window.
+     * 
+     * @param {Game_Actor} actor 
+     * @memberof Window_SkillStatus
+     */
     setActor(actor: Game_Actor): void;
+    /**
+     * Refreshes the window contents.
+     * 
+     * @memberof Window_SkillStatus
+     */
     refresh(): void;
 }
 
@@ -10682,6 +18984,7 @@ declare class Window_SkillStatus extends Window_Base {
  * Window_SkillList
  *
  * The window for selecting a skill on the skill screen.
+ * @class Window_SkillList
  */
 declare class Window_SkillList extends Window_Selectable {
     protected _actor: Game_Actor;
@@ -10690,11 +18993,48 @@ declare class Window_SkillList extends Window_Selectable {
 
     constructor(x: number, y: number, witth: number, height: number);
 
+    /**
+     * Sets the current actor of the skill list window.
+     * 
+     * @param {Game_Actor} actor 
+     * @memberof Window_SkillList
+     */
     setActor(actor: Game_Actor): void;
+    /**
+     * Sets the skill type id of the skill list window.
+     * 
+     * @param {number} stypeId 
+     * @memberof Window_SkillList
+     */
     setStypeId(stypeId: number): void;
+    /**
+     * Returns the current skill from the databse.
+     * 
+     * @returns {RPG.Skill} 
+     * @memberof Window_SkillList
+     */
     item(): RPG.Skill;
+    /**
+     * Returns true if the given skill is included.
+     * 
+     * @param {RPG.Skill} item 
+     * @returns {boolean} 
+     * @memberof Window_SkillList
+     */
     includes(item: RPG.Skill): boolean;
+    /**
+     * Returns true if the given skill is enabled.
+     * 
+     * @param {RPG.Skill} item 
+     * @returns {boolean} 
+     * @memberof Window_SkillList
+     */
     isEnabled(item: RPG.Skill): boolean;
+    /**
+     * Creates the item list.
+     * 
+     * @memberof Window_SkillList
+     */
     makeItemList(): void;
     selectLast(): void;
     costWidth(): number;
@@ -10706,6 +19046,7 @@ declare class Window_SkillList extends Window_Selectable {
  * Window_EquipStatus
  *
  * The window for displaying parameter changes on the equipment screen.
+ * @class Window_EquipStatus
  */
 declare class Window_EquipStatus extends Window_Base {
     protected _actor: Game_Actor;
@@ -10731,6 +19072,7 @@ declare class Window_EquipStatus extends Window_Base {
  * Window_EquipCommand
  *
  * The window for selecting a command on the equipment screen.
+ * @class Window_EquipCommand
  */
 declare class Window_EquipCommand extends Window_HorzCommand {
     protected _windowWidth: number;
@@ -10743,6 +19085,7 @@ declare class Window_EquipCommand extends Window_HorzCommand {
  * Window_EquipSlot
  *
  * The window for selecting an equipment slot on the equipment screen.
+ * @class Window_EquipSlot
  */
 declare class Window_EquipSlot extends Window_Selectable {
     protected _actor: Game_Actor;
@@ -10751,11 +19094,49 @@ declare class Window_EquipSlot extends Window_Selectable {
 
     constructor(x: number, y: number, width: number, height: number);
 
+    /**
+     * Sets the current game actor.
+     * 
+     * @param {Game_Actor} actor 
+     * @memberof Window_EquipSlot
+     */
     setActor(actor: Game_Actor): void;
+    /**
+     * Returns the current equip item.
+     * 
+     * @returns {RPG.EquipItem} 
+     * @memberof Window_EquipSlot
+     */
     item(): RPG.EquipItem;
+    /**
+     * Returns the name of the slot at the specified index.
+     * 
+     * @param {number} index 
+     * @returns {string} 
+     * @memberof Window_EquipSlot
+     */
     slotName(index: number): string;
+    /**
+     * Returns true if the current slot is enabled.
+     * 
+     * @param {number} index 
+     * @returns {boolean} 
+     * @memberof Window_EquipSlot
+     */
     isEnabled(index: number): boolean;
+    /**
+     * Sets the status window within the equip slot window.
+     * 
+     * @param {Window_EquipStatus} statusWindow 
+     * @memberof Window_EquipSlot
+     */
     setStatusWindow(statusWindow: Window_EquipStatus): void;
+    /**
+     * Sets the item window within the equip slot window.
+     * 
+     * @param {Window_EquipItem} itemWindow 
+     * @memberof Window_EquipSlot
+     */
     setItemWindow(itemWindow: Window_EquipItem): void;
 }
 
@@ -10764,6 +19145,7 @@ declare class Window_EquipSlot extends Window_Selectable {
  * Window_EquipItem
  *
  * The window for selecting an equipment item on the equipment screen.
+ * @class Window_EquipItem
  */
 declare class Window_EquipItem extends Window_ItemList {
     protected _actor: Game_Actor;
@@ -10784,6 +19166,7 @@ declare class Window_EquipItem extends Window_ItemList {
  * Window_Status
  *
  * The window for displaying full status on the status screen.
+ * @class Window_Status
  */
 declare class Window_Status extends Window_Selectable {
     protected _actor: Game_Actor;
@@ -10795,6 +19178,12 @@ declare class Window_Status extends Window_Selectable {
     drawBlock2(y: number): void;
     drawBlock3(y: number): void;
     drawBlock4(y: number): void;
+    /**
+     * Draws a horizontal line at the given y coordinate.
+     * 
+     * @param {number} y 
+     * @memberof Window_Status
+     */
     drawHorzLine(y: number): void;
     lineColor(): string;
     drawBasicInfo(x: number, y: number): void;
@@ -10810,6 +19199,7 @@ declare class Window_Status extends Window_Selectable {
  * Window_Options
  *
  * The window for changing various settings on the options screen.
+ * @class Window_Options
  */
 declare class Window_Options extends Window_Command {
     constructor();
@@ -10833,19 +19223,49 @@ declare class Window_Options extends Window_Command {
  * Window_SavefileList
  *
  * The window for selecting a save file on the save and load screens.
+ * @class Window_SavefileList
  */
 declare class Window_SavefileList extends Window_Selectable {
     protected _mode: string;
 
     constructor(x: number, y: number, width: number, height: number);
 
+    /**
+     * Sets the mode of the save file window.
+     * 
+     * @param {string} mode 
+     * @memberof Window_SavefileList
+     */
     setMode(mode: string): void;
+    /**
+     * Returns the maximum number of visible items.
+     * 
+     * @returns {number} 
+     * @memberof Window_SavefileList
+     */
     maxVisibleItems(): number;
     itemHeight(): number;
+    /**
+     * Draws the file id at the specified x and y coordinates.
+     * 
+     * @param {number} id 
+     * @param {number} x 
+     * @param {number} y 
+     * @memberof Window_SavefileList
+     */
     drawFileId(id: number, x: number, y: number): void;
     drawContents(info: {key: string}, rect: Rectangle, valid: boolean): void;
     drawGameTitle(info: {key: string}, x: number, y: number, width: number): void;
     drawPartyCharacters(info: {key: string}, x: number, y: number): void;
+    /**
+     * Draws the current playtime at the specified x and y coordinates within the given
+     * width.
+     * @param {{key: string}} info 
+     * @param {number} x 
+     * @param {number} y 
+     * @param {number} width 
+     * @memberof Window_SavefileList
+     */
     drawPlaytime(info: {key: string}, x: number, y: number, width: number): void;
 }
 
@@ -10854,11 +19274,26 @@ declare class Window_SavefileList extends Window_Selectable {
  * Window_ShopCommand
  *
  * The window for selecting buy/sell on the shop screen.
+ * @class Window_ShopCommand
  */
 declare class Window_ShopCommand extends Window_HorzCommand {
     protected _windowWidth: number;
+    /**
+     * Determines if the shop is purchase only.
+     * 
+     * @protected
+     * @type {boolean}
+     * @memberof Window_ShopCommand
+     */
     protected _purchaseOnly: boolean;
 
+    /**
+     * Determines the width of the shop buy/sell window;
+     * also determines if the shop is purchase only.
+     * @param {number} width 
+     * @param {boolean} purchaseOnly 
+     * @memberof Window_ShopCommand
+     */
     initialize(width: number, purchaseOnly: boolean): void;
 }
 
@@ -10867,6 +19302,7 @@ declare class Window_ShopCommand extends Window_HorzCommand {
  * Window_ShopBuy
  *
  * The window for selecting an item to buy on the shop screen.
+ * @class Window_ShopBuy
  */
 declare class Window_ShopBuy extends Window_Selectable {
     protected _shopGoods: Array<Array<any>>;
@@ -10875,13 +19311,45 @@ declare class Window_ShopBuy extends Window_Selectable {
     protected _price: Array<number>;
     protected _statusWindow: Window_ShopStatus;
 
+    /**
+     * Creates an instance of Window_ShopBuy.
+     * @param {number} x 
+     * @param {number} y 
+     * @param {number} height 
+     * @param {Array<Array<any>>} shopGoods 
+     * @memberof Window_ShopBuy
+     */
     constructor(x: number, y: number, height: number, shopGoods: Array<Array<any>>);
 
+    /**
+     * Returns the width of the window.
+     * 
+     * @returns {number} 
+     * @memberof Window_ShopBuy
+     */
     windowWidth(): number;
+    /**
+     * Returns the current item of the window.
+     * 
+     * @returns {RPG.BaseItem} 
+     * @memberof Window_ShopBuy
+     */
     item(): RPG.BaseItem;
     setMoney(money: number): void;
     price(item: RPG.BaseItem): number;
+    /**
+     * Checks if the current item is enabled (can be bought/sold).
+     * 
+     * @param {RPG.BaseItem} item 
+     * @returns {boolean} 
+     * @memberof Window_ShopBuy
+     */
     isEnabled(item: RPG.BaseItem): boolean;
+    /**
+     * Creates a list of items for the shop window.
+     * 
+     * @memberof Window_ShopBuy
+     */
     makeItemList(): void;
     setStatusWindow(statusWindow: Window_ShopStatus): void;
 }
@@ -10891,10 +19359,18 @@ declare class Window_ShopBuy extends Window_Selectable {
  * Window_ShopSell
  *
  * The window for selecting an item to sell on the shop screen.
+ * @class Window_ShopSell
  */
 declare class Window_ShopSell extends Window_ItemList {
     constructor(x: number, y: number, width: number, height: number);
 
+    /**
+     * Determines if the item is sellable, otherwise, greyed out.
+     *
+     * @param {RPG.BaseItem} item 
+     * @returns {boolean} 
+     * @memberof Window_ShopSell
+     */
     isEnabled(item: RPG.BaseItem): boolean;
 }
 
@@ -10904,17 +19380,66 @@ declare class Window_ShopSell extends Window_ItemList {
  *
  * The window for inputting quantity of items to buy or sell on the shop
  * screen.
+ * @class Window_ShopNumber
  */
 declare class Window_ShopNumber extends Window_Selectable {
+    /**
+     * The current item being bought/sold.
+     * 
+     * @protected
+     * @type {RPG.BaseItem}
+     * @memberof Window_ShopNumber
+     */
     protected _item: RPG.BaseItem;
+    /**
+     * Returns the maximum number of the item
+     * that can be bought/sold.
+     * @protected
+     * @type {number}
+     * @memberof Window_ShopNumber
+     */
     protected _max: number;
+    /**
+     * The current price of the items.
+     * 
+     * @protected
+     * @type {number}
+     * @memberof Window_ShopNumber
+     */
     protected _price: number;
     protected _number: number;
+    /**
+     * Returns the currency unit of the game.
+     * 
+     * @protected
+     * @type {string}
+     * @memberof Window_ShopNumber
+     */
     protected _currencyUnit: string;
+    /**
+     * The buttons to input quantity
+     * for the quantity of the item to be bought/sold.
+     * @protected
+     * @type {Array<Sprite_Button>}
+     * @memberof Window_ShopNumber
+     */
     protected _buttons: Array<Sprite_Button>;
 
+    /**
+     * Creates an instance of Window_ShopNumber.
+     * @param {number} x 
+     * @param {number} y 
+     * @param {number} height 
+     * @memberof Window_ShopNumber
+     */
     constructor(x: number, y: number, height: number);
 
+    /**
+     * Returns the width of the window.
+     * 
+     * @returns {number} 
+     * @memberof Window_ShopNumber
+     */
     windowWidth(): number;
     number(): number;
     setup(item: RPG.BaseItem, max: number, price: number): void;
@@ -10922,18 +19447,50 @@ declare class Window_ShopNumber extends Window_Selectable {
     createButtons(): void;
     placeButtons(): void;
     updateButtonsVisiblity(): void;
+    /**
+     * Shows the quantity input buttons.
+     * 
+     * @memberof Window_ShopNumber
+     */
     showButtons(): void;
+    /**
+     * Hides the quantity input buttons.
+     * 
+     * @memberof Window_ShopNumber
+     */
     hideButtons(): void;
     drawMultiplicationSign(): void;
     drawNumber(): void;
+    /**
+     * Draws the total price of the selected
+     * quantity of item.
+     * @memberof Window_ShopNumber
+     */
     drawTotalPrice(): void;
     itemY(): number;
     priceY(): number;
     buttonY(): number;
+    /**
+     * Returns the width of the cursor.
+     * 
+     * @returns {number} 
+     * @memberof Window_ShopNumber
+     */
     cursorWidth(): number;
     cursorX(): number;
     maxDigits(): number;
+    /**
+     * Processes the change in quantity.
+     * 
+     * @memberof Window_ShopNumber
+     */
     processNumberChange(): void;
+    /**
+     * Changes the quantity, given a number.
+     * 
+     * @param {number} amount 
+     * @memberof Window_ShopNumber
+     */
     changeNumber(amount: number): void;
     onButtonUp(): void;
     onButtonUp2(): void;
@@ -10948,29 +19505,91 @@ declare class Window_ShopNumber extends Window_Selectable {
  *
  * The window for displaying number of items in possession and the actor's
  * equipment on the shop screen.
+ * @class Window_ShopStatus
  */
 declare class Window_ShopStatus extends Window_Base {
     protected _item: RPG.BaseItem;
     protected _pageIndex: number;
 
+    /**
+     * Creates an instance of Window_ShopStatus.
+     * @param {number} x 
+     * @param {number} y 
+     * @param {number} width 
+     * @param {number} height 
+     * @memberof Window_ShopStatus
+     */
     constructor(x: number, y: number, width: number, height: number);
 
+    /**
+     * Refreshes the window contents.
+     * 
+     * @memberof Window_ShopStatus
+     */
     refresh(): void;
     setItem(item: RPG.BaseItem): void;
     isEquipItem(): boolean;
     drawPossession(x: number, y: number): void;
     drawEquipInfo(x: number, y: number): void;
     statusMembers(): Array<Game_Actor>;
+    /**
+     * Returns the page size.
+     * 
+     * @returns {number} 
+     * @memberof Window_ShopStatus
+     */
     pageSize(): number;
+    /**
+     * Returns the max number of pages.
+     * 
+     * @returns {number} 
+     * @memberof Window_ShopStatus
+     */
     maxPages(): number;
     drawActorEquipInfo(x: number, y: number, actor: Game_Actor): void;
     drawActorParamChange(x: number, y: number, actor: Game_Actor, item1: RPG.EquipItem): void;
+    /**
+     * Returns the parameter id.
+     * 
+     * @returns {number} 
+     * @memberof Window_ShopStatus
+     */
     paramId(): number;
+    /**
+     * Returns the current item equiped by the given actor when
+     * the respective equipment Id is passed.
+     * @param {Game_Actor} actor 
+     * @param {number} etypeId 
+     * @returns {RPG.EquipItem} 
+     * @memberof Window_ShopStatus
+     */
     currentEquippedItem(actor: Game_Actor, etypeId: number): RPG.EquipItem;
+    /**
+     * Updates the current page.
+     * 
+     * @memberof Window_ShopStatus
+     */
     updatePage(): void;
+    /**
+     * Determines if page can be changed.
+     * 
+     * @returns {boolean} 
+     * @memberof Window_ShopStatus
+     */
     isPageChangeEnabled(): boolean;
     isPageChangeRequested(): boolean;
+    /**
+     * Determines if the window is touched within it's frame.
+     * 
+     * @returns {boolean} 
+     * @memberof Window_ShopStatus
+     */
     isTouchedInsideFrame(): boolean;
+    /**
+     * Changes the current page.
+     * 
+     * @memberof Window_ShopStatus
+     */
     changePage(): void;
 }
 
@@ -10979,14 +19598,33 @@ declare class Window_ShopStatus extends Window_Base {
  * Window_NameEdit
  *
  * The window for editing an actor's name on the name input screen.
+ * @class Window_NameEdit
  */
 declare class Window_NameEdit extends Window_Base {
     protected _name: string;
     protected _index: number;
 
+    /**
+     * Creates an instance of Window_NameEdit.
+     * @param {Game_Actor} actor 
+     * @param {number} maxLength 
+     * @memberof Window_NameEdit
+     */
     constructor(actor: Game_Actor, maxLength: number);
 
+    /**
+     * Returns the window width.
+     * 
+     * @returns {number} 
+     * @memberof Window_NameEdit
+     */
     windowWidth(): number;
+    /**
+     * Returns the window height.
+     * 
+     * @returns {number} 
+     * @memberof Window_NameEdit
+     */
     windowHeight(): number;
 
     // "name" is defines already by superclass(PIXI.DisplayObject).
@@ -10995,13 +19633,48 @@ declare class Window_NameEdit extends Window_Base {
     restoreDefault(): boolean;
     add(ch: string): boolean;
     back(): boolean;
+    /**
+     * Returns the width of the character face.
+     * 
+     * @returns {number} 
+     * @memberof Window_NameEdit
+     */
     faceWidth(): number;
+    /**
+     * Returns the width of a character.
+     * 
+     * @returns {number} 
+     * @memberof Window_NameEdit
+     */
     charWidth(): number;
     left(): number;
     underlineRect(index: number): Rectangle;
+    /**
+     * Returns the color of the underline as a css color string.
+     * 
+     * @returns {string} 
+     * @memberof Window_NameEdit
+     */
     underlineColor(): string;
+    /**
+     * Draws the underline at the given index of the window.
+     * 
+     * @param {number} index 
+     * @memberof Window_NameEdit
+     */
     drawUnderline(index: number): void;
+    /**
+     * Draws a character within the window at the specified index.
+     * 
+     * @param {number} index 
+     * @memberof Window_NameEdit
+     */
     drawChar(index: number): void;
+    /**
+     * Refreshes the window contents.
+     * 
+     * @memberof Window_NameEdit
+     */
     refresh(): void;
 }
 
@@ -11010,6 +19683,7 @@ declare class Window_NameEdit extends Window_Base {
  * Window_NameInput
  *
  * The window for selecting text characters on the name input screen.
+ * @class Window_NameInputt
  */
 declare class Window_NameInput extends Window_Selectable {
     static LATIN1: Array<string>;
@@ -11025,7 +19699,19 @@ declare class Window_NameInput extends Window_Selectable {
 
     constructor(editWindow: Window_NameEdit);
 
+    /**
+     * Returns the window height.
+     * 
+     * @returns {number} 
+     * @memberof Window_NameInput
+     */
     windowHeight(): number;
+    /**
+     * Returns the table of characters to input.
+     * 
+     * @returns {Array<Array<string>>} 
+     * @memberof Window_NameInput
+     */
     table(): Array<Array<string>>;
     character(): string;
     isPageChange(): boolean;
@@ -11041,6 +19727,7 @@ declare class Window_NameInput extends Window_Selectable {
  * Window_ChoiceList
  *
  * The window used for the event command [Show Choices].
+ * @class Window_ChoiceList
  */
 declare class Window_ChoiceList extends Window_Command {
     protected _messageWindow: Window_Message;
@@ -11061,6 +19748,7 @@ declare class Window_ChoiceList extends Window_Command {
  * Window_NumberInput
  *
  * The window used for the event command [Input Number].
+ * @class Window_NumberInput
  */
 declare class Window_NumberInput extends Window_Selectable {
     protected _messageWindow: Window_Message;
@@ -11072,10 +19760,38 @@ declare class Window_NumberInput extends Window_Selectable {
 
     start(): void;
     updatePlacement(): void;
+    /**
+     * Returns the window width.
+     * 
+     * @returns {number} 
+     * @memberof Window_NumberInput
+     */
     windowWidth(): number;
+    /**
+     * Returns the window height.
+     * 
+     * @returns {number} 
+     * @memberof Window_NumberInput
+     */
     windowHeight(): number;
+    /**
+     * Returns the item width.
+     * 
+     * @returns {number} 
+     * @memberof Window_NumberInput
+     */
     itemWidth(): number;
+    /**
+     * Creates the number input window buttons.
+     * 
+     * @memberof Window_NumberInput
+     */
     createButtons(): void;
+    /**
+     * Places the number input window buttons.
+     * 
+     * @memberof Window_NumberInput
+     */
     placeButtons(): void;
     updateButtonsVisiblity(): void;
     showButtons(): void;
@@ -11093,14 +19809,32 @@ declare class Window_NumberInput extends Window_Selectable {
  * Window_EventItem
  *
  * The window used for the event command [Select Item].
+ * @class Window_EventItem
  */
 declare class Window_EventItem extends Window_ItemList {
     protected _messageWindow: Window_Message;
 
     constructor(messageWindow: Window_Message);
 
+    /**
+     * Returns the height off the window.
+     * 
+     * @returns {number} 
+     * @memberof Window_EventItem
+     */
     windowHeight(): number;
+    /**
+     * Returns the number of visible rows.
+     * 
+     * @returns {number} 
+     * @memberof Window_EventItem
+     */
     numVisibleRows(): number;
+    /**
+     * Starts the event item window.
+     * 
+     * @memberof Window_EventItem
+     */
     start(): void;
     updatePlacement(): void;
     includes(item: RPG.BaseItem): boolean;
@@ -11114,6 +19848,7 @@ declare class Window_EventItem extends Window_ItemList {
  * Window_Message
  *
  * The window for displaying text messages.
+ * @class Window_Message
  */
 declare class Window_Message extends Window_Base {
     protected _background: number;
@@ -11133,27 +19868,129 @@ declare class Window_Message extends Window_Base {
     constructor();
 
     initMembers(): void;
+    /**
+     * Returns the sub windows attached to the message window.
+     * 
+     * @returns {Array<Window_Base>} 
+     * @memberof Window_Message
+     */
     subWindows(): Array<Window_Base>;
+    /**
+     * Creates the sub windows for the message window.
+     * 
+     * @memberof Window_Message
+     */
     createSubWindows(): void;
+    /**
+     * Returns the width of the window.
+     * 
+     * @returns {number} 
+     * @memberof Window_Message
+     */
     windowWidth(): number;
+    /**
+     * Returns the height of the window.
+     * 
+     * @returns {number} 
+     * @memberof Window_Message
+     */
     windowHeight(): number;
     clearFlags(): void;
+    /**
+     * Returns the number of visible rows within the message window.
+     * 
+     * @returns {number} 
+     * @memberof Window_Message
+     */
     numVisibleRows(): number;
     checkToNotClose(): void;
+    /**
+     * Returns true if the message window can start.
+     * 
+     * @returns {boolean} 
+     * @memberof Window_Message
+     */
     canStart(): boolean;
+    /**
+     * Starts the displaying of the message within the message window.
+     * 
+     * @memberof Window_Message
+     */
     startMessage(): void;
+    /**
+     * Updates the placement of the message window.
+     * 
+     * @memberof Window_Message
+     */
     updatePlacement(): void;
+    /**
+     * Updates the background of the message window.
+     * 
+     * @memberof Window_Message
+     */
     updateBackground(): void;
+    /**
+     * Terminates the message and closes the gold and message window.
+     * 
+     * @memberof Window_Message
+     */
     terminateMessage(): void;
+    /**
+     * Updates the wait of the message window.
+     * 
+     * @returns {boolean} 
+     * @memberof Window_Message
+     */
     updateWait(): boolean;
     updateLoading(): boolean;
+    /**
+     * Updates input when the message window is processing.
+     * 
+     * @returns {boolean} 
+     * @memberof Window_Message
+     */
     updateInput(): boolean;
+    /**
+     * Returns true if any sub window is active.
+     * 
+     * @returns {boolean} 
+     * @memberof Window_Message
+     */
     isAnySubWindowActive(): boolean;
+    /**
+     * Updates the message.
+     * 
+     * @returns {boolean} 
+     * @memberof Window_Message
+     */
     updateMessage(): boolean;
+    /**
+     * Handler for when there is no text left to display within
+     * the message window.
+     * @memberof Window_Message
+     */
     onEndOfText(): void;
     startInput(): boolean;
+    /**
+     * Returns true if the ok or cancel inputs have been triggered
+     * multiple times.
+     * @returns {boolean} 
+     * @memberof Window_Message
+     */
     isTriggered(): boolean;
+    /**
+     * Returns true if the message window still has text
+     * and settings have not changed.
+     * @returns {boolean} 
+     * @memberof Window_Message
+     */
     doesContinue(): boolean;
+    /**
+     * Returns true if the message window settings have been changed.
+     * 
+     * @returns {boolean} 
+     * @memberof Window_Message
+     */
     areSettingsChanged(): boolean;
     updateShowFast(): void;
     newPage(textState: MV.TextState): void;
@@ -11162,10 +19999,35 @@ declare class Window_Message extends Window_Base {
     newLineX(): number;
     processNewLine(textState: MV.TextState): void;
     processNewPage(textState: MV.TextState): void;
+    /**
+     * Returns true if there is no text left to display in the message
+     * window.
+     * @param {MV.TextState} textState 
+     * @returns {boolean} 
+     * @memberof Window_Message
+     */
     isEndOfText(textState: MV.TextState): boolean;
+    /**
+     * Returns true if the text state needs a new page to display text.
+     * 
+     * @param {MV.TextState} textState 
+     * @returns {boolean} 
+     * @memberof Window_Message
+     */
     needsNewPage(textState: MV.TextState): boolean;
     processEscapeCharacter(code: string, textState: MV.TextState): void;
+    /**
+     * Starts a wait for the message window.
+     * 
+     * @param {number} count 
+     * @memberof Window_Message
+     */
     startWait(count: number): void;
+    /**
+     * Starts a pause for the message window; this will only be
+     * lifted if the user presses a button.
+     * @memberof Window_Message
+     */
     startPause(): void;
 }
 
@@ -11175,6 +20037,7 @@ declare class Window_Message extends Window_Base {
  *
  * The window for displaying scrolling text. No frame is displayed, but it
  * is handled as a window for convenience.
+ * @class Window_ScrollText
  */
 declare class Window_ScrollText extends Window_Base {
     protected _text: string;
@@ -11182,12 +20045,34 @@ declare class Window_ScrollText extends Window_Base {
 
     constructor();
 
+    /**
+     * Starts the displaying of a message in the scroll text window.
+     * 
+     * @memberof Window_ScrollText
+     */
     startMessage(): void;
     refresh(): void;
     updateMessage(): void;
     scrollSpeed(): number;
+    /**
+     * Returns true if the scene is in fast forward mode.
+     * 
+     * @returns {boolean} 
+     * @memberof Window_ScrollText
+     */
     isFastForward(): boolean;
+    /**
+     * Returns the fast forward rate of the scroll text window.
+     * 
+     * @returns {number} 
+     * @memberof Window_ScrollText
+     */
     fastForwardRate(): number;
+    /**
+     * Terminates the message and the scroll text window is hidden.
+     * 
+     * @memberof Window_ScrollText
+     */
     terminateMessage(): void;
 }
 
@@ -11196,17 +20081,44 @@ declare class Window_ScrollText extends Window_Base {
  * Window_MapName
  *
  * The window for displaying the map name on the map screen.
+ * @class Window_MapName
  */
 declare class Window_MapName extends Window_Base {
     protected _showCount: number;
 
     constructor();
 
+    /**
+     * Returns the window width.
+     * 
+     * @returns {number} 
+     * @memberof Window_MapName
+     */
     windowWidth(): number;
+    /**
+     * Returns the window height.
+     * 
+     * @returns {number} 
+     * @memberof Window_MapName
+     */
     windowHeight(): number;
     updateFadeIn(): void;
     updateFadeOut(): void;
+    /**
+     * Windows the map name window.
+     * 
+     * @memberof Window_MapName
+     */
     refresh(): void;
+    /**
+     * Draws the background of the map name window.
+     * 
+     * @param {number} x 
+     * @param {number} y 
+     * @param {number} width 
+     * @param {number} height 
+     * @memberof Window_MapName
+     */
     drawBackground(x: number, y: number, width: number, height: number): void;
 }
 
@@ -11217,6 +20129,7 @@ declare class Window_MapName extends Window_Base {
  *
  * The window for displaying battle progress. No frame is displayed, but it is
  * handled as a window for convenience.
+ * @class Window_BattleLog
  */
 declare class Window_BattleLog extends Window_Selectable {
     protected _lines: Array<string>;
@@ -11312,6 +20225,7 @@ declare class Window_BattleLog extends Window_Selectable {
  * Window_PartyCommand
  *
  * The window for selecting whether to fight or escape on the battle screen.
+ * @class Window_PartyCommand
  */
 declare class Window_PartyCommand extends Window_Command {
     constructor();
@@ -11324,16 +20238,43 @@ declare class Window_PartyCommand extends Window_Command {
  * Window_ActorCommand
  *
  * The window for selecting an actor's action on the battle screen.
+ * @class Window_ActorCommand
  */
 declare class Window_ActorCommand extends Window_Command {
     protected _actor: Game_Actor;
 
     constructor();
 
+    /**
+     * Adds the attack command to the actor command window.
+     * 
+     * @memberof Window_ActorCommand
+     */
     addAttackCommand(): void;
+    /**
+     * Adds the skill command to the actor command window.
+     * 
+     * @memberof Window_ActorCommand
+     */
     addSkillCommands(): void;
+    /**
+     * Adds the guard command to the actor command window.
+     * 
+     * @memberof Window_ActorCommand
+     */
     addGuardCommand(): void;
+    /**
+     * Adds the item command to the actor command window.
+     * 
+     * @memberof Window_ActorCommand
+     */
     addItemCommand(): void;
+    /**
+     * Sets up the actor command window with a specified actor.
+     * 
+     * @param {Game_Actor} actor 
+     * @memberof Window_ActorCommand
+     */
     setup(actor: Game_Actor): void;
     selectLast(): void;
 }
@@ -11343,19 +20284,79 @@ declare class Window_ActorCommand extends Window_Command {
  * Window_BattleStatus
  *
  * The window for displaying the status of party members on the battle screen.
+ * @class Window_BattleStatus
  */
 declare class Window_BattleStatus extends Window_Selectable {
     constructor();
 
+    /**
+     * Returns the window width.
+     * 
+     * @returns {number} 
+     * @memberof Window_BattleStatus
+     */
     windowWidth(): number;
+    /**
+     * Returns the window height.
+     * 
+     * @returns {number} 
+     * @memberof Window_BattleStatus
+     */
     windowHeight(): number;
+    /**
+     * Returns the number of visible rows.
+     * 
+     * @returns {number} 
+     * @memberof Window_BattleStatus
+     */
     numVisibleRows(): number;
     basicAreaRect(index: number): Rectangle;
+    /**
+     * returns a rectangle for the gauges in the gauge area.
+     * 
+     * @param {number} index 
+     * @returns {Rectangle} 
+     * @memberof Window_BattleStatus
+     */
     gaugeAreaRect(index: number): Rectangle;
+    /**
+     * Returns the width of the guage area.
+     * 
+     * @returns {number} 
+     * @memberof Window_BattleStatus
+     */
     gaugeAreaWidth(): number;
+    /**
+     * Draws the basic area for actors within the battle status window.
+     * 
+     * @param {Rectangle} rect 
+     * @param {Game_Actor} actor 
+     * @memberof Window_BattleStatus
+     */
     drawBasicArea(rect: Rectangle, actor: Game_Actor): void;
+    /**
+     * Draws the gauge area for the actors within the battle status window.
+     * 
+     * @param {Rectangle} rect 
+     * @param {Game_Actor} actor 
+     * @memberof Window_BattleStatus
+     */
     drawGaugeArea(rect: Rectangle, actor: Game_Actor): void;
+    /**
+     * Draws the gauges in the basic area with tp included.
+     * 
+     * @param {Rectangle} rect 
+     * @param {Game_Actor} actor 
+     * @memberof Window_BattleStatus
+     */
     drawGaugeAreaWithTp(rect: Rectangle, actor: Game_Actor): void;
+    /**
+     * Draws the gauges in the basic area without tp included.
+     * 
+     * @param {Rectangle} rect 
+     * @param {Game_Actor} actor 
+     * @memberof Window_BattleStatus
+     */
     drawGaugeAreaWithoutTp(rect: Rectangle, actor: Game_Actor): void;
 }
 
@@ -11364,11 +20365,24 @@ declare class Window_BattleStatus extends Window_Selectable {
  * Window_BattleActor
  *
  * The window for selecting a target actor on the battle screen.
+ * @class Window_BattleActor
  */
 declare class Window_BattleActor extends Window_BattleStatus {
     constructor(x: number, y: number);
 
+    /**
+     * Selects an actor within the battle actor window.
+     * 
+     * @param {number} index 
+     * @memberof Window_BattleActor
+     */
     select(index: number): void;
+    /**
+     * Returns the current selected actor.
+     * 
+     * @returns {Game_Actor} 
+     * @memberof Window_BattleActor
+     */
     actor(): Game_Actor;
 }
 
@@ -11377,17 +20391,54 @@ declare class Window_BattleActor extends Window_BattleStatus {
  * Window_BattleEnemy
  *
  * The window for selecting a target enemy on the battle screen.
+ * @class Window_BattleEnemy
  */
 declare class Window_BattleEnemy extends Window_Selectable {
     protected _enemies: Array<Game_Enemy>;
 
     constructor(x: number, y: number);
 
+    /**
+     * Returns the window width.
+     * 
+     * @returns {number} 
+     * @memberof Window_BattleEnemy
+     */
     windowWidth(): number;
+    /**
+     * Returns the window height.
+     * 
+     * @returns {number} 
+     * @memberof Window_BattleEnemy
+     */
     windowHeight(): number;
+    /**
+     * Returns the number of visible rows.
+     * 
+     * @returns {number} 
+     * @memberof Window_BattleEnemy
+     */
     numVisibleRows(): number;
+    /**
+     * Returns the current enemy.
+     * 
+     * @returns {Game_Enemy} 
+     * @memberof Window_BattleEnemy
+     */
     enemy(): Game_Enemy;
+    /**
+     * Returns the current index selected.
+     * 
+     * @returns {number} 
+     * @memberof Window_BattleEnemy
+     */
     enemyIndex(): number;
+    /**
+     * Selects a specified enemy using the index.
+     * 
+     * @param {number} index 
+     * @memberof Window_BattleEnemy
+     */
     select(index: number): void;
 }
 
@@ -11396,6 +20447,7 @@ declare class Window_BattleEnemy extends Window_Selectable {
  * Window_BattleSkill
  *
  * The window for selecting a skill to use on the battle screen.
+ * @class Window_BattleSkill
  */
 declare class Window_BattleSkill extends Window_SkillList {
     constructor(x: number, y: number, width: number, height: number);
@@ -11406,6 +20458,7 @@ declare class Window_BattleSkill extends Window_SkillList {
  * Window_BattleItem
  *
  * The window for selecting an item to use on the battle screen.
+ * @class Window_BattleItem
  */
 declare class Window_BattleItem extends Window_ItemList {
     constructor(x: number, y: number, width: number, height: number);
@@ -11418,6 +20471,7 @@ declare class Window_BattleItem extends Window_ItemList {
  * Window_TitleCommand
  *
  * The window for selecting New Game/Continue on the title screen.
+ * @class Window_TitleCommand
  */
 declare class Window_TitleCommand extends Window_Command {
     protected static _lastCommandSymbol: string;
@@ -11435,6 +20489,7 @@ declare class Window_TitleCommand extends Window_Command {
  * Window_GameEnd
  *
  * The window for selecting "Go to Title" on the game end screen.
+ * @class Window_GameEnd
  */
 declare class Window_GameEnd extends Window_Command {
     constructor();
@@ -11447,6 +20502,7 @@ declare class Window_GameEnd extends Window_Command {
  * Window_DebugRange
  *
  * The window for selecting a block of switches/variables on the debug screen.
+ * @class Window_DebugRange
  */
 declare class Window_DebugRange extends Window_Selectable {
     protected static lastTopRow: number;
@@ -11468,6 +20524,7 @@ declare class Window_DebugRange extends Window_Selectable {
  * Window_DebugEdit
  *
  * The window for displaying switches and variables on the debug screen.
+ * @class Window_DebugEdit
  */
 declare class Window_DebugEdit extends Window_Selectable {
     protected _mode: string;
@@ -11482,529 +20539,4 @@ declare class Window_DebugEdit extends Window_Selectable {
     currentId(): number;
     updateSwitch(): void;
     updateVariable(): void;
-}
-/**
- * -----------------------------------------------------------------------------
- * Scene_Base
- *
- * The superclass of all scenes within the game.
- */
-declare class Scene_Base extends Stage {
-    protected _active: boolean;
-    protected _fadeSign: number;
-    protected _fadeDuration: number;
-    protected _fadeSprite: ScreenSprite;
-    protected _windowLayer: WindowLayer;
-
-    create(): void;
-    isActive(): boolean;
-    isReady(): boolean;
-    start(): void;
-    update(): void;
-    stop(): void;
-    isBusy(): boolean;
-    terminate(): void;
-    createWindowLayer(): void;
-    addWindow(window: Window_Base): void;
-    startFadeIn(duration: number, white: boolean): void;
-    startFadeOut(duration: number, white: boolean): void;
-    createFadeSprite(white: boolean): void;
-    updateFade(): void;
-    updateChildren(): void;
-    popScene(): void;
-    checkGameover(): void;
-    fadeOutAll(): void;
-    fadeSpeed(): number;
-    slowFadeSpeed(): number;
-}
-
-/**
- * -----------------------------------------------------------------------------
- * Scene_Boot
- *
- * The scene class for initializing the entire game.
- */
-declare class Scene_Boot extends Scene_Base {
-    protected _startDate: Date;
-
-    loadSystemImages(): void;
-    loadSystemWindowImage(): void;
-    isGameFontLoaded(): boolean;
-    updateDocumentTitle(): void;
-    checkPlayerLocation(): void;
-}
-
-/**
- * -----------------------------------------------------------------------------
- * Scene_Title
- *
- * The scene class of the title screen.
- */
-declare class Scene_Title extends Scene_Base {
-    protected _commandWindow: Window_TitleCommand;
-    protected _backSprite1: Sprite;
-    protected _backSprite2: Sprite;
-    protected _gameTitleSprite: Sprite;
-
-    createBackground(): void;
-    createForeground(): void;
-    drawGameTitle(): void;
-    centerSprite(sprite: Sprite): void;
-    createCommandWindow(): void;
-    commandNewGame(): void;
-    commandContinue(): void;
-    commandOptions(): void;
-    playTitleMusic(): void;
-}
-
-/**
- * -----------------------------------------------------------------------------
- * Scene_Map
- *
- * The scene class of the map screen.
- */
-declare class Scene_Map extends Scene_Base {
-    protected _waitCount: number;
-    protected _encounterEffectDuration: number;
-    protected _mapLoaded: boolean;
-    protected _touchCount: number;
-    protected _transfer: boolean;
-
-    protected _spriteset: Spriteset_Map;
-    protected _mapNameWindow: Window_MapName;
-    protected _scrollTextWindow: Window_ScrollText;
-    protected _messageWindow: Window_Message;
-
-    menuCalling: boolean;
-
-    onMapLoaded(): void;
-    updateMainMultiply(): void;
-    updateMain(): void;
-    isFastForward(): boolean;
-    stop(): void;
-    needsFadeIn(): boolean;
-    needsSlowFadeOut(): boolean;
-    updateWaitCount(): boolean;
-    updateDestination(): void;
-    isMapTouchOk(): boolean;
-    processMapTouch(): void;
-    isSceneChangeOk(): boolean;
-    updateScene(): void;
-    createDisplayObjects(): void;
-    createSpriteset(): void;
-    createAllWindows(): void;
-    createMapNameWindow(): void;
-    createMessageWindow(): void;
-    createScrollTextWindow(): void;
-    updateTransferPlayer(): void;
-    updateEncounter(): void;
-    updateCallMenu(): void;
-    isMenuEnabled(): boolean;
-    isMenuCalled(): boolean;
-    callMenu(): void;
-    updateCallDebug(): void;
-    isDebugCalled(): boolean;
-    fadeInForTransfer(): void;
-    fadeOutForTransfer(): void;
-    launchBattle(): void;
-    stopAudioOnBattleStart(): void;
-    startEncounterEffect(): void;
-    updateEncounterEffect(): void;
-    snapForBattleBackground(): void;
-    startFlashForEncounter(duration: number): void;
-    encounterEffectSpeed(): number;
-}
-
-/**
- * -----------------------------------------------------------------------------
- * Scene_MenuBase
- *
- * The superclass of all the menu-type scenes.
- */
-declare class Scene_MenuBase extends Scene_Base {
-    protected _actor: Game_Actor;
-    protected _backgroundSprite: Sprite;
-    protected _helpWindow: Window_Help;
-
-    actor(): Game_Actor;
-    updateActor(): void;
-    createBackground(): void;
-    setBackgroundOpacity(opacity: number): void;
-    createHelpWindow(): void;
-    nextActor(): void;
-    previousActor(): void;
-    onActorChange(): void;
-}
-
-/**
- * -----------------------------------------------------------------------------
- * Scene_Menu
- *
- * The scene class of the menu screen.
- */
-declare class Scene_Menu extends Scene_MenuBase {
-    protected _commandWindow: Window_MenuCommand;
-    protected _goldWindow: Window_Gold;
-    protected _statusWindow: Window_MenuStatus;
-
-    createCommandWindow(): void;
-    createGoldWindow(): void;
-    createStatusWindow(): void;
-    commandItem(): void;
-    commandPersonal(): void;
-    commandFormation(): void;
-    commandOptions(): void;
-    commandSave(): void;
-    commandGameEnd(): void;
-    onPersonalOk(): void;
-    onPersonalCancel(): void;
-    onFormationOk(): void;
-    onFormationCancel(): void;
-}
-
-/**
- * -----------------------------------------------------------------------------
- * Scene_ItemBase
- *
- * The superclass of Scene_Item and Scene_Skill.
- */
-declare class Scene_ItemBase extends Scene_MenuBase {
-    protected _actorWindow: Window_MenuActor;
-    protected _itemWindow: Window_Selectable;
-
-    createActorWindow(): void;
-    item(): void;
-    user(): Game_Actor;
-    isCursorLeft(): boolean;
-    showSubWindow(window: Window_Base): void;
-    hideSubWindow(window: Window_Base): void;
-    onActorOk(): void;
-    onActorCancel(): void;
-    determineItem(): void;
-    useItem(): void;
-    activateItemWindow(): void;
-    itemTargetActors(): Game_Actor;
-    canUse(): boolean;
-    isItemEffectsValid(): boolean;
-    applyItem(): void;
-    checkCommonEvent(): void;
-}
-
-/**
- * -----------------------------------------------------------------------------
- * Scene_Item
- *
- * The scene class of the item screen.
- */
-declare class Scene_Item extends Scene_ItemBase {
-    protected _categoryWindow: Window_ItemCategory;
-
-    createCategoryWindow(): void;
-    createItemWindow(): void;
-    onCategoryOk(): void;
-    onItemOk(): void;
-    onItemCancel(): void;
-    playSeForItem(): void;
-}
-
-/**
- * -----------------------------------------------------------------------------
- * Scene_Skill
- *
- * The scene class of the skill screen.
- */
-declare class Scene_Skill extends Scene_ItemBase {
-    protected _skillTypeWindow: Window_SkillType;
-
-    createSkillTypeWindow(): void;
-    createStatusWindow(): void;
-    createItemWindow(): void;
-    refreshActor(): void;
-    commandSkill(): void;
-    onItemCancel(): void;
-    playSeForItem(): void;
-    onActorChange(): void;
-}
-
-/**
- * -----------------------------------------------------------------------------
- * Scene_Equip
- *
- * The scene class of the equipment screen.
- */
-declare class Scene_Equip extends Scene_MenuBase {
-    protected _statusWindow: Window_EquipStatus;
-    protected _commandWindow: Window_EquipCommand;
-    protected _slotWindow: Window_EquipSlot;
-    protected _itemWindow: Window_EquipItem;
-
-    createStatusWindow(): void;
-    createCommandWindow(): void;
-    createSlotWindow(): void;
-    createItemWindow(): void;
-    refreshActor(): void;
-    commandEquip(): void;
-    commandOptimize(): void;
-    commandClear(): void;
-    onSlotOk(): void;
-    onSlotCancel(): void;
-    onItemOk(): void;
-    onItemCancel(): void;
-    onActorChange(): void;
-}
-
-/**
- * -----------------------------------------------------------------------------
- * Scene_Status
- *
- * The scene class of the status screen.
- */
-declare class Scene_Status extends Scene_MenuBase {
-    protected _statusWindow: Window_Status;
-
-    refreshActor(): void;
-    onActorChange(): void;
-}
-
-/**
- * -----------------------------------------------------------------------------
- * Scene_Options
- *
- * The scene class of the options screen.
- */
-declare class Scene_Options extends Scene_MenuBase {
-    protected _optionsWindow: Window_Options;
-
-    createOptionsWindow(): void;
-}
-
-/**
- * -----------------------------------------------------------------------------
- * Scene_File
- *
- * The superclass of Scene_Save and Scene_Load.
- */
-declare class Scene_File extends Scene_MenuBase {
-    protected _listWindow: Window_SavefileList;
-
-    savefileId(): void;
-    createHelpWindow(): void;
-    createListWindow(): void;
-    mode(): void;
-    activateListWindow(): void;
-    helpWindowText(): string;
-    firstSavefileIndex(): number;
-    onSavefileOk(): void;
-}
-
-/**
- * -----------------------------------------------------------------------------
- * Scene_Save
- *
- * The scene class of the save screen.
- */
-declare class Scene_Save extends Scene_File {
-    mode(): string;
-    helpWindowText(): string;
-    firstSavefileIndex(): number;
-    onSavefileOk(): void;
-    onSaveSuccess(): void;
-    onSaveFailure(): void;
-}
-
-/**
- * -----------------------------------------------------------------------------
- * Scene_Load
- *
- * The scene class of the load screen.
- */
-declare class Scene_Load extends Scene_File {
-    protected _loadSuccess: boolean;
-
-    mode(): string;
-    helpWindowText(): string;
-    firstSavefileIndex(): number;
-    onSavefileOk(): void;
-    onLoadSuccess(): void;
-    onLoadFailure(): void;
-    reloadMapIfUpdated(): void;
-}
-
-/**
- * -----------------------------------------------------------------------------
- * Scene_GameEnd
- *
- * The scene class of the game end screen.
- */
-declare class Scene_GameEnd extends Scene_MenuBase {
-    protected _commandWindow: Window_GameEnd;
-
-    stop(): void;
-    createBackground(): void;
-    createCommandWindow(): void;
-    commandToTitle(): void;
-}
-
-/**
- * -----------------------------------------------------------------------------
- * Scene_Shop
- *
- * The scene class of the shop screen.
- */
-declare class Scene_Shop extends Scene_MenuBase {
-    protected _goods: Array<Array<any>>;
-    protected _purchaseOnly: boolean;
-    protected _item: RPG.BaseItem;
-
-    protected _goldWindow: Window_Gold;
-    protected _commandWindow: Window_ShopCommand;
-    protected _dummyWindow: Window_Base;
-    protected _numberWindow: Window_ShopNumber;
-    protected _statusWindow: Window_ShopStatus;
-    protected _buyWindow: Window_ShopBuy;
-    protected _categoryWindow: Window_ItemCategory;
-    protected _sellWindow: Window_ShopSell;
-    protected _helpWindow: Window_Help;
-
-    prepare(goods: Array<Array<any>>, purchaseOnly: boolean): void;
-    createGoldWindow(): void;
-    createCommandWindow(): void;
-    createDummyWindow(): void;
-    createNumberWindow(): void;
-    createStatusWindow(): void;
-    createBuyWindow(): void;
-    createCategoryWindow(): void;
-    createSellWindow(): void;
-    activateBuyWindow(): void;
-    activateSellWindow(): void;
-    commandBuy(): void;
-    commandSell(): void;
-    onBuyOk(): void;
-    onBuyCancel(): void;
-    onCategoryOk(): void;
-    onCategoryCancel(): void;
-    onSellOk(): void;
-    onSellCancel(): void;
-    onNumberOk(): void;
-    onNumberCancel(): void;
-    doBuy(number: number): void;
-    doSell(number: number): void;
-    endNumberInput(): void;
-    maxBuy(): number;
-    maxSell(): number;
-    money(): number;
-    currencyUnit(): string;
-    buyingPrice(): number;
-    sellingPrice(): number;
-}
-
-/**
- * -----------------------------------------------------------------------------
- * Scene_Name
- *
- * The scene class of the name input screen.
- */
-declare class Scene_Name extends Scene_MenuBase {
-    prepare(actorId: number, maxLength: number): void;
-    createEditWindow(): void;
-    createInputWindow(): void;
-    onInputOk(): void;
-}
-
-/**
- * -----------------------------------------------------------------------------
- * Scene_Debug
- *
- * The scene class of the debug screen.
- */
-declare class Scene_Debug extends Scene_MenuBase {
-    createRangeWindow(): void;
-    createEditWindow(): void;
-    createDebugHelpWindow(): void;
-    onRangeOk(): void;
-    onEditCancel(): void;
-    refreshHelpWindow(): void;
-    helpText(): string;
-}
-
-/**
- * -----------------------------------------------------------------------------
- * Scene_Battle
- *
- * The scene class of the battle screen.
- */
-declare class Scene_Battle extends Scene_Base {
-    protected _spriteset: Spriteset_Battle;
-    protected _statusWindow: Window_BattleStatus;
-    protected _partyCommandWindow: Window_PartyCommand;
-    protected _actorCommandWindow: Window_ActorCommand;
-    protected _skillWindow: Window_BattleSkill;
-    protected _itemWindow: Window_BattleItem;
-    protected _actorWindow: Window_BattleActor;
-    protected _enemyWindow: Window_BattleEnemy;
-    protected _logWindow: Window_BattleLog;
-    protected _helpWindow: Window_Help;
-    protected _messageWindow: Window_Message;
-    protected _scrollTextWindow: Window_ScrollText;
-
-    updateBattleProcess(): void;
-    isAnyInputWindowActive(): boolean;
-    changeInputWindow(): void;
-    stop(): void;
-    needsSlowFadeOut(): boolean;
-    updateStatusWindow(): void;
-    updateWindowPositions(): void;
-    createDisplayObjects(): void;
-    createSpriteset(): void;
-    createAllWindows(): void;
-    createLogWindow(): void;
-    createStatusWindow(): void;
-    createPartyCommandWindow(): void;
-    createActorCommandWindow(): void;
-    createHelpWindow(): void;
-    createSkillWindow(): void;
-    createItemWindow(): void;
-    createActorWindow(): void;
-    createEnemyWindow(): void;
-    createMessageWindow(): void;
-    createScrollTextWindow(): void;
-    refreshStatus(): void;
-    startPartyCommandSelection(): void;
-    commandFight(): void;
-    commandEscape(): void;
-    startActorCommandSelection(): void;
-    commandAttack(): void;
-    commandSkill(): void;
-    commandGuard(): void;
-    commandItem(): void;
-    selectNextCommand(): void;
-    selectPreviousCommand(): void;
-    selectActorSelection(): void;
-    onActorOk(): void;
-    onActorCancel(): void;
-    selectEnemySelection(): void;
-    onEnemyOk(): void;
-    onEnemyCancel(): void;
-    onSkillOk(): void;
-    onSkillCancel(): void;
-    onItemOk(): void;
-    onItemCancel(): void;
-    onSelectAction(): void;
-    endCommandSelection(): void;
-}
-
-/**
- * -----------------------------------------------------------------------------
- * Scene_Gameover
- *
- * The scene class of the game over screen.
- */
-declare class Scene_Gameover extends Scene_Base {
-    protected _backSprite: Sprite;
-
-    stop(): void;
-    playGameoverMusic(): void;
-    createBackground(): void;
-    isTriggered(): boolean;
-    gotoTitle(): void;
 }
